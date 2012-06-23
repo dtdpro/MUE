@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: question.xml 62 2010-11-28 16:08:16Z chdemko $ -->
+<form>
+	<fieldset name="details">
+		<field
+			name="opt_id"
+			type="hidden"
+		/>
+		<field
+			name="published"
+			type="list"
+			id="published"
+			class="inputbox"
+			label="JSTATUS"
+			description="JFIELD_PUBLISHED_DESC"
+			size="1"
+			default="1"
+			filter="integer">
+			<option	value="1">JPUBLISHED</option>
+			<option	value="0">JUNPUBLISHED</option>
+		</field>
+		<field 
+			name="opt_field" 
+			type="hidden" 
+		/>
+		<field 
+			name="ordering" 
+			type="OrderUOpt" 
+			class="inputbox"
+			label="JFIELD_ORDERING_LABEL"
+			description="JFIELD_ORDERING_DESC" 
+		/>
+
+	</fieldset>
+	<fieldset name="content">
+		<field
+			name="opt_text"
+			type="textarea"
+			label="COM_MUE_UOPT_FIELD_NAME_LABEL"
+			description="COM_MUE_UOPT_FIELD_NAME_DESC"
+			rows="4"
+			cols="70"
+			class="inputbox"
+			required="true"
+			filter="safehtml"
+			buttons="false"
+		/>
+
+	</fieldset>
+
+</form>
+

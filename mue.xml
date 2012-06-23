@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="1.7" method="upgrade">
+	<name>com_mue</name>
+	<creationDate>2012.06</creationDate>
+	<author>DtD Productions</author>
+	<authorEmail>info@dtdpro.com</authorEmail>
+	<authorUrl>http://www.dtdpro.com</authorUrl>
+	<copyright>Copyright 2012 DtD Productions</copyright>
+	<license>GPL v2</license>
+	<version>1.0.0</version>
+	<releaseDate>2012.06.30</releaseDate>
+	<releaseType>Update</releaseType>
+	<downloadUrl>http://www.dtdpro.com/</downloadUrl>
+	<description>COM_MUE_DESC</description>
+	<install>
+		<sql>
+			<file charset="utf8" driver="mysql">install.sql</file>
+		</sql>
+	</install>
+	<files folder="site">
+		<filename>index.html</filename>
+		<filename>router.php</filename>
+		<filename>mue.php</filename>
+		<filename>controller.php</filename>
+		<filename>metadata.xml</filename>
+		<folder>models</folder>
+		<folder>views</folder>
+		<folder>lib</folder>
+		<folder>helpers</folder>
+	</files>
+    <media destination="com_mue" folder="media">
+            <filename>index.html</filename>
+            <folder>scripts</folder>
+			<folder>images</folder>
+    </media>
+	<administration>
+		<!-- Administration Menu Section -->
+		<menu img="../media/com_mue/images/mue-16x16.png">COM_MUE_MENU</menu>
+		<submenu>
+			<menu view="users">COM_MUE_SUBMENU_USERS</menu>
+		</submenu>
+		<files folder="admin">
+			<filename>index.html</filename>
+			<filename>controller.php</filename>
+			<filename>mue.php</filename>
+			<filename>install.sql</filename>
+			<filename>access.xml</filename>
+			<filename>config.xml</filename>
+			<folder>models</folder>
+			<folder>controllers</folder>
+			<folder>tables</folder>
+			<folder>views</folder>
+			<folder>helpers</folder>
+		</files>
+		<languages folder="admin">
+			<language tag="en-GB">language/en-GB.com_mue.ini</language>
+			<language tag="en-GB">language/en-GB.com_mue.sys.ini</language>
+		</languages>	
+	</administration>
+</extension>

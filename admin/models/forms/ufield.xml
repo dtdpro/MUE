@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: question.xml 62 2010-11-28 16:08:16Z chdemko $ -->
+<form>
+	<fieldset name="details">
+		<field
+			name="uf_id"
+			type="hidden"
+		/>
+		<field
+			name="published"
+			type="list"
+			id="published"
+			class="inputbox"
+			label="JSTATUS"
+			description="JFIELD_PUBLISHED_DESC"
+			size="1"
+			default="1"
+			filter="integer">
+			<option	value="1">JPUBLISHED</option>
+			<option	value="0">JUNPUBLISHED</option>
+		</field>
+		<field 
+			name="ordering" 
+			type="OrderUField" 
+			class="inputbox"
+			label="JFIELD_ORDERING_LABEL"
+			description="JFIELD_ORDERING_DESC" 
+		/>
+		<field
+			name="uf_sname"
+			type="text"
+			extension="com_continued"
+			class="inputbox"
+			size="40"
+			label="COM_MUE_UFIELD_FIELD_SNAME_LABEL"
+			description="COM_MUE_UFIELD_FIELD_SNAME_DESC"
+			required="true" />
+		<field
+			name="uf_name"
+			type="text"
+			extension="com_continued"
+			class="inputbox"
+			size="60"
+			label="COM_MUE_UFIELD_FIELD_NAME_LABEL"
+			description="COM_MUE_UFIELD_FIELD_NAME_DESC"
+			required="true" />
+		<field
+			name="uf_type"
+			type="list"
+			extension="com_continued"
+			class="inputbox"
+			default=""
+			label="COM_MUE_UFIELD_FIELD_TYPE_LABEL"
+			description="COM_MUE_UFIELD_FIELD_TYPE_DESC"
+			required="true">
+			<option value="textbox">Text Field</option>
+			<option value="textar">Text Box</option>
+			<option value="multi">Radio Select</option>
+			<option value="cbox">Check Box</option>
+			<option value="mcbox">Multi Checkbox</option>
+			<option value="yesno">Yes / No</option>
+			<option value="dropdown">Drop Down</option>
+			<option value="mlist">MultiSelect List</option>
+			<option value="message">Message</option>
+			<option value="email">EMail</option>
+			<option value="username">UserName</option>
+			<option value="phone">Phone</option>
+			<option value="password">Password</option>
+			<option value="birthday">Birthday</option>
+			<option value="captcha">Captcha</option>
+		</field>
+		<field
+			name="uf_req"
+			type="radio"
+			label="COM_MUE_UFIELD_FIELD_REQ_LABEL"
+			description="COM_MUE_UFIELD_FIELD_REQ_DESC"
+			size="1"
+			class="inputbox"
+			required="true"
+			default="0">
+			<option	value="1">Yes</option>
+			<option	value="0">No</option>
+		</field>
+		<field
+			name="uf_min"
+			type="text"
+			extension="com_continued"
+			class="inputbox"
+			size="6"
+			label="COM_MUE_UFIELD_FIELD_MIN_LABEL"
+			description="COM_MUE_UFIELD_FIELD_MIN_DESC"
+			required="true"
+			default="0" />
+		<field
+			name="uf_max"
+			type="text"
+			extension="com_continued"
+			class="inputbox"
+			size="6"
+			label="COM_MUE_UFIELD_FIELD_MAX_LABEL"
+			description="COM_MUE_UFIELD_FIELD_MAX_DESC"
+			required="true"
+			default="0" />
+		<field
+			name="uf_default"
+			type="text"
+			extension="com_continued"
+			class="inputbox"
+			size="40"
+			label="COM_MUE_UFIELD_FIELD_DEFAULT_LABEL"
+			description="COM_MUE_UFIELD_FIELD_DEFAULT_DESC"
+			required="false" />
+		<field
+			name="uf_change"
+			type="radio"
+			label="COM_MUE_UFIELD_FIELD_CHANGE_LABEL"
+			description="COM_MUE_UFIELD_FIELD_CHANGE_DESC"
+			size="1"
+			class="inputbox"
+			required="true"
+			default="1">
+			<option	value="1">Yes</option>
+			<option	value="0">No</option>
+		</field>
+		<field 
+			name="uf_match" 
+			type="FieldMatch" 
+			class="inputbox"
+			label="COM_MUE_UFIELD_FIELD_MATCH_LABEL"
+			description="COM_MUE_UFIELD_FIELD_MATCH_DESC" 
+		/>
+		<field
+			name="uf_hidden"
+			type="radio"
+			label="COM_MUE_UFIELD_FIELD_HIDDEN_LABEL"
+			description="COM_MUE_UFIELD_FIELD_HIDDEN_DESC"
+			size="1"
+			class="inputbox"
+			required="true"
+			default="0">
+			<option	value="1">Yes</option>
+			<option	value="0">No</option>
+		</field>
+		<field
+			name="uf_reg"
+			type="radio"
+			label="COM_MUE_UFIELD_FIELD_REG_LABEL"
+			description="COM_MUE_UFIELD_FIELD_REG_DESC"
+			size="1"
+			class="inputbox"
+			required="true"
+			default="1">
+			<option	value="1">Yes</option>
+			<option	value="0">No</option>
+		</field>
+		<field
+			name="uf_profile"
+			type="radio"
+			label="COM_MUE_UFIELD_FIELD_PROFILE_LABEL"
+			description="COM_MUE_UFIELD_FIELD_PROFILE_DESC"
+			size="1"
+			class="inputbox"
+			required="true"
+			default="1">
+			<option	value="1">Yes</option>
+			<option	value="0">No</option>
+		</field>
+	</fieldset>
+	<fieldset name="content">
+		<field
+			name="uf_note"
+			type="editor"
+			label="COM_MUE_UFIELD_FIELD_NOTE_LABEL"
+			description="COM_MUE_UFIELD_FIELD_NOTE_DESC"
+			class="inputbox"
+			filter="safehtml"
+			buttons="false"
+		/>
+	</fieldset>
+	<fieldset>
+		<field name="fieldgroups" type="hidden" />
+	</fieldset>
+	
+
+</form>
+
