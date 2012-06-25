@@ -1,7 +1,7 @@
-<div id="system">
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
 $cfg = MUEHelper::getConfig();
+if ($this->retry) echo '<div id="system">';
 ?>
 
 <script type="text/javascript">
@@ -20,9 +20,9 @@ $cfg = MUEHelper::getConfig();
 
 </script>
 <?php 
-//echo '<div id="mue-user-reg">';
+if ($this->retry) echo '<div id="mue-user-reg">';
 echo '<form action="" method="post" name="regform" id="regform">';
-//echo '<div class="mue-user-reg-row"><div class="mue-user-reg-label">User Group</div><div class="mue-user-reg-hdr">'.$this->groupinfo[0]->ug_name.'</div></div>';
+if ($this->retry) echo '<div class="mue-user-reg-row"><div class="mue-user-reg-label">User Group</div><div class="mue-user-reg-hdr">'.$this->groupinfo[0]->ug_name.'</div></div>';
 foreach($this->userfields as $f) {
 	echo '<div class="mue-user-reg-row">';
 	echo '<div class="mue-user-reg-label">';
@@ -43,11 +43,11 @@ foreach($this->userfields as $f) {
 	if ($f->uf_type == "message") echo '<strong>'.$f->uf_name.'</strong>';
 	
 	//checkbox
-	if ($f->uf_type=="cbox") {
+	if ($f->uf_type=="cbox" || $f->uf_type=="mailchimp") {
 		if (!empty($f->value)) $checked = ($f->value == '1') ? ' checked="checked"' : '';
 		else $checked = '';
 		echo '<input type="checkbox" name="jform['.$sname.']" id="jform_'.$sname.'" class="uf_radio"';
-		if ($f->uf_req) { echo ' validate="{required:true, messages:{required:\'This Field is required\'}}"'; }
+		if ($f->uf_req && $f->uf_type=="cbox") { echo ' validate="{required:true, messages:{required:\'This Field is required\'}}"'; }
 		echo $checked.'/>'."\n";
 		echo '<label for="jform_'.$sname.'">';
 		echo ' '.$f->uf_name.'</label><br />'."\n";
@@ -254,6 +254,6 @@ echo '<input type="hidden" name="jform[userGroupID]" value="'.$this->groupinfo[0
 echo JHtml::_('form.token');
 echo '</form>';
 echo '<div style="clear:both;"></div>';
-//echo '</div>';
+if ($this->retry) echo '</div>';
+if ($this->retry) echo '</div>';
 ?>
-</div>

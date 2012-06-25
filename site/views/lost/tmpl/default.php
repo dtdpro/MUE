@@ -4,7 +4,7 @@
 defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
 echo '<h2 class="componentheading">Lost username/password</h2>';
-$cecfg = ContinuEdHelper::getConfig();
+
 ?>
 <script type="text/javascript">
 	jceq(document).ready(function() {

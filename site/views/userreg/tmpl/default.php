@@ -24,7 +24,7 @@ $cecfg = MUEHelper::getConfig();
 	    jceq.post( url, jceq("#regpickform").serialize(),
 	      function( data ) {
 	          
-	          jceq( "#mue-user-reg" ).append( data );
+	          jceq( "#mue-user-regform" ).empty().append( data );
 	      }
 	    );
 	}
@@ -58,6 +58,7 @@ echo '</div>';
 //echo '<input type="submit" value="Begin Registration" class="button" border="0" name="submit">';
 //echo '</div>';
 echo '<div style="clear:both;"></div>';
+echo '<div id="mue-user-regform"></div>';
 echo '</div>';
 //echo '<div id="mue-userreg-form"></div>';
 ?>

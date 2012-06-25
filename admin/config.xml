@@ -2,30 +2,13 @@
 
 <config>
 	<fieldset name="registration" label="COM_MUE_CONFIG_REG_LABEL" description="COM_MUE_CONFIG_REG_DESC" addfieldpath="/administrator/components/com_mue/models/fields">
-		<field 
-			name="show_loginreg" 
-			type="radio" 
-			class="inputbox"
-			label="COM_MUE_CONFIG_FIELD_LOGINREG_LABEL"
-			description="COM_MUE_CONFIG_FIELD_LOGINREG_DESC" 
-		>
-			<option value="0">No</option>
-			<option value="1">Yes</option>
-		</field>
-		<field 
-			name="quickreg_cap" 
-			type="FieldCaptcha" 
-			class="inputbox"
-			label="COM_MUE_CONFIG_FIELD_QRC_LABEL"
-			description="COM_MUE_CONFIG_FIELD_QRC_DESC" 
-		/>
 		<field name="REG_PAGE_CONTENT" type="textarea" label="COM_MUE_CONFIG_FIELD_REG_PAGE_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_REG_PAGE_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="true" filter="safehtml" buttons="false" />
 		<field name="FROM_EMAIL" type="text" label="COM_MUE_CONFIG_FIELD_FROM_EMAIL_LABEL" description="COM_MUE_CONFIG_FIELD_FROM_EMAIL_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="FROM_NAME" type="text" label="COM_MUE_CONFIG_FIELD_FROM_NAME_LABEL" description="COM_MUE_CONFIG_FIELD_FROM_NAME_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="WELCOME_SUBJECT" type="text" label="COM_MUE_CONFIG_FIELD_WELCOME_SUBJECT_LABEL" description="COM_MUE_CONFIG_FIELD_WELCOME_SUBJECT_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="LOSTINFO_SUBJECT" type="text" label="COM_MUE_CONFIG_FIELD_LOSTINFO_SUBJECT_LABEL" description="COM_MUE_CONFIG_FIELD_LOSTINFO_SUBJECT_DESC" size="70" class="inputbox" required="false" default="" /> 
 	</fieldset>
-	<fieldset name="reports" label="COM_MUE_CONFIG_REPORTS_LABEL" description="COM_MUE_CONFIG_REPORTS_DESC" addfieldpath="/administrator/components/com_continued/models/fields">
+	<fieldset name="reports" label="COM_MUE_CONFIG_REPORTS_LABEL" description="COM_MUE_CONFIG_REPORTS_DESC" addfieldpath="/administrator/components/com_mue/models/fields">
 		<field 
 			name="on_list_field" 
 			type="FieldInclude" 
@@ -33,6 +16,11 @@
 			label="COM_MUE_CONFIG_FIELD_ONLIST_LABEL"
 			description="COM_MUE_CONFIG_FIELD_ONLIST_DESC" 
 		/>
+	</fieldset>
+	<fieldset name="mailchimp" label="COM_MUE_CONFIG_MAILCHIMP_LABEL" description="COM_MUE_CONFIG_MAILCHIMP_DESC">
+		<field name="mckey" type="text" label="COM_MUE_CONFIG_FIELD_MCKEY_LABEL" description="COM_MUE_CONFIG_FIELD_MCKEY_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="mclist" type="text" label="COM_MUE_CONFIG_FIELD_MCLIST_LABEL" description="COM_MUE_CONFIG_FIELD_MCLIST_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="mcvars" type="text" label="COM_MUE_CONFIG_FIELD_MCVARS_LABEL" description="COM_MUE_CONFIG_FIELD_MCVARS_DESC" size="70" class="inputbox" required="false" default="" />
 	</fieldset>
 	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" class="inputbox" validate="rules" filter="rules" component="com_continued" section="component" />

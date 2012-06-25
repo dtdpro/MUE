@@ -4,6 +4,7 @@
 defined('_JEXEC') or die();
 
 jimport( 'joomla.application.component.model' );
+jimport('joomla.utilities.date');
 
 class MUEModelUserReg extends JModel
 {
@@ -72,7 +73,8 @@ class MUEModelUserReg extends JModel
 		$app=Jfactory::getApplication();
 		$session=JFactory::getSession();
 		$cfg = MUEHelper::getConfig();
-		
+		$date = new JDate('now');
+		$usernotes = $date->toSql(true)." Registered"."\r\n";
 		// Include the content plugins for the on save events.
 		JPluginHelper::importPlugin('content');
 		
@@ -84,7 +86,9 @@ class MUEModelUserReg extends JModel
 			$flist = $this->getUserFields($data['userGroupID'],false);
 			foreach ($flist as $d) {
 				$fieldname = $d->uf_sname;
-				if ($d->uf_type == 'captcha') {
+				if ($d->uf_type == 'mailchimp') {
+					$mclist=$fieldname;
+				} else if ($d->uf_type == 'captcha') {
 					$capfield=$fieldname;
 				} else if ($d->uf_type=="mcbox" || $d->uf_type=="mlist") {
 					$item->$fieldname = implode(" ",$data[$fieldname]);
@@ -100,9 +104,9 @@ class MUEModelUserReg extends JModel
 					$item->$fieldname = $data[$fieldname];
 				}
 				if ($d->uf_type != 'captcha') $fids[]=$d->uf_id;
-				if ($d->uf_type != 'captcha' || $d->uf_type != 'password') $app->setUserState('continued.userreg.'.$fieldname, $item->$fieldname);
+				if ($d->uf_type != 'captcha' || $d->uf_type != 'password') $app->setUserState('mue.userreg.'.$fieldname, $item->$fieldname);
 			}
-			
+			$item->site_url = JURI::base();
 			if ($capfield) {
 				include_once 'components/com_mue/lib/securimage/securimage.php';
 				$securimage = new Securimage();
@@ -112,6 +116,22 @@ class MUEModelUserReg extends JModel
 					$this->setError('Security Code Incorrect');
 					return false;
 				} 
+			}
+			
+			if ($mclist) {
+				if ($data[$mclist])  {
+					include_once 'components/com_mue/lib/mailchimp.php';
+					$mc = new MailChimp($cfg->mckey,$cfg->mclist);
+					$mcdata = array('FNAME'=>$item->fname, 'LNAME'=>$item->lname, 'OPTIN_IP'=>$_SERVER['REMOTE_ADDR'], 'OPTIN_TIME'=>$date->toSql(true));
+					$othervars=explode(",",$cfg->mcvars);
+					foreach ($othervars as $ov) {
+						list($mue, $mcv) = explode(":",$ov,2);
+						$mcdata[$mcv] = $item->$mue;
+					}
+					$mcresult = $mc->subscribeUser($item->email,$mcdata,false,"html");
+					if ($mcresult) { $item->$mclist; $usernotes .= $date->toSql(true)." Subscribed to MailChimp List #".$cfg->mclist."\r\n"; }
+					else { $item->$mclist; $usernotes .= $date->toSql(true)." Could not subscribe to MailChimp List #".$cfg->mclist." Error: ".$mc->error."\r\n"; }
+				}
 			}
 			
 			//Update Joomla User Info
@@ -137,7 +157,7 @@ class MUEModelUserReg extends JModel
 			$credentials['password'] = $item->password;
 			
 			//Set user group info
-			$qud = 'INSERT INTO #__mue_usergroup (userg_user,userg_group,userg_update) VALUES ('.$user->id.','.$data['userGroupID'].',NOW())';
+			$qud = 'INSERT INTO #__mue_usergroup (userg_user,userg_group,userg_update,userg_notes,userg_siteurl) VALUES ('.$user->id.','.$data['userGroupID'].',"'.$date->toSql(true).'","'.$usernotes.'","'.$item->site_url.'")';
 			$db->setQuery($qud);
 			if (!$db->query()) {
 				$this->setError('Could not update user group');
@@ -156,6 +176,7 @@ class MUEModelUserReg extends JModel
 			$emailmsg = str_replace("{fullname}",$item->fname." ".$item->lname,$emailmsg);
 			$emailmsg = str_replace("{username}",(strtolower($item->username)) ? strtolower($item->username) : strtolower($item->email),$emailmsg);
 			$emailmsg = str_replace("{password}",$item->password,$emailmsg);
+			$emailmsg = str_replace("{site_url}",$item->site_url,$emailmsg);
 			
 			
 			//remove joomla user info from item

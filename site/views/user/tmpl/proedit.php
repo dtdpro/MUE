@@ -1,7 +1,7 @@
 <div id="system">
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
-$cecfg = ContinuEdHelper::getConfig();
+
 ?>
 <h2 class="componentheading">User Profile Edit</h2>
 <script type="text/javascript">
@@ -43,11 +43,11 @@ foreach($this->userfields as $f) {
 		if ($f->uf_type == "message") echo '<strong>'.$f->uf_name.'</strong>';
 	
 		//checkbox
-		if ($f->uf_type=="cbox") {
+		if ($f->uf_type=="cbox" || $f->uf_type=="mailchimp") {
 			if (!empty($this->userinfo->$sname)) $checked = ($this->userinfo->$sname == '1') ? ' checked="checked"' : '';
 			else $checked = '';
 			echo '<input type="checkbox" name="jform['.$sname.']" id="jform_'.$sname.'" class="uf_radio"';
-			if ($f->uf_req) { echo ' validate="{required:true, messages:{required:\'This Field is required\'}}"'; }
+			if ($f->uf_req && $f->uf_type=="cbox") { echo ' validate="{required:true, messages:{required:\'This Field is required\'}}"'; }
 			echo $checked.'/>'."\n";
 			echo '<label for="jform_'.$sname.'">';
 			echo ' '.$f->uf_name.'</label><br />'."\n";
@@ -229,6 +229,7 @@ foreach($this->userfields as $f) {
 			echo '</div>';
 			echo '<div class="mue-user-edit-value">';
 			echo $this->userinfo->$sname;
+			echo '<input type="hidden" name="jform['.$sname.']" value="'.$this->userinfo->$sname.'">';
 			echo '</div>';
 			echo '<div class="mue-user-edit-error">';
 			//if ($f->uf_type=="multi" || $f->uf_type=="mcbox") echo '<label id="jform_'.$sname.'-lbl" for="jform['.$sname.']" class="uf_error"></label>';

@@ -45,7 +45,7 @@ class MUEViewLost extends JView
 		$model =& $this->getModel();
 		$app=Jfactory::getApplication();
 		if ($model->sendInfo()) {
-			$app->redirect('index.php?option=com_mue&view=lost&layout=infosent',"New Password Code Sent");
+			$app->redirect('index.php?option=com_mue&view=lost',"Information Sent to provided email address");
 		} else {
 			$app->redirect('index.php?option=com_mue&view=lost',$model->getError());
 		}

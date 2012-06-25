@@ -54,6 +54,7 @@ class MUEModelLost extends JModel
 		$emailmsg = str_replace("{fullname}",$user->name,$emailmsg);
 		$emailmsg = str_replace("{username}",$user->username,$emailmsg);
 		$emailmsg = str_replace("{password}",$newpass,$emailmsg);
+		$emailmsg = str_replace("{site_url}",JURI::base(),$emailmsg);
 		
 		//Send Welcome Email
 		$mail = &JFactory::getMailer();

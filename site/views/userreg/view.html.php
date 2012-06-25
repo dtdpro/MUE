@@ -50,6 +50,7 @@ class MUEViewUserReg extends JView
 			$this->assignRef('groupinfo',$groupinfo);
 			$this->assignRef('groupid',$groupid);
 			$this->assignRef('userfields',$userfields);
+			$this->assignRef('retry',JRequest::getInt('retry'));
 		} else {
 			$app->redirect('index.php?option=com_mue&view=userreg');
 		}
@@ -62,7 +63,7 @@ class MUEViewUserReg extends JView
 		$groupid = $data['userGroupID'];
 		if (!$model->save()) {
 			$app->setUserState('mue.userreg.groupid',$groupid); 
-			$app->redirect('index.php?option=com_mue&view=userreg&layout=regform&groupid='.$groupid,$model->getError(),'error');
+			$app->redirect('index.php?option=com_mue&view=userreg&layout=regform&retry=1&groupid='.$groupid,$model->getError(),'error');
 		} else {
 			$redir = base64_decode(JRequest::getVar('return', '', 'POST', 'BASE64'));
 			if (!$redir) $redir='index.php?option=com_mue&view=user&layout=profile';

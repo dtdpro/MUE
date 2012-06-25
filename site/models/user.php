@@ -46,6 +46,9 @@ class MUEModelUser extends JModel
 		$isNew = true;
 		$db		= $this->getDbo();
 		$ugroup = $data['userGroupID'];
+		$date = new JDate('now');
+		$usernotes = $date->toSql(true)." Updated"."\r\n";
+		$cfg = MUEHelper::getConfig();
 		
 		// Include the content plugins for the on save events.
 		JPluginHelper::importPlugin('content');
@@ -55,18 +58,46 @@ class MUEModelUser extends JModel
 		{
 			//setup item and bind data
 			$fids = array();
-			$flist = $this->getUserFields($ugroup,false,false,true);
+			$flist = $this->getUserFields($ugroup,false,false,false);
 			foreach ($flist as $d) {
 				$fieldname = $d->uf_sname;
-				if ($d->uf_type=='birthday') {
+				if ($d->uf_type == 'mailchimp') {
+					$mclist=$fieldname;
+				} else if ($d->uf_type=='birthday') {
 					$fmonth = (int)$data[$fieldname.'_month'];
 					$fday = (int)$data[$fieldname.'_day'];
 					if ($fmonth < 10) $fmonth = "0".$fmonth;
 					if ($fday < 10) $fday = "0".$fday;
 					$item->$fieldname = $fmonth.$fday;
-				}
-				else $item->$fieldname = $data[$fieldname];
+				} else if ($d->uf_type=="mcbox" || $d->uf_type=="mlist") {
+					$item->$fieldname = implode(" ",$item->$fieldname);
+				} else if ($fl->uf_type=='cbox') { 
+					if ($item->$fieldname=='on') $item->$fieldname = 1;
+					else $item->$fieldname = 0;
+				} else $item->$fieldname = $data[$fieldname];
 				$fids[]=$d->uf_id;
+			}
+			$item->site_url = JURI::base();
+			
+			if ($mclist) {
+				include_once 'components/com_mue/lib/mailchimp.php';
+				if ($data[$mclist]) {
+					$mc = new MailChimp($cfg->mckey,$cfg->mclist);
+					$mcdata = array('FNAME'=>$item->fname, 'LNAME'=>$item->lname, 'OPTIN_IP'=>$_SERVER['REMOTE_ADDR'], 'OPTIN_TIME'=>$date->toSql(true));
+					$othervars=explode(",",$cfg->mcvars);
+					foreach ($othervars as $ov) {
+						list($mue, $mcv) = explode(":",$ov,2);
+						$mcdata[$mcv] = $item->$mue;
+					} $mcd=print_r($mcdata,true);
+					$mcresult = $mc->subscribeUser($item->email,$mcdata,false,"html");
+					if ($mcresult) { $item->$mclist; $usernotes .= $date->toSql(true)." Subscribed to MailChimp List #".$cfg->mclist.' '.$mcd."\r\n"; }
+					else { $item->$mclist; $usernotes .= $date->toSql(true)." Could not subscribe to MailChimp List #".$cfg->mclist." Error: ".$mc->error."\r\n"; }
+				} else {
+					$mc = new MailChimp($cfg->mckey,$cfg->mclist);
+					$mcresult = $mc->unsubscribeUser($item->email);
+					if ($mcresult) { $item->$mclist; $usernotes .= $date->toSql(true)." Unsubscribed from MailChimp List #".$cfg->mclist."\r\n"; }
+					else { $item->$mclist; $usernotes .= $date->toSql(true)." Could not unsubscribe from MailChimp List #".$cfg->mclist." Error: ".$mc->error."\r\n"; }
+				}
 			}
 			
 			//Update Joomla User Info
@@ -102,11 +133,7 @@ class MUEModelUser extends JModel
 			foreach ($flist as $fl) {
 				$fieldname = $fl->uf_sname;
 				if (!$fl->uf_cms) {
-					if ($fl->uf_type=="mcbox" || $fl->uf_type=="mlist") $item->$fieldname = implode(" ",$item->$fieldname);
-					if ($fl->uf_type=='cbox') { 
-						if ($item->$fieldname=='on') $item->$fieldname = 1;
-						else $item->$fieldname = 0;
-					}
+
 					$qf = 'INSERT INTO #__mue_users (usr_user,usr_field,usr_data) VALUES ("'.$user->id.'","'.$fl->uf_id.'","'.$item->$fieldname.'")';
 					$db->setQuery($qf);
 					if (!$db->query()) {
@@ -117,7 +144,7 @@ class MUEModelUser extends JModel
 			}
 			
 			//Update update date
-			$qud = 'UPDATE #__mue_usergroup SET userg_update = NOW() WHERE userg_user = '.$user->id;
+			$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$usernotes.'") WHERE userg_user = '.$user->id;
 			$db->setQuery($qud);
 			if (!$db->query()) {
 				$this->setError($db->getErrorMsg());
