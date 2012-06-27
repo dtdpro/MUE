@@ -80,7 +80,7 @@ JHtml::_('behavior.keepalive');
 			$usersConfig = JComponentHelper::getParams('com_users');
 			if ($usersConfig->get('allowUserRegistration')) : ?>
 			<li>
-				<a href="<?php echo JRoute::_('index.php?option=com_mue&view=registration'); ?>"><?php echo JText::_('MOD_MUELOGIN_REGISTER'); ?></a>
+				<a href="<?php echo JRoute::_('index.php?option=com_mue&view=userreg'); ?>"><?php echo JText::_('MOD_MUELOGIN_REGISTER'); ?></a>
 			</li>
 			<?php endif; ?>
 		</ul>
