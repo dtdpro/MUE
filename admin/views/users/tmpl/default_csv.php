@@ -3,7 +3,7 @@ $path = JPATH_SITE.'/cache/';
 $filename = 'MUE_Users_Report' . '-' . date("Y-m-d").'.csv';
 $contents = "";
 
-$contents .= '"User Id","Username","Name","email","User Group","Notes","LastVisit","Last Update","Registered"';
+$contents .= '"User Id","Username","Name","email","User Group","Join Site","Notes","LastVisit","Last Update","Registered"';
 foreach ($this->fdata as $f) {
 	$contents .= ',"'.$f->uf_name.'"';
 }
@@ -15,6 +15,7 @@ foreach ($this->items as $i) {
 	$contents .= '"'.$i->name.'",';
 	$contents .= '"'.$i->email.'",'; 
 	$contents .= '"'.$i->ug_name.'",'; 
+	$contents .= '"'.$i->userg_siteurl.'",'; 
 	$contents .= '"'.$i->userg_notes.'",'; 
 	$contents .= '"'.$i->lastvisitDate.'",'; 
 	$contents .= '"'.$i->lastUpdate.'",'; 

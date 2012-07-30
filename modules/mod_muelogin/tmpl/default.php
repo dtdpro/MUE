@@ -36,8 +36,9 @@ JHtml::_('behavior.keepalive');
 			</li>
 
 		</ul>
-		<input type="hidden" name="option" value="com_users" />
-		<input type="hidden" name="task" value="user.logout" />
+		<input type="hidden" name="option" value="com_mue">
+		<input type="hidden" name="view" value="login">
+		<input type="hidden" name="layout" value="logout">
 		<input type="hidden" name="return" value="<?php echo $return; ?>" />
 		<?php echo JHtml::_('form.token'); ?>	
 	</form>
@@ -53,11 +54,11 @@ JHtml::_('behavior.keepalive');
 		<?php endif; ?>
 
 		<div class="username">
-			<input type="text" name="username" size="18" placeholder="<?php echo JText::_('MOD_MUELOGIN_VALUE_USERNAME') ?>" />
+			<input type="text" name="login_user" size="18" placeholder="<?php echo JText::_('MOD_MUELOGIN_VALUE_USERNAME') ?>" />
 		</div>
 
 		<div class="password">
-			<input type="password" name="password" size="18" placeholder="<?php echo JText::_('JGLOBAL_PASSWORD') ?>" />
+			<input type="password" name="login_pass" size="18" placeholder="<?php echo JText::_('JGLOBAL_PASSWORD') ?>" />
 		</div>
 
 		<?php if (JPluginHelper::isEnabled('system', 'remember')) : ?>
@@ -91,8 +92,9 @@ JHtml::_('behavior.keepalive');
 		</div>
 		<?php endif; ?>
 		
-		<input type="hidden" name="option" value="com_users" />
-		<input type="hidden" name="task" value="user.login" />
+		<input type="hidden" name="option" value="com_mue">
+		<input type="hidden" name="view" value="login">
+		<input type="hidden" name="layout" value="logmein">
 		<input type="hidden" name="return" value="<?php echo $return; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 	</form>

@@ -21,6 +21,7 @@ class MUEModelUsers extends JModelList
 			'email', 'u.email',
 			'block', 'u.block',
 			'ug_name', 'g.ug_name',
+			'userg_siteurl', 'ug.userg_siteurl',
 			'registerDate', 'u.registerDate',
 			'lastvisitDate', 'u.lastvisitDate',
 			'lastUpdate', 'ug.lastUpdate',
@@ -65,7 +66,7 @@ class MUEModelUsers extends JModelList
 		// From the hello table
 		$query->from('#__users as u');
 		// Join over the users.
-		$query->select('ug.userg_update as lastUpdate,ug.userg_notes');
+		$query->select('ug.userg_update as lastUpdate,ug.userg_notes,ug.userg_siteurl');
 		$query->join('LEFT', '#__mue_usergroup AS ug ON u.id = ug.userg_user');
 		$query->select('g.ug_name');
 		$query->join('LEFT', '#__mue_ugroups AS g ON ug.userg_group = g.ug_id');

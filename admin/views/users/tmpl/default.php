@@ -52,6 +52,9 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 				<th width="150">
 					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_GROUP' , 'g.ug_name', $listDirn, $listOrder); ?>
 				</th>
+				<th width="150">
+					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_JOINSITE' , 'g.userg_siteurl', $listDirn, $listOrder); ?>
+				</th>
 				<th class="nowrap" width="5%">
 					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_ENABLED', 'u.block', $listDirn, $listOrder); ?>
 				</th>
@@ -93,6 +96,9 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 				</td>
 				<td class="center">
 					<?php echo $item->ug_name; ?>
+				</td>
+				<td class="center">
+					<?php echo $item->userg_siteurl; ?>
 				</td>
 				<td class="center">
 				<?php echo JHtml::_('grid.boolean', $i, !$item->block, 'users.unblock', 'users.block'); ?>
