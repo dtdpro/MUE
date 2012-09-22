@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="2.5" client="site" method="upgrade">
+	<name>mod_mueusermenu</name>
+	<author>DtD Productions</author>
+	<creationDate>July 2006</creationDate>
+	<copyright>Copyright 2012 DtD Productions. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>info@dtdpro.com</authorEmail>
+	<authorUrl>www.dtdpro.com</authorUrl>
+	<version>1.0.0</version>
+	<description>MOD_MUEUSERMENU_XML_DESCRIPTION</description>
+	<files>
+		<filename module="mod_mueusermenu">mod_mueusermenu.php</filename>
+		<folder>tmpl</folder>
+		<filename>index.html</filename>
+		<filename>mod_mueusermenu.xml</filename>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.mod_mueusermenu.ini</language>
+		<language tag="en-GB">en-GB.mod_mueusermenu.sys.ini</language>
+	</languages>
+	<help key="JHELP_EXTENSIONS_MODULE_MANAGER_LOGIN" />
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+					name="layout"
+					type="modulelayout"
+					label="JFIELD_ALT_LAYOUT_LABEL"
+					description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
+				<field
+					name="moduleclass_sfx"
+					type="text"
+					label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
+					description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC" />
+				<field
+					name="menu_class"
+					type="text"
+					default="menu menu-line"
+					label="MOD_MUEUSERMENU_FIELD_MENUCLASS_LABEL"
+					description="MOD_MUEUSERMENU_FIELD_MENUCLASS_DESC" />
+			</fieldset>
+		</fields>
+	</config>
+</extension>

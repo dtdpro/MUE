@@ -41,7 +41,7 @@ class MUEViewLogin extends JView
 		$app->logout();
 		
 		$redir = base64_decode(JRequest::getVar('return', '', 'POST', 'BASE64'));
-		if (!$redir) $redir=JURI::base( true );
+		if (!$redir) $redir="/";
 		
 		$app->redirect($redir);
 	}
