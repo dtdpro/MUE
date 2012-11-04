@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS `#__mue_usergroup` (
   `userg_group` int(11) NOT NULL,
   `userg_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `userg_notes` text NOT NULL,
+  `userg_siteurl` VARCHAR( 255 ) NOT NULL,
   PRIMARY KEY (`userg_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
