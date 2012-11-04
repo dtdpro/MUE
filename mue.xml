@@ -7,16 +7,21 @@
 	<authorUrl>http://www.dtdpro.com</authorUrl>
 	<copyright>Copyright 2012 DtD Productions</copyright>
 	<license>GPL v2</license>
-	<version>1.0.0</version>
-	<releaseDate>2012.06.30</releaseDate>
+	<version>1.1.0</version>
+	<releaseDate>2012.11.04</releaseDate>
 	<releaseType>Update</releaseType>
 	<downloadUrl>http://www.dtdpro.com/</downloadUrl>
 	<description>COM_MUE_DESC</description>
 	<install>
 		<sql>
-			<file charset="utf8" driver="mysql">install.sql</file>
+			<file charset="utf8" driver="mysql">sql/install.sql</file>
 		</sql>
-	</install>
+	</install>	
+	<update>
+		<schemas>
+			<schemapath type="mysql">sql/updates</schemapath>
+		</schemas>
+	</update>
 	<files folder="site">
 		<filename>index.html</filename>
 		<filename>router.php</filename>
@@ -51,6 +56,7 @@
 			<folder>tables</folder>
 			<folder>views</folder>
 			<folder>helpers</folder>
+			<folder>sql</folder>
 		</files>
 		<languages folder="admin">
 			<language tag="en-GB">language/en-GB.com_mue.ini</language>

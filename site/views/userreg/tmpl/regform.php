@@ -29,7 +29,7 @@ foreach($this->userfields as $f) {
 	if ($f->uf_req) echo "*";
 	$sname = $f->uf_sname;
 	//field title
-	if ($f->uf_type != "cbox" && $f->uf_type != "message") echo $f->uf_name;
+	if ($f->uf_type != "cbox" && $f->uf_type != "message" && $f->uf_type != "mailchimp") echo $f->uf_name;
 	echo '</div>';
 	echo '<div class="mue-user-reg-value">';
 	if ($f->uf_type == "mcbox" || $f->uf_type == "mlist") {
@@ -251,6 +251,7 @@ echo '<input type="hidden" name="option" value="com_mue">';
 echo '<input type="hidden" name="view" value="userreg">';
 echo '<input type="hidden" name="layout" value="reguser">';
 echo '<input type="hidden" name="jform[userGroupID]" value="'.$this->groupinfo[0]->ug_id.'">';
+echo '<input type="hidden" name="return" value="'.base64_encode($this->return).'">';
 echo JHtml::_('form.token');
 echo '</form>';
 echo '<div style="clear:both;"></div>';

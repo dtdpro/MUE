@@ -5,9 +5,12 @@ jimport( 'joomla.application.component.view');
 
 class MUEViewUserReg extends JView
 {
+	var $return="";
+	
 	public function display($tpl = null)
 	{
 		$layout = $this->getLayout();
+		$this->return = base64_decode(JRequest::getVar('return', '', 'POST', 'BASE64'));
 		
 		switch($layout) {
 			case "default": 
@@ -36,6 +39,7 @@ class MUEViewUserReg extends JView
 		JRequest::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 		$app=Jfactory::getApplication();
 		$app->setUserState('mue.userreg.groupid',JRequest::getInt('groupid')); 
+		$app->setUserState('mue.userreg.return',$this->return); 
 		$app->redirect('index.php?option=com_mue&view=userreg&layout=regform&tmpl=raw');
 		
 	}
@@ -44,6 +48,7 @@ class MUEViewUserReg extends JView
 		$model =& $this->getModel();
 		$app=Jfactory::getApplication();
 		$groupid = $app->getUserState('mue.userreg.groupid');
+		if (!$this->return) $this->return = $app->getUserState('mue.userreg.return');
 		if ($groupid) {
 			$groupinfo = $model->getUserGroups($groupid);
 			$userfields=$model->getUserFields($groupid);
@@ -65,7 +70,7 @@ class MUEViewUserReg extends JView
 			$app->setUserState('mue.userreg.groupid',$groupid); 
 			$app->redirect('index.php?option=com_mue&view=userreg&layout=regform&retry=1&groupid='.$groupid,$model->getError(),'error');
 		} else {
-			$redir = base64_decode(JRequest::getVar('return', '', 'POST', 'BASE64'));
+			$redir = $this->return;
 			if (!$redir) $redir='index.php?option=com_mue&view=user&layout=profile';
 			$app->redirect($redir);
 		}		

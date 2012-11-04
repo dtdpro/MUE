@@ -55,7 +55,12 @@ class MUEViewLogin extends JView
 		if (!$redir) $redir='index.php?option=com_mue&view=user&layout=profile';
 		
 		if ($model->loginUser()) {
-			$app->redirect($redir);
+			$user=MUEHelper::getUserInfo();
+			if ($user->lastUpdated == "0000-00-00 00:00:00") {
+				$app->redirect($redir,'Please update your <a href="'.JRoute::_("index.php?option=com_mue&view=user&layout=profile").'">profile</a>');
+			} else {
+				$app->redirect($redir);
+			}
 		} else {
 			$app->redirect('index.php?option=com_mue&view=login&layout=login',$model->getError());
 		}
