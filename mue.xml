@@ -48,7 +48,6 @@
 			<filename>index.html</filename>
 			<filename>controller.php</filename>
 			<filename>mue.php</filename>
-			<filename>install.sql</filename>
 			<filename>access.xml</filename>
 			<filename>config.xml</filename>
 			<folder>models</folder>
