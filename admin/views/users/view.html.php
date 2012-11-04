@@ -38,7 +38,7 @@ class MUEViewUsers extends JView
 	protected function addToolBar() 
 	{
 		$state	= $this->get('State');
-		JToolBarHelper::title(JText::_('COM_MUE_MANAGER_USERS'), 'continued');
+		JToolBarHelper::title(JText::_('COM_MUE_MANAGER_USERS'), 'mue');
 		JToolBarHelper::addNew('user.add', 'JTOOLBAR_NEW');
 		JToolBarHelper::editList('user.edit', 'JTOOLBAR_EDIT');	
 		JToolBarHelper::divider();	

@@ -37,7 +37,7 @@ class MUEViewUGroups extends JView
 	protected function addToolBar() 
 	{
 		$state	= $this->get('State');
-		JToolBarHelper::title(JText::_('COM_MUE_MANAGER_UGROUPS'), 'continued');
+		JToolBarHelper::title(JText::_('COM_MUE_MANAGER_UGROUPS'), 'mue');
 		JToolBarHelper::addNew('ugroup.add', 'JTOOLBAR_NEW');
 		JToolBarHelper::editList('ugroup.edit', 'JTOOLBAR_EDIT');
 		JToolBarHelper::divider();

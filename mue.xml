@@ -7,7 +7,7 @@
 	<authorUrl>http://www.dtdpro.com</authorUrl>
 	<copyright>Copyright 2012 DtD Productions</copyright>
 	<license>GPL v2</license>
-	<version>1.1.0</version>
+	<version>1.1.1</version>
 	<releaseDate>2012.11.04</releaseDate>
 	<releaseType>Update</releaseType>
 	<downloadUrl>http://www.dtdpro.com/</downloadUrl>
@@ -42,6 +42,8 @@
 		<!-- Administration Menu Section -->
 		<menu img="../media/com_mue/images/mue-16x16.png">COM_MUE_MENU</menu>
 		<submenu>
+			<menu view="ugroups">COM_MUE_SUBMENU_UGROUPS</menu>
+			<menu view="ufields">COM_MUE_SUBMENU_UFIELDS</menu>
 			<menu view="users">COM_MUE_SUBMENU_USERS</menu>
 		</submenu>
 		<files folder="admin">
