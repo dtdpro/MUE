@@ -5,9 +5,9 @@ $cecfg = MUEHelper::getConfig();
 
 ?>
 <script type="text/javascript">
-	/*jceq(document).ready(function() {
-		jceq.metadata.setType("attr", "validate");
-		jceq("#regpickform").validate({
+	/*jQuery(document).ready(function() {
+		jQuery.metadata.setType("attr", "validate");
+		jQuery("#regpickform").validate({
 			errorClass:"uf_pickerror",
 			errorPlacement: function(error, element) {
 		    	error.appendTo( element.parent("div").next("div") );
@@ -18,13 +18,13 @@ $cecfg = MUEHelper::getConfig();
 	});
 */
 	function submitGroup() {
-		var $form = jceq( this ),
+		var $form = jQuery( this ),
 	        url = $form.attr( 'action' );
 	    /* Send the data using post and put the results in a div */
-	    jceq.post( url, jceq("#regpickform").serialize(),
+	    jQuery.post( url, jQuery("#regpickform").serialize(),
 	      function( data ) {
 	          
-	          jceq( "#mue-user-regform" ).empty().append( data );
+	          jQuery( "#mue-user-regform" ).empty().append( data );
 	      }
 	    );
 	}

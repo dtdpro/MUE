@@ -7,9 +7,9 @@ echo '<h2 class="componentheading">Lost username/password</h2>';
 
 ?>
 <script type="text/javascript">
-	jceq(document).ready(function() {
-		jceq.metadata.setType("attr", "validate");
-		jceq("#loginform").validate({
+	jQuery(document).ready(function() {
+		jQuery.metadata.setType("attr", "validate");
+		jQuery("#loginform").validate({
 			errorClass:"uf_error",
 			errorPlacement: function(error, element) {
 		    	error.appendTo( element.parent("div").next("div") );

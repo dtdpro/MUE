@@ -5,9 +5,9 @@ if ($this->retry) echo '<div id="system">';
 ?>
 
 <script type="text/javascript">
-	jceq(document).ready(function() {
-		jceq.metadata.setType("attr", "validate");
-		jceq("#regform").validate({
+	jQuery(document).ready(function() {
+		jQuery.metadata.setType("attr", "validate");
+		jQuery("#regform").validate({
 			errorClass:"uf_error",
 			validClass:"uf_valid",
 			errorPlacement: function(error, element) {

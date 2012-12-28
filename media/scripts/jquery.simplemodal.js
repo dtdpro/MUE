@@ -15,26 +15,26 @@
  * SimpleModal.
  *
  * There are two ways to call SimpleModal:
- * 1) As a chained function on a jQuery object, like jceq('#myDiv').modal();.
+ * 1) As a chained function on a jQuery object, like jQuery('#myDiv').modal();.
  * This call would place the DOM object, #myDiv, inside a modal dialog.
  * Chaining requires a jQuery object. An optional options object can be
  * passed as a parameter.
  *
- * @example jceq('<div>my data</div>').modal({options});
- * @example jceq('#myDiv').modal({options});
+ * @example jQuery('<div>my data</div>').modal({options});
+ * @example jQuery('#myDiv').modal({options});
  * @example jQueryObject.modal({options});
  *
- * 2) As a stand-alone function, like jceq.modal(data). The data parameter
+ * 2) As a stand-alone function, like jQuery.modal(data). The data parameter
  * is required and an optional options object can be passed as a second
  * parameter. This method provides more flexibility in the types of data
  * that are allowed. The data could be a DOM object, a jQuery object, HTML
  * or a string.
  *
- * @example jceq.modal('<div>my data</div>', {options});
- * @example jceq.modal('my data', {options});
- * @example jceq.modal(jceq('#myDiv'), {options});
- * @example jceq.modal(jQueryObject, {options});
- * @example jceq.modal(document.getElementById('myDiv'), {options});
+ * @example jQuery.modal('<div>my data</div>', {options});
+ * @example jQuery.modal('my data', {options});
+ * @example jQuery.modal(jQuery('#myDiv'), {options});
+ * @example jQuery.modal(jQueryObject, {options});
+ * @example jQuery.modal(document.getElementById('myDiv'), {options});
  *
  * A SimpleModal call can contain multiple elements, but only one modal
  * dialog can be created at a time. Which means that all of the matched
@@ -64,19 +64,19 @@
 ;(function (factory) {
 	if (typeof define === 'function' && define.amd) {
 		// AMD. Register as an anonymous module.
-		define(['jceq'], factory);
+		define(['jQuery'], factory);
 	} else {
 		// Browser globals
-		factory(jceq);
+		factory(jQuery);
 	}
 }
-(function (jceq) {
+(function (jQuery) {
 	var d = [],
-		doc = jceq(document),
-		ie6 = jceq.browser.msie && parseInt(jceq.browser.version) === 6 && typeof window['XMLHttpRequest'] !== 'object',
-		ie7 = jceq.browser.msie && parseInt(jceq.browser.version) === 7,
+		doc = jQuery(document),
+		ie6 = jQuery.browser.msie && parseInt(jQuery.browser.version) === 6 && typeof window['XMLHttpRequest'] !== 'object',
+		ie7 = jQuery.browser.msie && parseInt(jQuery.browser.version) === 7,
 		ieQuirks = null,
-		wndw = jceq(window),
+		wndw = jQuery(window),
 		w = [];
 
 	/*
@@ -85,39 +85,39 @@
 	 * @param {string, object} data A string, jQuery object or DOM object
 	 * @param {object} [options] An optional object containing options overrides
 	 */
-	jceq.modal = function (data, options) {
-		return jceq.modal.impl.init(data, options);
+	jQuery.modal = function (data, options) {
+		return jQuery.modal.impl.init(data, options);
 	};
 
 	/*
 	 * Close the modal dialog.
 	 */
-	jceq.modal.close = function () {
-		jceq.modal.impl.close();
+	jQuery.modal.close = function () {
+		jQuery.modal.impl.close();
 	};
 
 	/*
 	 * Set focus on first or last visible input in the modal dialog. To focus on the last
-	 * element, call jceq.modal.focus('last'). If no input elements are found, focus is placed
+	 * element, call jQuery.modal.focus('last'). If no input elements are found, focus is placed
 	 * on the data wrapper element.
 	 */
-	jceq.modal.focus = function (pos) {
-		jceq.modal.impl.focus(pos);
+	jQuery.modal.focus = function (pos) {
+		jQuery.modal.impl.focus(pos);
 	};
 
 	/*
 	 * Determine and set the dimensions of the modal dialog container.
 	 * setPosition() is called if the autoPosition option is true.
 	 */
-	jceq.modal.setContainerDimensions = function () {
-		jceq.modal.impl.setContainerDimensions();
+	jQuery.modal.setContainerDimensions = function () {
+		jQuery.modal.impl.setContainerDimensions();
 	};
 
 	/*
 	 * Re-position the modal dialog.
 	 */
-	jceq.modal.setPosition = function () {
-		jceq.modal.impl.setPosition();
+	jQuery.modal.setPosition = function () {
+		jQuery.modal.impl.setPosition();
 	};
 
 	/*
@@ -127,8 +127,8 @@
 	 * setContainerDimensions() is called, which in turn calls setPosition(), if enabled.
 	 * Lastly, focus() is called is the focus option is true.
 	 */
-	jceq.modal.update = function (height, width) {
-		jceq.modal.impl.update(height, width);
+	jQuery.modal.update = function (height, width) {
+		jQuery.modal.impl.update(height, width);
 	};
 
 	/*
@@ -136,8 +136,8 @@
 	 *
 	 * @param {object} [options] An optional object containing options overrides
 	 */
-	jceq.fn.modal = function (options) {
-		return jceq.modal.impl.init(this, options);
+	jQuery.fn.modal = function (options) {
+		return jQuery.modal.impl.init(this, options);
 	};
 
 	/*
@@ -179,7 +179,7 @@
 	 * onShow:			(Function:null) The callback function used after the modal dialog has opened
 	 * onClose:			(Function:null) The callback function used in place of SimpleModal's close
 	 */
-	jceq.modal.defaults = {
+	jQuery.modal.defaults = {
 		appendTo: 'body',
 		focus: true,
 		opacity: 50,
@@ -214,7 +214,7 @@
 	 * Main modal object
 	 * o = options
 	 */
-	jceq.modal.impl = {
+	jQuery.modal.impl = {
 		/*
 		 * Contains the modal dialog elements and is the object passed
 		 * back to the callback (onOpen, onShow, onClose) functions
@@ -231,11 +231,11 @@
 				return false;
 			}
 
-			// jceq.boxModel is undefined if checked earlier
-			ieQuirks = jceq.browser.msie && !jceq.boxModel;
+			// jQuery.boxModel is undefined if checked earlier
+			ieQuirks = jQuery.browser.msie && !jQuery.boxModel;
 
 			// merge defaults and user options
-			s.o = jceq.extend({}, jceq.modal.defaults, options);
+			s.o = jQuery.extend({}, jQuery.modal.defaults, options);
 
 			// keep track of z-index
 			s.zIndex = s.o.zIndex;
@@ -246,12 +246,12 @@
 			// determine how to handle the data based on its type
 			if (typeof data === 'object') {
 				// convert DOM object to a jQuery object
-				data = data instanceof jQuery ? data : jceq(data);
+				data = data instanceof jQuery ? data : jQuery(data);
 				s.d.placeholder = false;
 
 				// if the object came from the DOM, keep track of its parent
 				if (data.parent().parent().size() > 0) {
-					data.before(jceq('<span></span>')
+					data.before(jQuery('<span></span>')
 						.attr('id', 'simplemodal-placeholder')
 						.css({display: 'none'}));
 
@@ -266,7 +266,7 @@
 			}
 			else if (typeof data === 'string' || typeof data === 'number') {
 				// just insert the data as innerHTML
-				data = jceq('<div></div>').html(data);
+				data = jQuery('<div></div>').html(data);
 			}
 			else {
 				// unsupported data type!
@@ -282,7 +282,7 @@
 			s.open();
 
 			// useful for adding events/manipulating data in the modal dialog
-			if (jceq.isFunction(s.o.onShow)) {
+			if (jQuery.isFunction(s.o.onShow)) {
 				s.o.onShow.apply(s, [s.d]);
 			}
 
@@ -300,8 +300,8 @@
 
 			// add an iframe to prevent select options from bleeding through
 			if (s.o.modal && ie6) {
-				s.d.iframe = jceq('<iframe src="javascript:false;"></iframe>')
-					.css(jceq.extend(s.o.iframeCss, {
+				s.d.iframe = jQuery('<iframe src="javascript:false;"></iframe>')
+					.css(jQuery.extend(s.o.iframeCss, {
 						display: 'none',
 						opacity: 0,
 						position: 'fixed',
@@ -315,10 +315,10 @@
 			}
 
 			// create the overlay
-			s.d.overlay = jceq('<div></div>')
+			s.d.overlay = jQuery('<div></div>')
 				.attr('id', s.o.overlayId)
 				.addClass('simplemodal-overlay')
-				.css(jceq.extend(s.o.overlayCss, {
+				.css(jQuery.extend(s.o.overlayCss, {
 					display: 'none',
 					opacity: s.o.opacity / 100,
 					height: s.o.modal ? d[0] : 0,
@@ -331,20 +331,20 @@
 				.appendTo(s.o.appendTo);
 
 			// create the container
-			s.d.container = jceq('<div></div>')
+			s.d.container = jQuery('<div></div>')
 				.attr('id', s.o.containerId)
 				.addClass('simplemodal-container')
-				.css(jceq.extend(
+				.css(jQuery.extend(
 					{position: s.o.fixed ? 'fixed' : 'absolute'},
 					s.o.containerCss,
 					{display: 'none', zIndex: s.o.zIndex + 2}
 				))
 				.append(s.o.close && s.o.closeHTML
-					? jceq(s.o.closeHTML).addClass(s.o.closeClass)
+					? jQuery(s.o.closeHTML).addClass(s.o.closeClass)
 					: '')
 				.appendTo(s.o.appendTo);
 
-			s.d.wrap = jceq('<div></div>')
+			s.d.wrap = jQuery('<div></div>')
 				.attr('tabIndex', -1)
 				.addClass('simplemodal-wrap')
 				.css({height: '100%', outline: 0, width: '100%'})
@@ -355,7 +355,7 @@
 			s.d.data = data
 				.attr('id', data.attr('id') || s.o.dataId)
 				.addClass('simplemodal-data')
-				.css(jceq.extend(s.o.dataCss, {
+				.css(jQuery.extend(s.o.dataCss, {
 						display: 'none'
 				}))
 				.appendTo('body');
@@ -376,7 +376,7 @@
 			var s = this;
 
 			// bind the close event to any element with the closeClass class
-			jceq('.' + s.o.closeClass).bind('click.simplemodal', function (e) {
+			jQuery('.' + s.o.closeClass).bind('click.simplemodal', function (e) {
 				e.preventDefault();
 				s.close();
 			});
@@ -422,7 +422,7 @@
 		 * Unbind events
 		 */
 		unbindEvents: function () {
-			jceq('.' + this.o.closeClass).unbind('click.simplemodal');
+			jQuery('.' + this.o.closeClass).unbind('click.simplemodal');
 			doc.unbind('keydown.simplemodal');
 			wndw.unbind('.simplemodal');
 			this.d.overlay.unbind('click.simplemodal');
@@ -434,7 +434,7 @@
 			var s = this, p = s.o.position;
 
 			// simulate fixed position - adapted from BlockUI
-			jceq.each([s.d.iframe || null, !s.o.modal ? null : s.d.overlay, s.d.container.css('position') === 'fixed' ? s.d.container : null], function (i, el) {
+			jQuery.each([s.d.iframe || null, !s.o.modal ? null : s.d.overlay, s.d.container.css('position') === 'fixed' ? s.d.container : null], function (i, el) {
 				if (el) {
 					var bch = 'document.body.clientHeight', bcw = 'document.body.clientWidth',
 						bsh = 'document.body.scrollHeight', bsl = 'document.body.scrollLeft',
@@ -483,10 +483,10 @@
 		 * Place focus on the first or last visible input
 		 */
 		focus: function (pos) {
-			var s = this, p = pos && jceq.inArray(pos, ['first', 'last']) !== -1 ? pos : 'first';
+			var s = this, p = pos && jQuery.inArray(pos, ['first', 'last']) !== -1 ? pos : 'first';
 
 			// focus on dialog or the first visible/enabled input element
-			var input = jceq(':input:enabled:visible:' + p, s.d.wrap);
+			var input = jQuery(':input:enabled:visible:' + p, s.d.wrap);
 			setTimeout(function () {
 				input.length > 0 ? input.focus() : s.d.wrap.focus();
 			}, 10);
@@ -494,8 +494,8 @@
 		getDimensions: function () {
 			// fix a jQuery/Opera bug with determining the window height
 			var s = this,
-				h = jceq.browser.opera && jceq.browser.version > '9.5' && jceq.fn.jquery < '1.3'
-						|| jceq.browser.opera && jceq.browser.version < '9.5' && jceq.fn.jquery > '1.2.6'
+				h = jQuery.browser.opera && jQuery.browser.version > '9.5' && jQuery.fn.jquery < '1.3'
+						|| jQuery.browser.opera && jQuery.browser.version < '9.5' && jQuery.fn.jquery > '1.2.6'
 				? wndw[0].innerHeight : wndw.height();
 
 			d = [doc.height(), doc.width()];
@@ -541,8 +541,8 @@
 				badIE = ie6 || ie7;
 
 			// get the dimensions for the container and data
-			var ch = s.d.origHeight ? s.d.origHeight : jceq.browser.opera ? s.d.container.height() : s.getVal(badIE ? s.d.container[0].currentStyle['height'] : s.d.container.css('height'), 'h'),
-				cw = s.d.origWidth ? s.d.origWidth : jceq.browser.opera ? s.d.container.width() : s.getVal(badIE ? s.d.container[0].currentStyle['width'] : s.d.container.css('width'), 'w'),
+			var ch = s.d.origHeight ? s.d.origHeight : jQuery.browser.opera ? s.d.container.height() : s.getVal(badIE ? s.d.container[0].currentStyle['height'] : s.d.container.css('height'), 'h'),
+				cw = s.d.origWidth ? s.d.origWidth : jQuery.browser.opera ? s.d.container.width() : s.getVal(badIE ? s.d.container[0].currentStyle['width'] : s.d.container.css('width'), 'w'),
 				dh = s.d.data.outerHeight(true), dw = s.d.data.outerWidth(true);
 
 			s.d.origHeight = s.d.origHeight || ch;
@@ -604,9 +604,9 @@
 		watchTab: function (e) {
 			var s = this;
 
-			if (jceq(e.target).parents('.simplemodal-container').length > 0) {
+			if (jQuery(e.target).parents('.simplemodal-container').length > 0) {
 				// save the list of inputs
-				s.inputs = jceq(':input:enabled:visible:first, :input:enabled:visible:last', s.d.data[0]);
+				s.inputs = jQuery(':input:enabled:visible:first, :input:enabled:visible:last', s.d.data[0]);
 
 				// if it's the first or last tabbable element, refocus
 				if ((!e.shiftKey && e.target === s.inputs[s.inputs.length -1]) ||
@@ -634,7 +634,7 @@
 			// display the iframe
 			s.d.iframe && s.d.iframe.show();
 
-			if (jceq.isFunction(s.o.onOpen)) {
+			if (jQuery.isFunction(s.o.onOpen)) {
 				// execute the onOpen callback
 				s.o.onOpen.apply(s, [s.d]);
 			}
@@ -670,7 +670,7 @@
 			// remove the default events
 			s.unbindEvents();
 
-			if (jceq.isFunction(s.o.onClose) && !s.occb) {
+			if (jQuery.isFunction(s.o.onClose) && !s.occb) {
 				// set the onClose callback flag
 				s.occb = true;
 
@@ -680,7 +680,7 @@
 			else {
 				// if the data came from the DOM, put it back
 				if (s.d.placeholder) {
-					var ph = jceq('#simplemodal-placeholder');
+					var ph = jQuery('#simplemodal-placeholder');
 					// save changes to the data?
 					if (s.o.persist) {
 						// insert the (possibly) modified data back into the DOM

@@ -1,5 +1,5 @@
 /**
- * jceq Validation Plugin 1.9.0
+ * jQuery Validation Plugin 1.9.0
  *
  * http://bassistance.de/jquery-plugins/jquery-plugin-validation/
  * http://docs.jquery.com/Plugins/Validation
@@ -19,41 +19,41 @@
 		// remove numbers and punctuation
 		.replace(/[0-9.(),;:!?%#$'"_+=\/-]*/g,'');
 	}
-	jceq.validator.addMethod("maxWords", function(value, element, params) {
+	jQuery.validator.addMethod("maxWords", function(value, element, params) {
 	    return this.optional(element) || stripHtml(value).match(/\b\w+\b/g).length < params;
-	}, jceq.validator.format("Please enter {0} words or less."));
+	}, jQuery.validator.format("Please enter {0} words or less."));
 
-	jceq.validator.addMethod("minWords", function(value, element, params) {
+	jQuery.validator.addMethod("minWords", function(value, element, params) {
 	    return this.optional(element) || stripHtml(value).match(/\b\w+\b/g).length >= params;
-	}, jceq.validator.format("Please enter at least {0} words."));
+	}, jQuery.validator.format("Please enter at least {0} words."));
 
-	jceq.validator.addMethod("rangeWords", function(value, element, params) {
+	jQuery.validator.addMethod("rangeWords", function(value, element, params) {
 	    return this.optional(element) || stripHtml(value).match(/\b\w+\b/g).length >= params[0] && value.match(/bw+b/g).length < params[1];
-	}, jceq.validator.format("Please enter between {0} and {1} words."));
+	}, jQuery.validator.format("Please enter between {0} and {1} words."));
 
 })();
 
-jceq.validator.addMethod("letterswithbasicpunc", function(value, element) {
+jQuery.validator.addMethod("letterswithbasicpunc", function(value, element) {
 	return this.optional(element) || /^[a-z-.,()'\"\s]+$/i.test(value);
 }, "Letters or punctuation only please");
 
-jceq.validator.addMethod("alphanumeric", function(value, element) {
+jQuery.validator.addMethod("alphanumeric", function(value, element) {
 	return this.optional(element) || /^\w+$/i.test(value);
 }, "Letters, numbers, spaces or underscores only please");
 
-jceq.validator.addMethod("lettersonly", function(value, element) {
+jQuery.validator.addMethod("lettersonly", function(value, element) {
 	return this.optional(element) || /^[a-z]+$/i.test(value);
 }, "Letters only please");
 
-jceq.validator.addMethod("nowhitespace", function(value, element) {
+jQuery.validator.addMethod("nowhitespace", function(value, element) {
 	return this.optional(element) || /^\S+$/i.test(value);
 }, "No white space please");
 
-jceq.validator.addMethod("ziprange", function(value, element) {
+jQuery.validator.addMethod("ziprange", function(value, element) {
 	return this.optional(element) || /^90[2-5]\d\{2}-\d{4}$/.test(value);
 }, "Your ZIP-code must be in the range 902xx-xxxx to 905-xx-xxxx");
 
-jceq.validator.addMethod("integer", function(value, element) {
+jQuery.validator.addMethod("integer", function(value, element) {
 	return this.optional(element) || /^-?\d+$/.test(value);
 }, "A positive or negative non-decimal number please");
 
@@ -65,11 +65,11 @@ jceq.validator.addMethod("integer", function(value, element) {
 * @example <input type="text" size="20" name="VehicleID" class="{required:true,vinUS:true}" />
 * @desc Declares a required input element whose value must be a valid vehicle identification number.
 *
-* @name jceq.validator.methods.vinUS
+* @name jQuery.validator.methods.vinUS
 * @type Boolean
 * @cat Plugins/Validate/Methods
 */
-jceq.validator.addMethod(
+jQuery.validator.addMethod(
 	"vinUS",
 	function(v){
 		if (v.length != 17)
@@ -113,23 +113,23 @@ jceq.validator.addMethod(
 /**
   * Return true, if the value is a valid date, also making this formal check dd/mm/yyyy.
   *
-  * @example jceq.validator.methods.date("01/01/1900")
+  * @example jQuery.validator.methods.date("01/01/1900")
   * @result true
   *
-  * @example jceq.validator.methods.date("01/13/1990")
+  * @example jQuery.validator.methods.date("01/13/1990")
   * @result false
   *
-  * @example jceq.validator.methods.date("01.01.1900")
+  * @example jQuery.validator.methods.date("01.01.1900")
   * @result false
   *
   * @example <input name="pippo" class="{dateITA:true}" />
   * @desc Declares an optional input element whose value must be a valid date.
   *
-  * @name jceq.validator.methods.dateITA
+  * @name jQuery.validator.methods.dateITA
   * @type Boolean
   * @cat Plugins/Validate/Methods
   */
-jceq.validator.addMethod(
+jQuery.validator.addMethod(
 	"dateITA",
 	function(value, element) {
 		var check = false;
@@ -151,15 +151,15 @@ jceq.validator.addMethod(
 	"Please enter a correct date"
 );
 
-jceq.validator.addMethod("dateNL", function(value, element) {
+jQuery.validator.addMethod("dateNL", function(value, element) {
 		return this.optional(element) || /^\d\d?[\.\/-]\d\d?[\.\/-]\d\d\d?\d?$/.test(value);
 	}, "Vul hier een geldige datum in."
 );
 
-jceq.validator.addMethod("time", function(value, element) {
+jQuery.validator.addMethod("time", function(value, element) {
 	return this.optional(element) || /^([01]\d|2[0-3])(:[0-5]\d){0,2}$/.test(value);
 }, "Please enter a valid time, between 00:00 and 23:59");
-jceq.validator.addMethod("time12h", function(value, element) {
+jQuery.validator.addMethod("time12h", function(value, element) {
 	return this.optional(element) || /^((0?[1-9]|1[012])(:[0-5]\d){0,2}(\ [AP]M))$/i.test(value);
 }, "Please enter a valid time, between 00:00 am and 12:00 pm");
 
@@ -181,41 +181,41 @@ jceq.validator.addMethod("time12h", function(value, element) {
  * and not
  * 212 123 4567
  */
-jceq.validator.addMethod("phoneUS", function(phone_number, element) {
+jQuery.validator.addMethod("phoneUS", function(phone_number, element) {
     phone_number = phone_number.replace(/\s+/g, "");
 	return this.optional(element) || phone_number.length > 9 &&
 		phone_number.match(/^(1-?)?(\([2-9]\d{2}\)|[2-9]\d{2})-?[2-9]\d{2}-?\d{4}$/);
 }, "Please specify a valid phone number");
 
-jceq.validator.addMethod('phoneUK', function(phone_number, element) {
+jQuery.validator.addMethod('phoneUK', function(phone_number, element) {
 return this.optional(element) || phone_number.length > 9 &&
 phone_number.match(/^(\(?(0|\+44)[1-9]{1}\d{1,4}?\)?\s?\d{3,4}\s?\d{3,4})$/);
 }, 'Please specify a valid phone number');
 
-jceq.validator.addMethod('mobileUK', function(phone_number, element) {
+jQuery.validator.addMethod('mobileUK', function(phone_number, element) {
 return this.optional(element) || phone_number.length > 9 &&
 phone_number.match(/^((0|\+44)7(5|6|7|8|9){1}\d{2}\s?\d{6})$/);
 }, 'Please specify a valid mobile number');
 
 // TODO check if value starts with <, otherwise don't try stripping anything
-jceq.validator.addMethod("strippedminlength", function(value, element, param) {
-	return jceq(value).text().length >= param;
-}, jceq.validator.format("Please enter at least {0} characters"));
+jQuery.validator.addMethod("strippedminlength", function(value, element, param) {
+	return jQuery(value).text().length >= param;
+}, jQuery.validator.format("Please enter at least {0} characters"));
 
 // same as email, but TLD is optional
-jceq.validator.addMethod("email2", function(value, element, param) {
+jQuery.validator.addMethod("email2", function(value, element, param) {
 	return this.optional(element) || /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)*(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i.test(value);
-}, jceq.validator.messages.email);
+}, jQuery.validator.messages.email);
 
 // same as url, but TLD is optional
-jceq.validator.addMethod("url2", function(value, element, param) {
+jQuery.validator.addMethod("url2", function(value, element, param) {
 	return this.optional(element) || /^(https?|ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)*(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i.test(value);
-}, jceq.validator.messages.url);
+}, jQuery.validator.messages.url);
 
 // NOTICE: Modified version of Castle.Components.Validator.CreditCardValidator
 // Redistributed under the the Apache License 2.0 at http://www.apache.org/licenses/LICENSE-2.0
 // Valid Types: mastercard, visa, amex, dinersclub, enroute, discover, jcb, unknown, all (overrides all other settings)
-jceq.validator.addMethod("creditcardtypes", function(value, element, param) {
+jQuery.validator.addMethod("creditcardtypes", function(value, element, param) {
 
 	if (/[^0-9-]+/.test(value))
 		return false;
@@ -273,28 +273,28 @@ jceq.validator.addMethod("creditcardtypes", function(value, element, param) {
 	return false;
 }, "Please enter a valid credit card number.");
 
-jceq.validator.addMethod("ipv4", function(value, element, param) {
+jQuery.validator.addMethod("ipv4", function(value, element, param) {
     return this.optional(element) || /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/i.test(value);
 }, "Please enter a valid IP v4 address.");
 
-jceq.validator.addMethod("ipv6", function(value, element, param) {
+jQuery.validator.addMethod("ipv6", function(value, element, param) {
     return this.optional(element) || /^((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))$/i.test(value);
 }, "Please enter a valid IP v6 address.");
 
 /**
   * Return true if the field value matches the given format RegExp
   *
-  * @example jceq.validator.methods.pattern("AR1004",element,/^AR\d{4}$/)
+  * @example jQuery.validator.methods.pattern("AR1004",element,/^AR\d{4}$/)
   * @result true
   *
-  * @example jceq.validator.methods.pattern("BR1004",element,/^AR\d{4}$/)
+  * @example jQuery.validator.methods.pattern("BR1004",element,/^AR\d{4}$/)
   * @result false
   *
-  * @name jceq.validator.methods.pattern
+  * @name jQuery.validator.methods.pattern
   * @type Boolean
   * @cat Plugins/Validate/Methods
   */
-jceq.validator.addMethod("pattern", function(value, element, param) {
+jQuery.validator.addMethod("pattern", function(value, element, param) {
     return this.optional(element) || param.test(value);
 }, "Invalid format.");
 

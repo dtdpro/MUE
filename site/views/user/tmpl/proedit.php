@@ -5,9 +5,9 @@ defined('_JEXEC') or die('Restricted access');
 ?>
 <h2 class="componentheading">User Profile Edit</h2>
 <script type="text/javascript">
-	jceq(document).ready(function() {
-		jceq.metadata.setType("attr", "validate");
-		jceq("#regform").validate({
+	jQuery(document).ready(function() {
+		jQuery.metadata.setType("attr", "validate");
+		jQuery("#regform").validate({
 			errorClass:"uf_error",
 			errorPlacement: function(error, element) {
 		    	error.appendTo( element.parent("div").next("div") );

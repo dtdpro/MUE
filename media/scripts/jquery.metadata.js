@@ -7,7 +7,7 @@
  *   http://www.opensource.org/licenses/mit-license.php
  *   http://www.gnu.org/licenses/gpl.html
  *
- * Revision: jceqId: jquery.metadata.js 4187 2007-12-16 17:15:27Z joern.zaefferer jceq
+ * Revision: jQueryId: jquery.metadata.js 4187 2007-12-16 17:15:27Z joern.zaefferer jQuery
  *
  */
 
@@ -26,24 +26,24 @@
  *          
  * The metadata for an element is loaded the first time the element is accessed via jQuery.
  *
- * As a result, you can define the metadata type, use jceq(expr) to load the metadata into the elements
- * matched by expr, then redefine the metadata type and run another jceq(expr) for other elements.
+ * As a result, you can define the metadata type, use jQuery(expr) to load the metadata into the elements
+ * matched by expr, then redefine the metadata type and run another jQuery(expr) for other elements.
  * 
- * @name jceq.metadata.setType
+ * @name jQuery.metadata.setType
  *
  * @example <p id="one" class="some_class {item_id: 1, item_label: 'Label'}">This is a p</p>
- * @before jceq.metadata.setType("class")
- * @after jceq("#one").metadata().item_id == 1; jceq("#one").metadata().item_label == "Label"
+ * @before jQuery.metadata.setType("class")
+ * @after jQuery("#one").metadata().item_id == 1; jQuery("#one").metadata().item_label == "Label"
  * @desc Reads metadata from the class attribute
  * 
  * @example <p id="one" class="some_class" data="{item_id: 1, item_label: 'Label'}">This is a p</p>
- * @before jceq.metadata.setType("attr", "data")
- * @after jceq("#one").metadata().item_id == 1; jceq("#one").metadata().item_label == "Label"
+ * @before jQuery.metadata.setType("attr", "data")
+ * @after jQuery("#one").metadata().item_id == 1; jQuery("#one").metadata().item_label == "Label"
  * @desc Reads metadata from a "data" attribute
  * 
  * @example <p id="one" class="some_class"><script>{item_id: 1, item_label: 'Label'}</script>This is a p</p>
- * @before jceq.metadata.setType("elem", "script")
- * @after jceq("#one").metadata().item_id == 1; jceq("#one").metadata().item_label == "Label"
+ * @before jQuery.metadata.setType("elem", "script")
+ * @after jQuery("#one").metadata().item_id == 1; jQuery("#one").metadata().item_label == "Label"
  * @desc Reads metadata from a nested script element
  * 
  * @param String type The encoding type
@@ -54,9 +54,9 @@
  * @see metadata()
  */
 
-(function(jceq) {
+(function(jQuery) {
 
-jceq.extend({
+jQuery.extend({
 	metadata : {
 		defaults : {
 			type: 'class',
@@ -69,11 +69,11 @@ jceq.extend({
 			this.defaults.name = name;
 		},
 		get: function( elem, opts ){
-			var settings = jceq.extend({},this.defaults,opts);
+			var settings = jQuery.extend({},this.defaults,opts);
 			// check for empty string in single property
 			if ( !settings.single.length ) settings.single = 'metadata';
 			
-			var data = jceq.data(elem, settings.single);
+			var data = jQuery.data(elem, settings.single);
 			// returned cached data if it already exists
 			if ( data ) return data;
 			
@@ -88,7 +88,7 @@ jceq.extend({
 					return undefined;
 				var e = elem.getElementsByTagName(settings.name);
 				if ( e.length )
-					data = jceq.trim(e[0].innerHTML);
+					data = jQuery.trim(e[0].innerHTML);
 			} else if ( elem.getAttribute != undefined ) {
 				var attr = elem.getAttribute( settings.name );
 				if ( attr )
@@ -100,7 +100,7 @@ jceq.extend({
 			
 			data = eval("(" + data + ")");
 			
-			jceq.data( elem, settings.single, data );
+			jQuery.data( elem, settings.single, data );
 			return data;
 		}
 	}
@@ -115,8 +115,8 @@ jceq.extend({
  * @type jQuery
  * @cat Plugins/Metadata
  */
-jceq.fn.metadata = function( opts ){
-	return jceq.metadata.get( this[0], opts );
+jQuery.fn.metadata = function( opts ){
+	return jQuery.metadata.get( this[0], opts );
 };
 
-})(jceq);
+})(jQuery);

@@ -19,7 +19,12 @@ require_once(JPATH_COMPONENT.DS.'helpers'.DS.'mue.php');
 
 // Load StyleSheet for template, based on config
 $doc = &JFactory::getDocument();
-$doc->addScript('media/com_mue/scripts/jquery.js');
+//jQuery
+if (!JFactory::getApplication()->get('jquery')) {
+	JFactory::getApplication()->set('jquery', true);
+	// add jQuery
+	$doc->addScript('media/com_mue/scripts/jquery.js');	
+}
 $doc->addScript('media/com_mue/scripts/jquery.validate.js');
 $doc->addScript('media/com_mue/scripts/additional-methods.js');
 $doc->addScript('media/com_mue/scripts/jquery.metadata.js');

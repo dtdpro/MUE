@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS `#__mams_usersubs` (
   `usrsub_status` enum('notyetstarted','verified','canceled','accepted','pending','started','denied','refunded','failed','pending','reversed','canceled_reversal','expired','voided','completed','dispute') NOT NULL,
   `usrsub_start` datetime NOT NULL,
   `usrsub_end` datetime NOT NULL,
-  PRIMARY KEY (`sub_id`)
+  PRIMARY KEY (`usrsub_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__mams_subs` (
