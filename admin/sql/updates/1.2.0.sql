@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS `#__mams_subs` (
   `sub_id` int(11) NOT NULL AUTO_INCREMENT,
   `sub_inttitle` varchar(255) NOT NULL,
   `sub_exttitle` varchar(255) NOT NULL,
+  `sub_desc` TEXT NOT NULL,
   `sub_length` int(11) NOT NULL,
   `sub_period` enum('Day','Week','Month', 'Year') NOT NULL,
   `sub_cost` float NOT NULL,
