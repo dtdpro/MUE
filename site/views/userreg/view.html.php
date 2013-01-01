@@ -64,6 +64,7 @@ class MUEViewUserReg extends JView
 	protected function addUser() {
 		$model =& $this->getModel();
 		$app=Jfactory::getApplication();
+		$muecfg = MUEHelper::getConfig();
 		$data = JRequest::getVar('jform', array(), 'post', 'array');
 		$groupid = $data['userGroupID'];
 		if (!$model->save()) {
@@ -72,6 +73,7 @@ class MUEViewUserReg extends JView
 		} else {
 			$redir = $this->return;
 			if (!$redir) $redir='index.php?option=com_mue&view=user&layout=profile';
+			if ($muecfg->subscribe) $redir='index.php?option=com_mue&view=subscribe';
 			$app->redirect($redir);
 		}		
 	}

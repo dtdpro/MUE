@@ -22,6 +22,29 @@
 		<field name="mclist" type="text" label="COM_MUE_CONFIG_FIELD_MCLIST_LABEL" description="COM_MUE_CONFIG_FIELD_MCLIST_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="mcvars" type="text" label="COM_MUE_CONFIG_FIELD_MCVARS_LABEL" description="COM_MUE_CONFIG_FIELD_MCVARS_DESC" size="70" class="inputbox" required="false" default="" />
 	</fieldset>
+	<fieldset name="subscribing" label="COM_MUE_CONFIG_SUBSCRIBE_LABEL" description="COM_MUE_CONFIG_SUBSCRIBE_DESC">
+		<field name="subscribe" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_SUBSCRIBE_LABEL" description="COM_MUE_CONFIG_FIELD_SUBSCRIBE_DESC" default="1">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</field>
+		<field name="spacer1" type="spacer" hr="true" />
+		<field name="paypal" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_PAYPAL_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPAL_DESC" default="1">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</field>
+		<field name="paypal_mode" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_PAYPALMODE_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPALMODE_DESC">
+			<option value="live">Live</option>
+			<option value="sandbox">Sandbox</option>
+		</field>
+		<field name="paypal_username" type="text" label="COM_MUE_CONFIG_FIELD_PAYPALUSERNAME_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPALUSERNAME_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="paypal_password" type="text" label="COM_MUE_CONFIG_FIELD_PAYPALPASSWORD_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPALPASSWORD_DESC" size="70" class="inputbox" required="false" default="" /> 
+		<field name="paypal_signature" type="text" label="COM_MUE_CONFIG_FIELD_PAYPALSIG_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPALSIG_DESC" size="70" class="inputbox" required="false" default="" /> 
+		<field name="spacer2" type="spacer" hr="true" />
+		<field name="redemption" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_REDEEM_LABEL" description="COM_MUE_CONFIG_FIELD_REDEEM_DESC" default="1">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</field>
+	</fieldset>
 	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" class="inputbox" validate="rules" filter="rules" component="com_continued" section="component" />
 	</fieldset>

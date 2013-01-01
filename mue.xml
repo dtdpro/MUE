@@ -27,6 +27,7 @@
 		<filename>router.php</filename>
 		<filename>mue.php</filename>
 		<filename>controller.php</filename>
+		<filename>paypalipn.php</filename>
 		<filename>metadata.xml</filename>
 		<folder>models</folder>
 		<folder>views</folder>

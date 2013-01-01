@@ -65,6 +65,18 @@ class MUEController extends JController {
 					$model = $this->getModel($vName);
 					break;
 
+				case 'subscribe':
+
+					// If the user is a guest, redirect to the login page.
+					$user = JFactory::getUser();
+					if ($user->get('guest') == 1) {
+						// Redirect to login page.
+						$this->setRedirect(JRoute::_('index.php?option=com_mue&view=login&layout=login', false));
+						return;
+					}
+					$model = $this->getModel($vName);
+					break;
+
 				case 'login':
 
 					// If the user is a guest, redirect to the login page.
