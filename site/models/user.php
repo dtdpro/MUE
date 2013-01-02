@@ -70,10 +70,9 @@ class MUEModelUser extends JModel
 					if ($fday < 10) $fday = "0".$fday;
 					$item->$fieldname = $fmonth.$fday;
 				} else if ($d->uf_type=="mcbox" || $d->uf_type=="mlist") {
-					$item->$fieldname = implode(" ",$item->$fieldname);
+					$item->$fieldname = implode(" ",$data[$fieldname]);
 				} else if ($fl->uf_type=='cbox') { 
-					if ($item->$fieldname=='on') $item->$fieldname = 1;
-					else $item->$fieldname = 0;
+					$item->$fieldname = ($data[$fieldname]=='on') ? "1" : "0";
 				} else $item->$fieldname = $data[$fieldname];
 				$fids[]=$d->uf_id;
 			}
