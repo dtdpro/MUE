@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS `#__mue_usersubs` (
   `usrsub_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `usrsub_ip` varchar(20) NOT NULL,
   `usrsub_status` enum('notyetstarted','verified','canceled','accepted','pending','started','denied','refunded','failed','pending','reversed','canceled_reversal','expired','voided','completed','dispute') NOT NULL,
-  `usrsub_start` datetime NOT NULL,
-  `usrsub_end` datetime NOT NULL,
+  `usrsub_start` date NOT NULL,
+  `usrsub_end` date NOT NULL,
   PRIMARY KEY (`usrsub_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 

@@ -4,7 +4,7 @@
 defined('_JEXEC') or die;
 
 JHtml::_('behavior.keepalive');
-
+$config = MUEHelper::getConfig();
 ?>
 
 <?php if ($user->id) : ?>
@@ -15,6 +15,11 @@ JHtml::_('behavior.keepalive');
 			<li class="level1">
 				<a href="<?php echo JRoute::_('index.php?option=com_mue&view=user&layout=profile'); ?>" class="level1"><?php echo JText::_('MOD_MUEUSERMENU_PROFILE'); ?></a>
 			</li>
+			<?php  if ($config->subscribe) : ?>
+			<li>
+				<a href="<?php echo JRoute::_('index.php?option=com_mue&view=user&layout=subs'); ?>"><?php echo JText::_('MOD_MUEUSERMENU_SUBS'); ?></a>
+			</li>
+			<?php endif; ?>
 			<li class="level1">
 				<a href="<?php echo JRoute::_('index.php?option=com_mue&view=login&layout=logout'); ?>" class="level1"><?php echo JText::_('MOD_MUEUSERMENU_LOGOUT'); ?></a>
 			</li>

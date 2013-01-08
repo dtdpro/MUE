@@ -9,6 +9,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
+$config = MUEHelper::getConfig();
 JHtml::_('behavior.keepalive');
 
 ?>
@@ -34,6 +35,11 @@ JHtml::_('behavior.keepalive');
 			<li>
 				<a href="<?php echo JRoute::_('index.php?option=com_mue&view=user&layout=profile'); ?>"><?php echo JText::_('MOD_MUELOGIN_PROFILE'); ?></a>
 			</li>
+			<?php  if ($config->subscribe) : ?>
+			<li>
+				<a href="<?php echo JRoute::_('index.php?option=com_mue&view=user&layout=subs'); ?>"><?php echo JText::_('MOD_MUELOGIN_SUBS'); ?></a>
+			</li>
+			<?php endif; ?>
 
 		</ul>
 		<input type="hidden" name="option" value="com_mue">

@@ -46,6 +46,7 @@
 			<menu view="ugroups">COM_MUE_SUBMENU_UGROUPS</menu>
 			<menu view="ufields">COM_MUE_SUBMENU_UFIELDS</menu>
 			<menu view="users">COM_MUE_SUBMENU_USERS</menu>
+			<menu view="usersubs">COM_MUE_SUBMENU_USERSUBS</menu>
 		</submenu>
 		<files folder="admin">
 			<filename>index.html</filename>

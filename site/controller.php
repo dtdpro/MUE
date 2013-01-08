@@ -16,13 +16,13 @@ class MUEController extends JController {
 		$vName	 = JRequest::getCmd('view', 'mue');
 		$vFormat = $document->getType();
 		$lName	 = JRequest::getCmd('layout', 'default');
-
+		$user = JFactory::getUser();
+			
 		if ($view = $this->getView($vName, $vFormat)) {
 			// Do any specific processing by view.
 			switch ($vName) {
 				case 'userreg':
 					// If the user is already logged in, redirect to the profile page.
-					$user = JFactory::getUser();
 					if ($user->get('guest') != 1) {
 						// Redirect to profile page.
 						$this->setRedirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile', false));
@@ -42,7 +42,6 @@ class MUEController extends JController {
 
 				case 'lost':
 					// If the user is already logged in, redirect to the profile page.
-					$user = JFactory::getUser();
 					if ($user->get('guest') != 1) {
 						// Redirect to profile page.
 						$this->setRedirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile', false));
@@ -56,7 +55,6 @@ class MUEController extends JController {
 				case 'user':
 
 					// If the user is a guest, redirect to the login page.
-					$user = JFactory::getUser();
 					if ($user->get('guest') == 1) {
 						// Redirect to login page.
 						$this->setRedirect(JRoute::_('index.php?option=com_mue&view=login&layout=login', false));
@@ -68,7 +66,6 @@ class MUEController extends JController {
 				case 'subscribe':
 
 					// If the user is a guest, redirect to the login page.
-					$user = JFactory::getUser();
 					if ($user->get('guest') == 1) {
 						// Redirect to login page.
 						$this->setRedirect(JRoute::_('index.php?option=com_mue&view=login&layout=login', false));
@@ -80,7 +77,6 @@ class MUEController extends JController {
 				case 'login':
 
 					// If the user is a guest, redirect to the login page.
-					$user = JFactory::getUser();
 					if ($lName == 'login' && $user->id) {
 						// Redirect to login page.
 						$this->setRedirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile', false));
@@ -100,7 +96,25 @@ class MUEController extends JController {
 
 			// Push document object into the view.
 			$view->assignRef('document', $document);
-
+			
+			if ($vName != "subscribe") {
+				$config=MUEHelper::getConfig();
+				$numsubs=count(MUEHelper::getUserSubs());
+				if ($config->subscribe && $user->id) {
+					if ($numsubs) {
+						$sub=MUEHelper::getActiveSub();
+						if (!$sub) {
+							JError::raiseWarning('muesubexpired','Subscription Expired');
+						} else {
+							if ((!$sub->sub_recurring || $sub->usrsub_rpstatus != "ActiveProfile") && $sub->daysLeft <= 10) {
+								JError::raiseNotice('muesubexpiressoon','Subscription Expires in '.$sub->daysLeft. ' day(s)');
+							}
+						}
+					} else {
+						JError::raiseNotice('muesubexpiressoon','Subscription Required');
+					}
+				}
+			}
 			$view->display();
 		}
 	}

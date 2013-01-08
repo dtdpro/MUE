@@ -9,6 +9,7 @@ function MUEBuildRoute(&$query)
 	static $default;
 	static $userreg;
 	static $profile;
+	static $subs;
 	static $proedit;
 	static $login;
 	static $logout;
@@ -42,6 +43,9 @@ function MUEBuildRoute(&$query)
 			// Check to see if we have found the profile,profile edit, and records menu item.
 			if (empty($profile) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'user') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'profile')) {
 				$profile = $items[$i]->id;
+			}
+			if (empty($subs) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'user') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'subs')) {
+				$subs = $items[$i]->id;
 			}
 			if (empty($proedit) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'user') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'proedit')) {
 				$peoedit = $items[$i]->id;
@@ -99,6 +103,15 @@ function MUEBuildRoute(&$query)
 		
 					case 'proedit':
 						if ($query['Itemid'] = $proedit) {
+							unset ($query['view']);
+							unset ($query['layout']);
+						} else {
+							$query['Itemid'] = $default;
+						}
+						break;
+		
+					case 'subs':
+						if ($query['Itemid'] = $subs) {
 							unset ($query['view']);
 							unset ($query['layout']);
 						} else {

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: question.xml 62 2010-11-28 16:08:16Z chdemko $ -->
+<form>
+	<fieldset name="details">
+		<field
+			name="usrsub_id"
+			type="hidden"
+		/>
+		<field
+			name="usrsub_type"
+			type="list"
+			class="inputbox"
+			default=""
+			label="COM_MUE_USERSUB_FIELD_TYPE_LABEL"
+			description="COM_MUE_USERSUB_FIELD_TYPE_DESC"
+			required="true">
+			<option value="paypal">PayPal</option>
+			<option value="redeem">Reddemed Code</option>
+			<option value="admin">Admin Add</option>
+			<option value="google">Google Checkout</option>
+		</field>
+		<field 
+			name="usrsub_plan" 
+			type="text" 
+			class="inputbox"
+			label="COM_MUE_USERSUB_FIELD_PLAN_LABEL"
+			description="COM_MUE_USERSUB_FIELD_PLAN_DESC" 
+		/>
+		<field 
+			name="usrsub_user" 
+			type="user" 
+			class="inputbox"
+			label="COM_MUE_USERSUB_FIELD_USER_LABEL"
+			description="COM_MUE_USERSUB_FIELD_USER_DESC" 
+		/>
+		<field 
+			name="usrsub_time" 
+			type="calendar" 
+			label="COM_MUE_USERSUB_FIELD_TIME_LABEL"
+			description="COM_MUE_USERSUB_FIELD_TIME_DESC" 
+			filter="user_utc"
+			format="%Y-%m-%d %H:%M:%S"
+			size="22"
+		/>
+		<field 
+			name="usrsub_transid" 
+			type="text" 
+			class="inputbox"
+			label="COM_MUE_USERSUB_FIELD_TRANSID_LABEL"
+			description="COM_MUE_USERSUB_FIELD_TRANSID_DESC" 
+		/>
+		<field 
+			name="usrsub_ip" 
+			type="text" 
+			class="inputbox"
+			label="COM_MUE_USERSUB_FIELD_IP_LABEL"
+			description="COM_MUE_USERSUB_FIELD_IP_DESC" 
+		/>
+		<field
+			name="usrsub_status"
+			type="list"
+			extension="com_continued"
+			class="inputbox"
+			default=""
+			label="COM_MUE_USERSUB_FIELD_STATUS_LABEL"
+			description="COM_MUE_USERSUB_FIELD_STATUS_DESC"
+			required="true">
+			<option value="notyetstarted">Not Yet Started</option>
+			<option value="verified">Assessment</option>
+			<option value="canceled">Canceled</option>
+			<option value="accepted">Accepted</option>
+			<option value="pending">Pending</option>
+			<option value="started">Started</option>
+			<option value="denied">Denied</option>
+			<option value="refunded">Refunded</option>
+			<option value="failed">Failed</option>
+			<option value="pending">Pending</option>
+			<option value="reversed">Reversed</option>
+			<option value="canceled_reversal">Cancelled Dispute</option>
+			<option value="expired">Expired</option>
+			<option value="voided">Voided</option>
+			<option value="completed">Completed</option>
+			<option value="dispute">Dispute</option>
+		</field>
+	</fieldset>
+	
+
+</form>
+

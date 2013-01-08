@@ -68,13 +68,16 @@ class MUEViewSubscribe extends JView
 		$user =& JFactory::getUser();	
 		$app=Jfactory::getApplication();
 		$muecfg = MUEHelper::getConfig();
+		$sub = MUEHelper::getActiveSub();
+		if ($sub) $end = $sub->usrsub_end;
+		else $sub = false;
 		if (!$user->id ) {
 			//take user to fm if not logged in
 			$app->redirect('index.php?option=com_mue&view=subscribe&Itemid='.JRequest::getVar( 'Itemid' ).'&plan='.$this->pinfo->sub_id);
 		}
 		include_once 'components/com_mue/helpers/paypal.php';
 		$paypal = new PayPalAPI($muecfg->paypal_mode,$muecfg->paypal_username,$muecfg->paypal_password,$muecfg->paypal_signature);
-		if (!$paypal->submitPayment($this->pinfo)) {
+		if (!$paypal->submitPayment($this->pinfo,$end)) {
 			$app->redirect('index.php?option=com_mue&view=subscribe&Itemid='.JRequest::getVar( 'Itemid' ).'&plan='.$this->pinfo->sub_id,$paypal->error,'error');
 		}
 	}

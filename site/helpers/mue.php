@@ -78,4 +78,34 @@ class MUEHelper {
 		$usergroup = $db->loadObject();
 		return $usergroup;
 	}
+	
+	function getUserSubs() {
+		$user =& JFactory::getUser();
+		$userid = $user->id;
+		$db =& JFactory::getDBO();
+		$query = 'SELECT s.*, p.*, DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft FROM #__mue_usersubs as s ';
+		$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
+		$query.= 'WHERE s.usrsub_status != "notyetstarted" && s.usrsub_user="'.$userid.'" ';
+		$query.= 'ORDER BY daysLeft DESC, s.usrsub_end DESC, s.usrsub_time DESC';
+		$db->setQuery($query);
+		$usersubs = $db->loadObjectList();
+		return $usersubs;
+	}
+	
+	function getActiveSub() {
+		$user =& JFactory::getUser();
+		$userid = $user->id;
+		$db =& JFactory::getDBO();
+		$query = 'SELECT s.*,p.*,DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft FROM #__mue_usersubs as s ';
+		$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
+		$query.= 'WHERE s.usrsub_status != "notyetstarted" && s.usrsub_end >= DATE(NOW()) && s.usrsub_user="'.$userid.'" ';
+		$query.= 'ORDER BY daysLeft DESC, s.usrsub_end DESC, s.usrsub_time DESC LIMIT 1';
+		$db->setQuery($query); 
+		$sub = $db->loadObject();
+		if ($sub) {
+			return $sub;
+		} else {
+			return false;
+		}
+	}
 }

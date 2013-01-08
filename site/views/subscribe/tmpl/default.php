@@ -11,7 +11,7 @@ echo '<h2 class="componentheading">Subscription</h2>';
 if (!$user->id) {
 	echo '<p align="center"><span style="color:#800000;font-weight:bolder;">'.$config->LOGIN_MSG.'</span></p>';
 } else {
-	
+	echo $config->sub_page_content;
 	$formtoken=JHTML::_( 'form.token' );
 	if ($config->paypal) {
 		echo '<div id="mue-plan-pick">';
