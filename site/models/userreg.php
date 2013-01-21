@@ -83,6 +83,7 @@ class MUEModelUserReg extends JModel
 		{
 			//setup item and bind data
 			$fids = array();
+			$optfs = array();
 			$flist = $this->getUserFields($data['userGroupID'],false);
 			foreach ($flist as $d) {
 				$fieldname = $d->uf_sname;
@@ -103,6 +104,7 @@ class MUEModelUserReg extends JModel
 				} else {
 					$item->$fieldname = $data[$fieldname];
 				}
+				if ($d->uf_type=="mcbox" || $d->uf_type=="mlist" || $d->uf_type=="multi" || $d->uf_type=="dropdown") $optfs[]=$d->uf_sname;
 				if ($d->uf_type != 'captcha') $fids[]=$d->uf_id;
 				if ($d->uf_type != 'captcha' || $d->uf_type != 'password') $app->setUserState('mue.userreg.'.$fieldname, $item->$fieldname);
 			}
@@ -117,6 +119,14 @@ class MUEModelUserReg extends JModel
 					return false;
 				} 
 			}
+				
+			$odsql = "SELECT * FROM #__mue_ufields_opts";
+			$db->setQuery($odsql);
+			$optionsdata = array();
+			$optres = $db->loadObjectList();
+			foreach ($optres as $o) {
+				$optionsdata[$o->opt_id]=$o->opt_text;
+			}
 			
 			if ($mclist) {
 				if ($data[$mclist])  {
@@ -126,11 +136,79 @@ class MUEModelUserReg extends JModel
 					$othervars=explode(",",$cfg->mcvars);
 					foreach ($othervars as $ov) {
 						list($mue, $mcv) = explode(":",$ov,2);
-						$mcdata[$mcv] = $item->$mue;
-					}
+						if (in_array($mue,$optfs)) $mcdata[$mcv] = $optionsdata[$item->$mue];
+						else if (in_array($mue,$moptfs)) {
+							$mcdata[$mcv] = "";
+							foreach (explode(" ",$item->$mue) as $mfo) {
+								$mcdata[$mcv] .= $optionsdata[$mfo]." ";
+							}
+						}
+						else $mcdata[$mcv] = $item->$mue;					}
 					$mcresult = $mc->subscribeUser($item->email,$mcdata,false,"html");
 					if ($mcresult) { $item->$mclist; $usernotes .= $date->toSql(true)." Subscribed to MailChimp List #".$cfg->mclist."\r\n"; }
 					else { $item->$mclist; $usernotes .= $date->toSql(true)." Could not subscribe to MailChimp List #".$cfg->mclist." Error: ".$mc->error."\r\n"; }
+				}
+			}
+			
+			//User Directory
+			$udf=$cfg->on_userdir_field;
+			if ($cfg->userdir && $item->$udf) {
+			$af=explode(",",$cfg->userdir_mapfields);
+				$uf=explode(",",$cfg->userdir_userinfo);
+				$sf=explode(",",$cfg->userdir_searchinfo);
+				$address="";
+				$dbuserinfo="";
+				$dbsearchinfo="";
+				foreach ($af as $f) {
+					if ($item->$f) {
+						if (in_array($f,$optfs)) {
+							$address .= $optionsdata[$item->$f]." ";
+						} else if (in_array($f,$moptfs)) {
+							foreach (explode(" ",$item->$f) as $mfo) {
+								$address .= $optionsdata[$mfo]." ";
+							}
+						} else {
+							$address .= $item->$f." ";
+						}
+					}
+				}
+				foreach ($uf as $f) {
+					if ($item->$f) {
+						if (in_array($f,$optfs)) {
+							$dbuserinfo .= $optionsdata[$item->$f]."<br />";
+						} else if (in_array($f,$moptfs)) {
+							foreach (explode(" ",$item->$f) as $mfo) {
+								$dbuserinfo .= $optionsdata[$mfo]."<br />";
+							}
+						} else {
+							$dbuserinfo .= $item->$f."<br />";
+						}
+					}
+				}
+				foreach ($sf as $f) {
+					if ($item->$f) {
+						if (in_array($f,$optfs)) {
+							$dbsearchinfo .= $optionsdata[$item->$f]." ";
+						} else if (in_array($f,$moptfs)) {
+							foreach (explode(" ",$item->$f) as $mfo) {
+								$dbsearchinfo .= $optionsdata[$mfo]." ";
+							}
+						} else {
+							$dbsearchinfo .= $item->$f." ";
+						}
+					}
+				}
+				$url = "http://maps.google.com/maps/api/geocode/json?sensor=false&address=".urlencode($address);
+				$gdata_json = $this->curl_file_get_contents($url);
+				$gdata = json_decode($gdata_json);
+				if ($gdata->status == 'OK') {
+					$udsql = 'INSERT INTO #__mue_userdir (ud_user,ud_lat,ud_lon,ud_userinfo,ud_searchinfo) VALUES  ("'.$user->id.'","'.$gdata->results[0]->geometry->location->lat.'","'.$gdata->results[0]->geometry->location->lng.'","'.$dbuserinfo.'","'.$dbsearchinfo.'")';
+					$db->setQuery($udsql);
+					$db->query();
+					$usernotes .= $date->toSql(true)." Added to User Directory\r\n";
+				} else {
+					$item->$udf = 0;
+					$usernotes .= $date->toSql(true)." Could not add to User Directory\r\n";
 				}
 			}
 			
@@ -229,6 +307,16 @@ class MUEModelUserReg extends JModel
 		return true;
 	}
 
+	private function curl_file_get_contents($URL){
+		$c = curl_init();
+		curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($c, CURLOPT_URL, $URL);
+		$contents = curl_exec($c);
+		curl_close($c);
+	
+		if ($contents) return $contents;
+		else return FALSE;
+	}
 	
 
 }

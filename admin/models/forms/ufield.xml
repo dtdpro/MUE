@@ -166,6 +166,18 @@
 			<option	value="1">Yes</option>
 			<option	value="0">No</option>
 		</field>
+		<field
+			name="uf_userdir"
+			type="radio"
+			label="COM_MUE_UFIELD_FIELD_USERDIR_LABEL"
+			description="COM_MUE_UFIELD_FIELD_USERDIR_DESC"
+			size="1"
+			class="inputbox"
+			required="true"
+			default="1">
+			<option	value="1">Yes</option>
+			<option	value="0">No</option>
+		</field>
 	</fieldset>
 	<fieldset name="content">
 		<field

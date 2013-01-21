@@ -14,6 +14,7 @@ function MUEBuildRoute(&$query)
 	static $login;
 	static $logout;
 	static $lost;
+	static $userdir;
 
 	// Initialise variables.
 	$segments = array();
@@ -54,7 +55,11 @@ function MUEBuildRoute(&$query)
 			// Check to see if we have found the lost info menu item.
 			if (empty($lost) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'lost')) {
 				$lost = $items[$i]->id;
-			}			
+			}		
+			// Check to see if we have found the user directory menu item.
+			if (empty($userdir) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'userdir')) {
+				$userdir = $items[$i]->id;
+			}		
 		}
 	}
 
@@ -128,7 +133,15 @@ function MUEBuildRoute(&$query)
 					$query['Itemid'] = $default;
 				}
 				break;
-
+				
+			case 'userdir':
+				if ($query['Itemid'] = $userdir) {
+					unset ($query['view']);
+				} else {
+					$query['Itemid'] = $default;
+				}
+				break;
+				
 			default:
 				break;
 		}

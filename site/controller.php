@@ -40,6 +40,17 @@ class MUEController extends JController {
 					$model = $this->getModel($vName);
 					break;
 
+				case 'userdir':
+					if (!$user->id) {
+						// Redirect to profile page.
+						$this->setRedirect(JRoute::_('index.php?option=com_mue&view=login&layout=login', false));
+						return;
+					}
+
+					// The user is a guest, load the lost password model and show the lost password page.
+					$model = $this->getModel($vName);
+					break;
+
 				case 'lost':
 					// If the user is already logged in, redirect to the profile page.
 					if ($user->get('guest') != 1) {

@@ -17,13 +17,28 @@
 			description="COM_MUE_CONFIG_FIELD_ONLIST_DESC" 
 		/>
 	</fieldset>
+	<fieldset name="userdirectory" label="COM_MUE_CONFIG_USERDIR_LABEL" description="COM_MUE_CONFIG_USERDIR_DESC" addfieldpath="/administrator/components/com_mue/models/fields">
+		<field name="userdir" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_USERDIR_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_DESC" default="0">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</field>
+		<field name="usrdir_sub" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_USERDIRSUB_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIRSUB_DESC" default="0">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</field>
+		<field name="userdir_title" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_TITLE_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_TITLE_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="on_userdir_field" type="FieldOnList" class="inputbox" label="COM_MUE_CONFIG_FIELD_ONUSERDIR_LABEL" description="COM_MUE_CONFIG_FIELD_ONUSERDIR_DESC" />
+		<field name="userdir_mapfields" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_MAPFIELDS_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_MAPFIELDS_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="userdir_userinfo" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_USERINFO_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_USERINFO_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="userdir_searchinfo" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_SEARCHINFO_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_SEARCHINFO_DESC" size="70" class="inputbox" required="false" default="" />
+	</fieldset>
 	<fieldset name="mailchimp" label="COM_MUE_CONFIG_MAILCHIMP_LABEL" description="COM_MUE_CONFIG_MAILCHIMP_DESC">
 		<field name="mckey" type="text" label="COM_MUE_CONFIG_FIELD_MCKEY_LABEL" description="COM_MUE_CONFIG_FIELD_MCKEY_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="mclist" type="text" label="COM_MUE_CONFIG_FIELD_MCLIST_LABEL" description="COM_MUE_CONFIG_FIELD_MCLIST_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="mcvars" type="text" label="COM_MUE_CONFIG_FIELD_MCVARS_LABEL" description="COM_MUE_CONFIG_FIELD_MCVARS_DESC" size="70" class="inputbox" required="false" default="" />
 	</fieldset>
 	<fieldset name="subscribing" label="COM_MUE_CONFIG_SUBSCRIBE_LABEL" description="COM_MUE_CONFIG_SUBSCRIBE_DESC">
-		<field name="subscribe" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_SUBSCRIBE_LABEL" description="COM_MUE_CONFIG_FIELD_SUBSCRIBE_DESC" default="1">
+		<field name="subscribe" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_SUBSCRIBE_LABEL" description="COM_MUE_CONFIG_FIELD_SUBSCRIBE_DESC" default="0">
 			<option value="0">No</option>
 			<option value="1">Yes</option>
 		</field>
