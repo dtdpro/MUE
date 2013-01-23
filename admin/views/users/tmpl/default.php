@@ -62,7 +62,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_VISIT' , 'u.lastvisitDate', $listDirn, $listOrder); ?>
 				</th>
 				<th width="150">
-					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_UPDATE' , 'ug.lastUpdate', $listDirn, $listOrder); ?>
+					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_UPDATE' , 'ug.userg_update', $listDirn, $listOrder); ?>
 				</th>
 				<th width="150">
 					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_REGISTERED' , 'u.registerDate', $listDirn, $listOrder); ?>
@@ -71,7 +71,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 		</thead>
 		<tfoot>
 		<tr>
-			<td colspan="10"><?php echo $this->pagination->getListFooter(); ?></td>
+			<td colspan="11"><?php echo $this->pagination->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
 		<tbody>

@@ -128,6 +128,25 @@ class MUEModelUserReg extends JModel
 				$optionsdata[$o->opt_id]=$o->opt_text;
 			}
 			
+			//Create Joomla User
+			$user= new JUser;
+			$udata['name']=$item->fname." ".$item->lname;
+			$udata['email']=strtolower($item->email);
+			$udata['username']=(strtolower($item->username)) ? strtolower($item->username) : strtolower($item->email);
+			$udata['password']=$item->password;
+			$udata['password2']=$item->cpassword;
+			$udata['block']=0;
+			$udata['groups'][]=2;
+			if (!$user->bind($udata)) {
+				$this->setError('Bind Error: '.$user->getError());
+				return false;
+			}
+			if (!$user->save()) {
+				$this->setError('Save Error:'.$user->getError());
+				return false;
+			}
+			
+			//MailChimp List
 			if ($mclist) {
 				if ($data[$mclist])  {
 					include_once 'components/com_mue/lib/mailchimp.php';
@@ -210,24 +229,6 @@ class MUEModelUserReg extends JModel
 					$item->$udf = 0;
 					$usernotes .= $date->toSql(true)." Could not add to User Directory\r\n";
 				}
-			}
-			
-			//Update Joomla User Info
-			$user= new JUser;
-			$udata['name']=$item->fname." ".$item->lname;
-			$udata['email']=strtolower($item->email);
-			$udata['username']=(strtolower($item->username)) ? strtolower($item->username) : strtolower($item->email);
-			$udata['password']=$item->password;
-			$udata['password2']=$item->cpassword;
-			$udata['block']=0;
-			$udata['groups'][]=2;
-			if (!$user->bind($udata)) {
-				$this->setError('Bind Error: '.$user->getError());
-				return false;
-			}
-			if (!$user->save()) {
-				$this->setError('Save Error:'.$user->getError());
-				return false;
 			}
 			
 			$credentials = array();

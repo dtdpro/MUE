@@ -6,7 +6,7 @@ JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_mue&layout=edit&usr_id='.(int) $this->item->usr_id); ?>" method="post" name="adminForm" id="mue-form" class="form-validate">
-	<div class="width-60 fltlft">
+	<div class="width-50 fltlft">
 		<fieldset class="adminform">
 			<legend><?php echo JText::_( 'COM_MUE_USER_DETAILS' ); ?></legend>
 			<ul class="adminformlist">
@@ -83,12 +83,12 @@ JHtml::_('behavior.formvalidation');
 		</fieldset>
 
 	</div>
-	<div class="width-40 fltlft">
+	<div class="width-50 fltlft">
 		<fieldset class="adminform">
 			<legend>Other User Info</legend>
 			<?php 
 				//text area
-				echo 'User Notes: <br /><textarea name="jform[usernotes]" id="jform_usernotes" cols="70" rows="4" class="inputbox">'.$this->item->usernotes.'</textarea>';
+				echo 'User Notes: <br /><textarea name="jform[usernotes]" id="jform_usernotes" cols="90" rows="40" class="inputbox">'.$this->item->usernotes.'</textarea>';
 				
 					
 			?>
