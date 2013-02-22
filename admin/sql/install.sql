@@ -72,4 +72,46 @@ CREATE TABLE IF NOT EXISTS `#__mue_userdir` (
   UNIQUE KEY `ud_user` (`ud_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `#__mue_subs` (
+  `sub_id` int(11) NOT NULL AUTO_INCREMENT,
+  `sub_inttitle` varchar(255) NOT NULL,
+  `sub_exttitle` varchar(255) NOT NULL,
+  `sub_desc` text NOT NULL,
+  `sub_length` int(11) NOT NULL,
+  `sub_period` enum('Day','Week','Month','Year') NOT NULL,
+  `sub_cost` float NOT NULL,
+  `sub_recurring` tinyint(1) NOT NULL DEFAULT '0',
+  `published` int(11) NOT NULL,
+  `access` int(11) NOT NULL,
+  `ordering` int(11) NOT NULL,
+  PRIMARY KEY (`sub_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `#__mue_usersubs` (
+  `usrsub_id` int(11) NOT NULL AUTO_INCREMENT,
+  `usrsub_user` int(11) NOT NULL,
+  `usrsub_sub` int(11) NOT NULL,
+  `usrsub_type` enum('paypal','redeem','admin','google') NOT NULL,
+  `usrsub_transid` varchar(255) NOT NULL,
+  `usrsub_email` varchar(255) NOT NULL,
+  `usrsub_rpprofile` varchar(255) NOT NULL,
+  `usrsub_rpstatus` varchar(100) NOT NULL,
+  `usrsub_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `usrsub_ip` varchar(20) NOT NULL,
+  `usrsub_status` varchar(100) NOT NULL,
+  `usrsub_start` date NOT NULL,
+  `usrsub_end` date NOT NULL,
+  PRIMARY KEY (`usrsub_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `#__mue_usersubs_log` (
+  `usl_id` int(11) NOT NULL AUTO_INCREMENT,
+  `usl_usid` int(11) NOT NULL,
+  `usl_user` int(11) NOT NULL,
+  `usl_sub` int(11) NOT NULL,
+  `usl_resarray` text NOT NULL,
+  `usl_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`usl_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
 

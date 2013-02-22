@@ -87,6 +87,7 @@ class PayPalAPI {
 		$PAYMENTREQUEST_0_INVNUM = urlencode($session->get('PAYMENTREQUEST_0_INVNUM'));
 		$PAYMENTREQUEST_0_PAYMENTACTION = "Sale";
 		$PAYMENTREQUEST_0_CURRENCYCODE = urlencode($session->get('PAYMENTREQUEST_0_CURRENCYCODE'));
+		$PAYMENTREQUEST_0_NOTIFYURL = urlencode($session->get('PAYMENTREQUEST_0_NOTIFYURL'));
 		$PAYERID = urlencode($session->get('PAYERID'));
 		$serverName = urlencode($_SERVER['SERVER_NAME']);
 		
@@ -94,6 +95,7 @@ class PayPalAPI {
 		$nvpstr.='&PAYMENTREQUEST_0_PAYMENTACTION='.$PAYMENTREQUEST_0_PAYMENTACTION;
 		$nvpstr.='&PAYMENTREQUEST_0_AMT='.$PAYMENTREQUEST_0_AMT;
 		$nvpstr.='&PAYMENTREQUEST_0_CURRENCYCODE='.$PAYMENTREQUEST_0_CURRENCYCODE;
+		$nvpstr.='&PAYMENTREQUEST_0_NOTIFYURL='.$PAYMENTREQUEST_0_NOTIFYURL;
 		$nvpstr.='&TOKEN='.$token;
 		$nvpstr.='&PAYERID='.$PAYERID;
 		$nvpstr.='&IPADDRESS='.$serverName ;
@@ -150,7 +152,7 @@ class PayPalAPI {
 					return false;
 				}
 			} else {
-				$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$resArray['TRANSACTIONID'].'", usrsub_status="accepted" WHERE usrsub_id = "'.$usid.'"';
+				$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$resArray['PAYMENTINFO_0_TRANSACTIONID'].'", usrsub_status="accepted" WHERE usrsub_id = "'.$usid.'"';
 				$db->setQuery($q2);
 				$db->query();
 			}
@@ -202,6 +204,7 @@ class PayPalAPI {
 			$session->set('PAYMENTREQUEST_0_CURRENCYCODE',$resArray['PAYMENTREQUEST_0_CURRENCYCODE']);
 			$session->set('PAYMENTREQUEST_0_AMT',$resArray['PAYMENTREQUEST_0_AMT']);
 			$session->set('PAYMENTREQUEST_0_INVNUM',$resArray['PAYMENTREQUEST_0_INVNUM']);
+			$session->set('PAYMENTREQUEST_0_NOTIFYURL',$resArray['PAYMENTREQUEST_0_NOTIFYURL']);
 			//setup CORRELATIONID with INVNUM
 			$token = $resArray['TOKEN'];
 			$q= 'UPDATE #__mue_usersubs SET usrsub_status="verified",usrsub_email="'.$resArray['EMAIL'].'" WHERE usrsub_id = '.$usid;
@@ -256,6 +259,7 @@ class PayPalAPI {
 		
 		$returnURL =urlencode(JURI::base().'index.php?option=com_mue&view=subscribe&layout=ppconfirm&Itemid='.$iid.'&purchaseid='.$purchaseid.'&plan='.$pinfo->sub_id);
 		$cancelURL =urlencode(JURI::base().'index.php?option=com_mue&view=subscribe&layout=ppcancel&Itemid='.$iid.'&purchaseid='.$purchaseid.'&plan='.$pinfo->sub_id);
+		$ipnURL= urlencode(JURI::base().'components/com_mue/paypalipn.php');
 		
 		$nvpstr="";
 		$nvpstr  = "&NOSHIPPING=1&ALLOWNOTE=0";
@@ -270,6 +274,7 @@ class PayPalAPI {
 		$nvpstr .= "&PAYMENTREQUEST_0_CURRENCYCODE=".$currencyCodeType;
 		$nvpstr .= "&PAYMENTREQUEST_0_PAYMENTACTION=".$paymentType;
 		$nvpstr .= "&PAYMENTREQUEST_0_INVNUM=".$ivn;
+		$nvpstr .= "&PAYMENTREQUEST_0_NOTIFYURL=".$ipnURL;
 		$nvpstr .= "&RETURNURL=".$returnURL."&CANCELURL=".$cancelURL ;
 		$nvpstr = $nvpstr;
 		
