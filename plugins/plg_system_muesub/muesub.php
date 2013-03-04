@@ -15,7 +15,13 @@ class plgSystemMUESub extends JPlugin
 		}
 
 		$user = JFactory::getUser();
-		if (JRequest::getVar('option') != "com_mue" && $user->id) {
+		$exceptions = Array();
+		$exceptions[]="com_mue";
+		$exceptions[]="com_mcor";
+		if (in_array(JRequest::getVar('option'),$exceptions) && $user->id) {
+			return;
+			
+		} else if ($user->id) {
 			// Load helper
 			require_once('components/com_mue'.DS.'helpers'.DS.'mue.php');
 			$config=MUEHelper::getConfig();

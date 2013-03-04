@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `#__mue_usersubs` (
   `usrsub_id` int(11) NOT NULL AUTO_INCREMENT,
   `usrsub_user` int(11) NOT NULL,
   `usrsub_sub` int(11) NOT NULL,
-  `usrsub_type` enum('paypal','redeem','admin','google') NOT NULL,
+  `usrsub_type` enum('paypal','redeem','admin','google','migrate') NOT NULL,
   `usrsub_transid` varchar(255) NOT NULL,
   `usrsub_email` varchar(255) NOT NULL,
   `usrsub_rpprofile` varchar(255) NOT NULL,

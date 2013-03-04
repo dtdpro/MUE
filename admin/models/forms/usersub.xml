@@ -18,6 +18,7 @@
 			<option value="redeem">Reddemed Code</option>
 			<option value="admin">Admin Add</option>
 			<option value="google">Google Checkout</option>
+			<option value="migrate">Migrated</option>
 		</field>
 		<field 
 			name="usrsub_plan" 
@@ -40,6 +41,22 @@
 			description="COM_MUE_USERSUB_FIELD_TIME_DESC" 
 			filter="user_utc"
 			format="%Y-%m-%d %H:%M:%S"
+			size="22"
+		/>
+		<field 
+			name="usrsub_start" 
+			type="calendar" 
+			label="COM_MUE_USERSUB_FIELD_START_LABEL"
+			description="COM_MUE_USERSUB_FIELD_START_DESC" 
+			format="%Y-%m-%d"
+			size="22"
+		/>
+		<field 
+			name="usrsub_end" 
+			type="calendar" 
+			label="COM_MUE_USERSUB_FIELD_END_LABEL"
+			description="COM_MUE_USERSUB_FIELD_END_DESC" 
+			format="%Y-%m-%d"
 			size="22"
 		/>
 		<field 
