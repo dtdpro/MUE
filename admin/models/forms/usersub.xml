@@ -22,7 +22,7 @@
 		</field>
 		<field 
 			name="usrsub_plan" 
-			type="text" 
+			type="SubPlans" 
 			class="inputbox"
 			label="COM_MUE_USERSUB_FIELD_PLAN_LABEL"
 			description="COM_MUE_USERSUB_FIELD_PLAN_DESC" 

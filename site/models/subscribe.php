@@ -71,4 +71,51 @@ class MUEModelSubscribe extends JModel
 		return true;
 	}
 	
+	function sendSubedEmail($pinfo) {
+		$config=MUEHelper::getConfig();
+		$user =& JFactory::getUser();
+		
+		//Confirm Email
+		$emailmsg = $config->subemail_content;
+		$emailmsg = str_replace("{fullname}",$user->name,$emailmsg);
+		$emailmsg = str_replace("{username}",$user->username,$emailmsg);
+		$emailmsg = str_replace("{plancost}",$pinfo->sub_cost,$emailmsg);
+		$emailmsg = str_replace("{plantitle}",$pinfo->sub_exttitle,$emailmsg);
+		$mail = &JFactory::getMailer();
+		$mail->IsHTML(true);
+		$mail->addRecipient($user->email);
+		$mail->setSender($config->subemail_email,$config->subemail_name);
+		$mail->setSubject($config->subemail_subject);
+		$mail->setBody( $emailmsg );
+		$sent = $mail->Send();
+	}
+	
+	function updateProfile() {
+		$cfg=MUEHelper::getConfig();
+		$user =& JFactory::getUser();
+		$db =& JFactory::getDBO();
+		$date = new JDate('now');
+		$usernotes = "\r\n".$date->toSql(true)." User Subcription Added\r\n";
+		if ($cfg->mcrgroup) {
+			include_once 'components/com_mue/lib/mailchimp.php';
+			
+			$mc = new MailChimp($cfg->mckey,$cfg->mclist);
+			$mcdata=array();
+			$mcdata['GROUPINGS']=array(array("name"=>$cfg->mcrgroup,"groups"=>$cfg->mcsubgroup));
+			$mcd=print_r($mcdata,true);
+			if ($mc->subStatus($user->email)) {
+				$mcresult = $mc->updateUser($user->email,$mcdata,false,"html");
+				if ($mcresult) { $usernotes .= $date->toSql(true)." EMail Subscription Updated on MailChimp List #".$cfg->mclist.' '.$mcd."\r\n"; }
+				else { $usernotes .= $date->toSql(true)." Could not update EMail subscription on MailChimp List #".$cfg->mclist." Error: ".$mc->error."\r\n"; }
+			}
+		}
+		//Update update date
+		$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->getEscaped($usernotes).'") WHERE userg_user = '.$user->id;
+		$db->setQuery($qud);
+		if (!$db->query()) {
+			$this->setError($db->getErrorMsg());
+			return false;
+		}
+	}
+	
 }

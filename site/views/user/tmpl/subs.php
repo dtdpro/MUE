@@ -36,6 +36,7 @@ if ($this->usersubs) {
 			case "redeem": echo "Code"; break;
 			case "admin": echo "Admin"; break;
 			case "google": echo "Google"; break;
+			case "migrate": echo "Migrated"; break;
 		}
 		echo '</td><td>';
 		if (!$sub->sub_recurring) {

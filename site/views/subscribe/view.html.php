@@ -103,6 +103,7 @@ class MUEViewSubscribe extends JView
 		$user =& JFactory::getUser();	
 		$app=Jfactory::getApplication();
 		$muecfg = MUEHelper::getConfig();
+		$model =& $this->getModel();
 		$this->usid = JRequest::getVar( 'purchaseid' );
 		if (!$user->id ) {
 			//take user to fm if not logged in
@@ -113,7 +114,8 @@ class MUEViewSubscribe extends JView
 		if (!$paypal->verifyPayment($this->pinfo,$this->usid)) {
 			$app->redirect('index.php?option=com_mue&view=subscribe&Itemid='.JRequest::getVar( 'Itemid' ).'&plan='.$this->pinfo->sub_id,$paypal->error,'error');
 		} else {
-			
+			$model->sendSubedEmail($this->pinfo);
+			$model->updateProfile();
 			$app->redirect('index.php?option=com_mue&view=user&layout=profile','Thank you, your subscription has been completed.');
 			
 		}

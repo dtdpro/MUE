@@ -50,6 +50,7 @@ class MUEModelUser extends JModel
 		$date = new JDate('now');
 		$usernotes = $date->toSql(true)." User Profile Updated"."\r\n";
 		$cfg = MUEHelper::getConfig();
+		$substatus=MUEHelper::getActiveSub();
 		
 		// Include the content plugins for the on save events.
 		JPluginHelper::importPlugin('content');
@@ -108,15 +109,27 @@ class MUEModelUser extends JModel
 						}
 						else $mcdata[$mcv] = $item->$mue;
 					} 
+					if ($cfg->mcrgroup) {
+						if (!$substatus) $mcdata['GROUPINGS']=array(array("name"=>$cfg->mcrgroup,"groups"=>$cfg->mcreggroup));
+						else $mcdata['GROUPINGS']=array(array("name"=>$cfg->mcrgroup,"groups"=>$cfg->mcsubgroup));
+					}
 					$mcd=print_r($mcdata,true);
-					$mcresult = $mc->subscribeUser($item->email,$mcdata,false,"html");
-					if ($mcresult) { $item->$mclist; $usernotes .= $date->toSql(true)." Subscribed to MailChimp List #".$cfg->mclist.' '.$mcd."\r\n"; }
-					else { $item->$mclist; $usernotes .= $date->toSql(true)." Could not subscribe to MailChimp List #".$cfg->mclist." Error: ".$mc->error."\r\n"; }
+					if ($mc->subStatus($item->email)) {
+						$mcresult = $mc->updateUser($item->email,$mcdata,false,"html");
+						if ($mcresult) { $item->$mclist=1; $usernotes .= $date->toSql(true)." EMail Subscription Updated on MailChimp List #".$cfg->mclist.' '.$mcd."\r\n"; }
+						else { $item->$mclist=1; $usernotes .= $date->toSql(true)." Could not update EMail subscription on MailChimp List #".$cfg->mclist." Error: ".$mc->error."\r\n"; }
+					}
+					else {
+						$mcresult = $mc->subscribeUser($item->email,$mcdata,false,"html");
+						if ($mcresult) { $item->$mclist=1; $usernotes .= $date->toSql(true)." EMail Subscribed to MailChimp List #".$cfg->mclist.' '.$mcd."\r\n"; }
+						else { $item->$mclist=0; $usernotes .= $date->toSql(true)." Could not subscribe EMail to MailChimp List #".$cfg->mclist." Error: ".$mc->error."\r\n"; }
+					}
+					
 				} else {
 					$mc = new MailChimp($cfg->mckey,$cfg->mclist);
 					$mcresult = $mc->unsubscribeUser($item->email);
-					if ($mcresult) { $item->$mclist; $usernotes .= $date->toSql(true)." Unsubscribed from MailChimp List #".$cfg->mclist."\r\n"; }
-					else { $item->$mclist; $usernotes .= $date->toSql(true)." Could not unsubscribe from MailChimp List #".$cfg->mclist." Error: ".$mc->error."\r\n"; }
+					if ($mcresult) { $item->$mclist=0; $usernotes .= $date->toSql(true)." EMail Unsubscribed from MailChimp List #".$cfg->mclist."\r\n"; }
+					else { $item->$mclist=0; $usernotes .= $date->toSql(true)." Could not unsubscribe EMail from MailChimp List #".$cfg->mclist." Error: ".$mc->error."\r\n"; }
 				}
 			}
 			
@@ -225,7 +238,7 @@ class MUEModelUser extends JModel
 				$fieldname = $fl->uf_sname;
 				if (!$fl->uf_cms) {
 
-					$qf = 'INSERT INTO #__mue_users (usr_user,usr_field,usr_data) VALUES ("'.$user->id.'","'.$fl->uf_id.'","'.$item->$fieldname.'")';
+					$qf = 'INSERT INTO #__mue_users (usr_user,usr_field,usr_data) VALUES ("'.$user->id.'","'.$fl->uf_id.'","'.$db->getEscaped($item->$fieldname).'")';
 					$db->setQuery($qf);
 					if (!$db->query()) {
 						$this->setError($db->getErrorMsg());
@@ -235,7 +248,7 @@ class MUEModelUser extends JModel
 			}
 			
 			//Update update date
-			$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$usernotes.'") WHERE userg_user = '.$user->id;
+			$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->getEscaped($usernotes).'") WHERE userg_user = '.$user->id;
 			$db->setQuery($qud);
 			if (!$db->query()) {
 				$this->setError($db->getErrorMsg());

@@ -36,6 +36,9 @@
 		<field name="mckey" type="text" label="COM_MUE_CONFIG_FIELD_MCKEY_LABEL" description="COM_MUE_CONFIG_FIELD_MCKEY_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="mclist" type="text" label="COM_MUE_CONFIG_FIELD_MCLIST_LABEL" description="COM_MUE_CONFIG_FIELD_MCLIST_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="mcvars" type="text" label="COM_MUE_CONFIG_FIELD_MCVARS_LABEL" description="COM_MUE_CONFIG_FIELD_MCVARS_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="mcrgroup" type="text" label="COM_MUE_CONFIG_FIELD_MCRGROUP_LABEL" description="COM_MUE_CONFIG_FIELD_MCRGROUP_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="mcreggroup" type="text" label="COM_MUE_CONFIG_FIELD_MCREGGROUP_LABEL" description="COM_MUE_CONFIG_FIELD_MCREGGROUP_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="mcsubgroup" type="text" label="COM_MUE_CONFIG_FIELD_MCSUBGROUP_LABEL" description="COM_MUE_CONFIG_FIELD_MCSUBGROUP_DESC" size="70" class="inputbox" required="false" default="" />
 	</fieldset>
 	<fieldset name="subscribing" label="COM_MUE_CONFIG_SUBSCRIBE_LABEL" description="COM_MUE_CONFIG_SUBSCRIBE_DESC">
 		<field name="subscribe" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_SUBSCRIBE_LABEL" description="COM_MUE_CONFIG_FIELD_SUBSCRIBE_DESC" default="0">
@@ -44,6 +47,7 @@
 		</field>
 		<field name="sub_page_content" type="textarea" label="COM_MUE_CONFIG_FIELD_SUB_PAGE_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_SUB_PAGE_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="true" filter="safehtml" buttons="false" />
 		<field name="usersub_page_content" type="textarea" label="COM_MUE_CONFIG_FIELD_USERSUB_PAGE_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_USERSUB_PAGE_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="true" filter="safehtml" buttons="false" />
+		<field name="subemail_content" type="textarea" label="COM_MUE_CONFIG_FIELD_SUBEMAIL_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_SUBEMAIL_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="true" filter="safehtml" buttons="false" />
 		<field name="subemail_email" type="text" label="COM_MUE_CONFIG_FIELD_SUBEMAIL_EMAIL_LABEL" description="COM_MUE_CONFIG_FIELD_SUBEMAIL_EMAIL_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="subemail_name" type="text" label="COM_MUE_CONFIG_FIELD_SUBEMAIL_NAME_LABEL" description="COM_MUE_CONFIG_FIELD_SUBEMAIL_NAME_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="subemail_subject" type="text" label="COM_MUE_CONFIG_FIELD_SUBEMAIL_SUBJECT_LABEL" description="COM_MUE_CONFIG_FIELD_SUBEMAIL_SUBJECT_DESC" size="70" class="inputbox" required="false" default="" />

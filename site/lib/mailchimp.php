@@ -15,6 +15,25 @@ class MailChimp {
         }
 	}
 	
+	function updateUser($email,$info=NULL,$send_welcome,$email_type="html") {
+		$replace_interests=true;
+         
+		$data = array(
+		        'email_address'=>$email,
+		        'apikey'=>$this->apikey,
+		        'merge_vars' => $info,
+		        'id' => $this->listid,
+		        'replace_interests' => $replace_interests,
+		        'email_type' => $email_type
+		    );
+		$payload = json_encode($data);
+
+		$result = $this->sendData("listUpdateMember", $payload);
+		if ($result->error) { $this->error=$this->datacenter.": ".$result->code." ".$result->error; return false; }
+		return true;
+		
+	}
+	
 	function subscribeUser($email,$info=NULL,$send_welcome,$email_type="html") {
 		$double_optin=false;
 		$update_existing=true;

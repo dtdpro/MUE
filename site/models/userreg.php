@@ -155,17 +155,25 @@ class MUEModelUserReg extends JModel
 					$othervars=explode(",",$cfg->mcvars);
 					foreach ($othervars as $ov) {
 						list($mue, $mcv) = explode(":",$ov,2);
-						if (in_array($mue,$optfs)) $mcdata[$mcv] = $optionsdata[$item->$mue];
-						else if (in_array($mue,$moptfs)) {
+						if (in_array($mue,$optfs)) {
+							$mcdata[$mcv] = $optionsdata[$item->$mue];
+						} else if (in_array($mue,$moptfs)) {
 							$mcdata[$mcv] = "";
 							foreach (explode(" ",$item->$mue) as $mfo) {
 								$mcdata[$mcv] .= $optionsdata[$mfo]." ";
 							}
+						} else {
+							$mcdata[$mcv] = $item->$mue;
 						}
-						else $mcdata[$mcv] = $item->$mue;					}
+					}
+					if ($cfg->mcrgroup) {
+						$mcdata['GROUPINGS']=array(array("name"=>$cfg->mcrgroup,"groups"=>$cfg->mcreggroup));
+					}
 					$mcresult = $mc->subscribeUser($item->email,$mcdata,false,"html");
-					if ($mcresult) { $item->$mclist; $usernotes .= $date->toSql(true)." Subscribed to MailChimp List #".$cfg->mclist."\r\n"; }
-					else { $item->$mclist; $usernotes .= $date->toSql(true)." Could not subscribe to MailChimp List #".$cfg->mclist." Error: ".$mc->error."\r\n"; }
+					if ($mcresult) { $item->$mclist=1; $usernotes .= $date->toSql(true)." Subscribed to MailChimp List #".$cfg->mclist."\r\n"; }
+					else { $item->$mclist=0; $usernotes .= $date->toSql(true)." Could not subscribe to MailChimp List #".$cfg->mclist." Error: ".$mc->error."\r\n"; }
+				} else {
+					$item->$mclist=0;
 				}
 			}
 			
@@ -236,7 +244,7 @@ class MUEModelUserReg extends JModel
 			$credentials['password'] = $item->password;
 			
 			//Set user group info
-			$qud = 'INSERT INTO #__mue_usergroup (userg_user,userg_group,userg_update,userg_notes,userg_siteurl) VALUES ('.$user->id.','.$data['userGroupID'].',"'.$date->toSql(true).'","'.$usernotes.'","'.$item->site_url.'")';
+			$qud = 'INSERT INTO #__mue_usergroup (userg_user,userg_group,userg_update,userg_notes,userg_siteurl) VALUES ('.$user->id.','.$data['userGroupID'].',"'.$date->toSql(true).'","'.$db->getEscaped($usernotes).'","'.$item->site_url.'")';
 			$db->setQuery($qud);
 			if (!$db->query()) {
 				$this->setError('Could not update user group');
@@ -270,7 +278,7 @@ class MUEModelUserReg extends JModel
 			foreach ($flist as $fl) {
 				$fieldname = $fl->uf_sname;
 				if (!$fl->uf_cms && $fl->uf_type != "captcha") {
-					$qf = 'INSERT INTO #__mue_users (usr_user,usr_field,usr_data) VALUES ("'.$user->id.'","'.$fl->uf_id.'","'.$item->$fieldname.'")';
+					$qf = 'INSERT INTO #__mue_users (usr_user,usr_field,usr_data) VALUES ("'.$user->id.'","'.$fl->uf_id.'","'.$db->getEscaped($item->$fieldname).'")';
 					$db->setQuery($qf);
 					if (!$db->query()) {
 						$this->setError("Error saving additional information");

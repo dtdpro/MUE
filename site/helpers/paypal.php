@@ -156,19 +156,6 @@ class PayPalAPI {
 				$db->setQuery($q2);
 				$db->query();
 			}
-			//Confirm Email
-			$cmsg  = '<html><head></head><body><table width="662" cellspacing="0" border="0" cellpadding="0" style="border: 1px solid black;">';
-			$cmsg .= '<tr><td style="font-family:Arial, Helvetica, sans-serif; font-size:12px;padding:10px;"><br>';
-			$cmsg .= 'Dear '.$user->name.':<br><br>We are pleased to confirm your subscription of $'.$pinfo->sub_cost.' USD for <strong>'.$pinfo->sub_exttitle.'</strong><br><br>';
-			$cmsg .= 'Thank You';
-			$cmsg .= '</td></tr></table></body></html>';
-			$mail = &JFactory::getMailer();
-			$mail->IsHTML(true);
-			$mail->addRecipient($user->email);
-			$mail->setSender($config->subemail_email,$config->subemail_name);
-			$mail->setSubject($config->subemail_subject);
-			$mail->setBody( $cmsg );
-			$sent = $mail->Send();
 		}
 		return true;
 		
