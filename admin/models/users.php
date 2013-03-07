@@ -123,8 +123,8 @@ class MUEModelUsers extends JModelList
 	
 	public function getItemsCSVEml() {
 		$db = JFactory::getDBO();
-		$cecfg = MUEHelper::getConfig();
-		$q = 'SELECT usr_user FROM #__mue_users WHERE usr_field = '.$cecfg->on_list_field.' && usr_data = "1"';
+		$cfg = MUEHelper::getConfig();
+		$q = 'SELECT usr_user FROM #__mue_users WHERE usr_field = '.$cfg->on_list_field.' && usr_data = "1"';
 		$db->setQuery($q);
 		$ulist = $db->loadResultArray();
 		$query=$this->getListQuery($ulist);

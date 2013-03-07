@@ -56,7 +56,7 @@ if ($this->usersubs) {
 				case "expired": echo "Expired"; break;
 				case "voided": echo "Voided"; break;
 				case "completed": 
-				case "verified": echo $sub->daysLeft." Day(s) Left"; break;
+				case "verified": echo ($sub->daysLeft > 0) ? $sub->daysLeft." Day(s) Left" : "Expired"; break;
 			}
 		} else {
 			switch ($sub->usrsub_rpstatus) {
