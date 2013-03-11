@@ -20,7 +20,7 @@ if ($cfg->subscribe){
 		if (!$sub) {
 			echo '<div class="mue-user-info-row"><div class="mue-user-info-label">Subscription Status</div><div class="mue-user-info-value">Expired <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button">Renew Subscription</a></div></div>';
 		} else {
-			echo '<div class="mue-user-info-row"><div class="mue-user-info-label">Subscription Status</div><div class="mue-user-info-value">Acive'.$sub->daysLeft. ' Say(s) Left';
+			echo '<div class="mue-user-info-row"><div class="mue-user-info-label">Subscription Status</div><div class="mue-user-info-value">Active '.$sub->daysLeft. ' Day(s) Left';
 			if ((!$sub->sub_recurring || $sub->usrsub_rpstatus != "ActiveProfile")&& $sub->daysLeft <= 10) echo ' <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button">Renew Subscription</a>';
 			echo '</div></div>';
 		}
