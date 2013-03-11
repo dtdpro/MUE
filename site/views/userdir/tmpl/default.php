@@ -171,7 +171,7 @@ if ($this->sfields) echo '<div class="mue-user-dir-row"><div class="mue-user-dir
 foreach($this->sfields as $f) {
 	echo '<div class="mue-user-dir-row">';
 	echo '<div class="mue-user-dir-label">';
-	if ($f->uf_req) echo "*";
+	
 	$sname = $f->uf_sname;
 	//field title
 	if ($f->uf_type != "cbox" && $f->uf_type != "message" && $f->uf_type != "mailchimp") echo $f->uf_name;
@@ -195,7 +195,7 @@ foreach($this->sfields as $f) {
 	//dropdown, radio
 	if ($f->uf_type=="dropdown" || $f->uf_type=="multi") {
 		echo '<select id="jform_'.$sname.'" name="jform['.$sname.']" class="uf_field uf_select" size="1">';
-		echo '<option value="" selected>- Select '.$f->uf_name.' -</option>';
+		echo '<option value="" selected>- Any '.$f->uf_name.' -</option>';
 		foreach ($f->options as $o) {
 			echo '<option value="'.$o->text.'">';
 			echo ' '.$o->text.'</option>';

@@ -10,6 +10,9 @@ JHtml::_('behavior.formvalidation');
 		<fieldset class="adminform">
 			<legend><?php echo JText::_( 'COM_MUE_USER_DETAILS' ); ?></legend>
 			<ul class="adminformlist">
+				<li><label id="jform_usersiteurl-lbl" for="jform_usersiteurl" class="hasTip" title="Join Site::Site user joined from">Joined From</label>
+				<input type="hidden" name="jform[usersiteurl]" id="jform_usersiteurl" value="<?php echo $this->item->usersiteurl; ?>"><?php echo $this->item->usersiteurl; ?>
+				</li>
 				<li><label id="jform_usergroup-lbl" for="jform_usergroup" class="hasTip" title="Group::Users' Group">Group</label>
 				<select id="jform_usergroup" name="jform[usergroup]" class="inputbox" size="1">
 				<?php echo JHtml::_('select.options',$this->usergroups,"value","text",$this->item->usergroup); ?>

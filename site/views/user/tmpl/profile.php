@@ -4,11 +4,30 @@ defined('_JEXEC') or die('Restricted access');
 	?>
 <h2 class="componentheading">User Profile</h2>
 <?php 
+$cfg=MUEHelper::getConfig();
+if ($cfg->subscribe){
+	$sub=MUEHelper::getActiveSub();
+	$numsubs=count(MUEHelper::getUserSubs());
+}
+
 echo '<p><a href='.JRoute::_("index.php?option=com_mue&view=user&layout=proedit").'" class="button">';
 echo 'Edit Profile</a>';
 
 echo '<div id="mue-user-info">';
 echo '<div class="mue-user-info-row"><div class="mue-user-info-label">User Group</div><div class="mue-user-info-hdr">'.$this->userinfo->userGroupName.'</div></div>';
+if ($cfg->subscribe){
+	if ($numsubs) {
+		if (!$sub) {
+			echo '<div class="mue-user-info-row"><div class="mue-user-info-label">Subscription Status</div><div class="mue-user-info-value">Expired <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button">Renew Subscription</a></div></div>';
+		} else {
+			echo '<div class="mue-user-info-row"><div class="mue-user-info-label">Subscription Status</div><div class="mue-user-info-value">Acive'.$sub->daysLeft. ' Say(s) Left';
+			if ((!$sub->sub_recurring || $sub->usrsub_rpstatus != "ActiveProfile")&& $sub->daysLeft <= 10) echo ' <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button">Renew Subscription</a>';
+			echo '</div></div>';
+		}
+	} else {
+		echo '<div class="mue-user-info-row"><div class="mue-user-info-label">Subscription Status</div><div class="mue-user-info-value">None <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button">Add Subscription</a></div></div>';
+	}
+}
 echo '<div class="mue-user-info-row"><div class="mue-user-info-label">Registered on</div><div class="mue-user-info-value">'.$this->userinfo->registerDate.'</div></div>';
 echo '<div class="mue-user-info-row"><div class="mue-user-info-label">Last Updated</div><div class="mue-user-info-value">'.$this->userinfo->lastUpdated.'</div></div>';
 foreach ($this->userfields as $f) {

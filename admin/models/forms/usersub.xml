@@ -21,7 +21,7 @@
 			<option value="migrate">Migrated</option>
 		</field>
 		<field 
-			name="usrsub_plan" 
+			name="usrsub_sub" 
 			type="SubPlans" 
 			class="inputbox"
 			label="COM_MUE_USERSUB_FIELD_PLAN_LABEL"

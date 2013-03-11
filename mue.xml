@@ -7,7 +7,7 @@
 	<authorUrl>http://www.dtdpro.com</authorUrl>
 	<copyright>Copyright 2012-2013 DtD Productions</copyright>
 	<license>GPL v2</license>
-	<version>1.4.0</version>
+	<version>1.5.0</version>
 	<releaseDate>2013.01.01</releaseDate>
 	<releaseType>Update</releaseType>
 	<downloadUrl>http://www.dtdpro.com/</downloadUrl>
@@ -45,6 +45,7 @@
 		<submenu>
 			<menu view="ugroups">COM_MUE_SUBMENU_UGROUPS</menu>
 			<menu view="ufields">COM_MUE_SUBMENU_UFIELDS</menu>
+			<menu view="uplans">COM_MUE_SUBMENU_UPLANS</menu>
 			<menu view="users">COM_MUE_SUBMENU_USERS</menu>
 			<menu view="usersubs">COM_MUE_SUBMENU_USERSUBS</menu>
 		</submenu>

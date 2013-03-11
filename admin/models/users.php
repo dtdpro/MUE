@@ -54,6 +54,37 @@ class MUEModelUsers extends JModelList
 		parent::populateState('u.name', 'asc');
 	}
 	
+	public function getItems()
+	{
+		// Get a storage key.
+		$store = $this->getStoreId();
+	
+		// Try to load the data from internal storage.
+		if (isset($this->cache[$store]))
+		{
+			return $this->cache[$store];
+		}
+	
+		// Load the list items.
+		$query = $this->_getListQuery();
+		$items = $this->_getList($query, $this->getStart(), $this->getState('list.limit'));
+	
+		// Check for a database error.
+		if ($this->_db->getErrorNum())
+		{
+			$this->setError($this->_db->getErrorMsg());
+			return false;
+		}
+	
+		$items=$this->getSubStatus($items);
+		// Add the items to the internal cache.
+		$this->cache[$store] = $items;
+	
+		return $this->cache[$store];
+	}
+	
+	
+	
 	protected function getListQuery($ulist = Array()) 
 	{
 		// Create a new query object.
@@ -105,6 +136,20 @@ class MUEModelUsers extends JModelList
 		return $query;
 	}
 	
+	protected function getSubStatus($items) {
+		foreach ($items as &$i) {
+			$db =& JFactory::getDBO();
+			$query = 'SELECT s.*,p.*,DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft FROM #__mue_usersubs as s ';
+			$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
+			$query.= 'WHERE s.usrsub_status != "notyetstarted" && s.usrsub_user="'.$i->id.'" ';
+			$query.= 'ORDER BY daysLeft DESC, s.usrsub_end DESC, s.usrsub_time DESC LIMIT 1';
+			$db->setQuery($query);
+			$sub = $db->loadObject();
+			$i->sub = $sub;
+		}
+		return $items;
+	}
+	
 	public function getUGroups() {
 		$query = 'SELECT ug_id AS value, ug_name AS text' .
 				' FROM #__mue_ugroups' .
@@ -117,7 +162,9 @@ class MUEModelUsers extends JModelList
 		$query=$this->getListQuery();
 		$db = JFactory::getDBO();
 		$db->setQuery($query);
-		return $db->loadObjectList();
+		$items = $db->loadObjectList();
+		$items=$this->getSubStatus($items);
+		return $items;
 		
 	}
 	
@@ -129,7 +176,9 @@ class MUEModelUsers extends JModelList
 		$ulist = $db->loadResultArray();
 		$query=$this->getListQuery($ulist);
 		$db->setQuery($query);
-		return $db->loadObjectList();
+		$items = $db->loadObjectList();
+		$items=$this->getSubStatus($items);
+		return $items;
 		
 	}
 	

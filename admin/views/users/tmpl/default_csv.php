@@ -1,9 +1,11 @@
 <?php
 $path = JPATH_SITE.'/cache/';
+$cfg=MUEHelper::getConfig();
 $filename = 'MUE_Users_Report' . '-' . date("Y-m-d").'.csv';
 $contents = "";
 
 $contents .= '"User Id","Username","Name","email","User Group","Join Site","Notes","LastVisit","Last Update","Registered"';
+if ($cfg->subscribe) $contents .= ',"Subcription Status"';
 foreach ($this->fdata as $f) {
 	$contents .= ',"'.$f->uf_name.'"';
 }
@@ -20,6 +22,16 @@ foreach ($this->items as $i) {
 	$contents .= '"'.$i->lastvisitDate.'",'; 
 	$contents .= '"'.$i->lastUpdate.'",'; 
 	$contents .= '"'.$i->registerDate.'"'; 
+	if ($cfg->subscribe) {
+		$contents .= ',"';
+		if ($i->sub) {
+			if ((int)$i->sub->daysLeft > 0) $contents .=  'Active: '.$i->sub->daysLeft.'  Days Left';
+			else $contents .=  'Expired: '.abs((int)$i->sub->daysLeft).'  Days Ago';
+		} else {
+			$contents .=  'No Subscription';
+		}
+		$contents .= '"';
+	}
 	foreach ($this->fdata as $f) {
 		$contents .= ',"';
 		if (!$f->uf_cms) {

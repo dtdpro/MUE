@@ -79,6 +79,7 @@ class MUEModelUser extends JModelAdmin
 		$item->usergroup=$uginfo->userg_group;
 		$item->lastupdate=$uginfo->userg_updtae;
 		$item->usernotes=$uginfo->userg_notes;
+		$item->usersiteurl=$uginfo->userg_siteurl;
 		
 		return $item;
 	}
@@ -186,7 +187,7 @@ class MUEModelUser extends JModelAdmin
 		$db->query();
 		
 		if (!empty($data['usergroup'])) {
-			$qc = 'INSERT INTO #__mue_usergroup (userg_user,userg_group,userg_notes) VALUES ('.$user->id.','.(int)$data['usergroup'].',"'.$usernotes.'")';
+			$qc = 'INSERT INTO #__mue_usergroup (userg_user,userg_group,userg_notes,userg_siteurl) VALUES ('.$user->id.','.(int)$data['usergroup'].',"'.$usernotes.'","'.$data['usersiteurl'].'")';
 			$db->setQuery($qc);
 			if (!$db->query()) {
 				$this->setError($db->getErrorMsg());

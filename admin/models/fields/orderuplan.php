@@ -6,9 +6,9 @@ defined('JPATH_BASE') or die;
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
 
-class JFormFieldOrderUOpt extends JFormField
+class JFormFieldOrderUPlan extends JFormField
 {
-	protected $type = 'OrderUOpt';
+	protected $type = 'OrderUPlan';
 
 	protected function getInput()
 	{
@@ -25,13 +25,11 @@ class JFormFieldOrderUOpt extends JFormField
 		$attr .= $this->element['onchange'] ? ' onchange="'.(string) $this->element['onchange'].'"' : '';
 
 		// Get some field values from the form.
-		$optionId	= (int) $this->form->getValue('opt_id');
-		$fId	= (int) $this->form->getValue('opt_field');
+		$optionId	= (int) $this->form->getValue('sub_id');
 
 		// Build the query for the ordering list.
-		$query = 'SELECT ordering AS value, opt_text AS text' .
-				' FROM #__mue_ufields_opts' .
-				' WHERE opt_field = ' . (int) $fId .
+		$query = 'SELECT ordering AS value, sub_exttitle AS text' .
+				' FROM #__mue_subs' .
 				' ORDER BY ordering';
 
 		// Create a read-only list (no name) with a hidden input to store the value.

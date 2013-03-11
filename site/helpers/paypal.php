@@ -249,7 +249,9 @@ class PayPalAPI {
 		$ipnURL= urlencode(JURI::base().'components/com_mue/paypalipn.php');
 		
 		$nvpstr="";
-		$nvpstr  = "&NOSHIPPING=1&ALLOWNOTE=0";
+		$nvpstr  = "&NOSHIPPING=1";
+		$nvpstr .= "&ALLOWNOTE=0";
+		$nvpstr .= "&SOLUTIONTYPE=Sole";
 		$nvpstr .= "&L_PAYMENTREQUEST_0_NAME0=".$L_PAYMENTREQUEST_0_NAME0;
 		$nvpstr .= "&L_PAYMENTREQUEST_0_DESC0=".$L_PAYMENTREQUEST_0_DESC0;
 		$nvpstr .= "&L_PAYMENTREQUEST_0_AMT0=".$L_PAYMENTREQUEST_0_AMT0;

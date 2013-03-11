@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: question.xml 62 2010-11-28 16:08:16Z chdemko $ -->
+<form>
+	<fieldset name="details">
+		<field
+			name="sub_id"
+			type="hidden"
+		/>
+		<field
+			name="published"
+			type="list"
+			id="published"
+			class="inputbox"
+			label="JSTATUS"
+			description="JFIELD_PUBLISHED_DESC"
+			size="1"
+			default="1"
+			filter="integer">
+			<option	value="1">JPUBLISHED</option>
+			<option	value="0">JUNPUBLISHED</option>
+		</field>
+		<field
+			name="access"
+			type="accesslevel"
+			id="access"
+			class="inputbox"
+			label="JFIELD_ACCESS_LABEL"
+			description="JFIELD_ACCESS_DESC"
+			default="1"
+			filter="integer"/>
+		<field
+			name="sub_inttitle"
+			type="text"
+			label="COM_MUE_UPLAN_FIELD_INTTITLE_LABEL"
+			description="COM_MUE_UPLAN_FIELD_INTTITLE_DESC"
+			size="40"
+			class="inputbox"
+			required="true"
+			default=""
+		/>
+		<field
+			name="sub_exttitle"
+			type="text"
+			label="COM_MUE_UPLAN_FIELD_EXTTITLE_LABEL"
+			description="COM_MUE_UPLAN_FIELD_EXTTITLE_DESC"
+			size="40"
+			class="inputbox"
+			required="true"
+			default=""
+		/>
+		<field
+			name="sub_cost"
+			type="text"
+			label="COM_MUE_UPLAN_FIELD_COST_LABEL"
+			description="COM_MUE_UPLAN_FIELD_COST_DESC"
+			size="10"
+			class="inputbox"
+			required="true"
+			default=""
+		/>
+		<field
+			name="sub_recurring"
+			type="radio"
+			label="COM_MUE_UPLAN_FIELD_RECURRING_LABEL"
+			description="COM_MUE_UPLAN_FIELD_RECURRING_DESC"
+			size="1"
+			class="inputbox"
+			required="true"
+			default="0">
+			<option	value="1">Yes</option>
+			<option	value="0">No</option>
+		</field>
+		<field
+			name="sub_length"
+			type="text"
+			label="COM_MUE_UPLAN_FIELD_LENGTH_LABEL"
+			description="COM_MUE_UPLAN_FIELD_LENGTH_DESC"
+			size="10"
+			class="inputbox"
+			required="true"
+			default=""
+			filter="int"
+		/>
+		<field
+			name="sub_period"
+			type="list"
+			extension="com_continued"
+			class="inputbox"
+			default=""
+			label="COM_MUE_UPLAN_FIELD_PERIOD_LABEL"
+			description="COM_MUE_UPLAN_FIELD_PERIOD_DESC"
+			required="true">
+			<option value="Year">Year</option>
+			<option value="Month">Month</option>
+			<option value="Week">Week</option>
+			<option value="Day">Day</option>
+		</field>
+		<field 
+			name="ordering" 
+			type="OrderUPlan" 
+			class="inputbox"
+			label="JFIELD_ORDERING_LABEL"
+			description="JFIELD_ORDERING_DESC" 
+		/>
+
+	</fieldset>
+	<fieldset name="content">
+		<field
+			name="sub_desc"
+			type="textarea"
+			label="COM_MUE_UPLAN_FIELD_DESC_LABEL"
+			description="COM_MUE_UPLAN_FIELD_DESC_DESC"
+			rows="4"
+			cols="70"
+			class="inputbox"
+			required="true"
+			filter="safehtml"
+			buttons="false"
+		/>
+
+	</fieldset>
+
+</form>
+

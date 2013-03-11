@@ -4,7 +4,7 @@
 defined('_JEXEC') or die('Restricted Access');
 // load tooltip behavior
 JHtml::_('behavior.tooltip');
-
+$cfg=MUEHelper::getConfig();
 $listOrder	= $this->escape($this->state->get('list.ordering'));
 $listDirn	= $this->escape($this->state->get('list.direction'));
 
@@ -67,11 +67,14 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 				<th width="150">
 					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_REGISTERED' , 'u.registerDate', $listDirn, $listOrder); ?>
 				</th>
+				<?php if ($cfg->subscribe) { ?>
+					<th width="150"><?php echo JText::_('COM_MUE_USER_SUBSTATUS'); ?></th>
+				<?php }	?>
 			</tr>
 		</thead>
 		<tfoot>
 		<tr>
-			<td colspan="11"><?php echo $this->pagination->getListFooter(); ?></td>
+			<td colspan="<?php echo ($cfg->subscribe) ? '12' : '11'; ?>"><?php echo $this->pagination->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
 		<tbody>
@@ -112,7 +115,18 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 				<td class="center">
 					<?php echo $item->registerDate; ?>
 				</td>
-		        
+				<?php if ($cfg->subscribe) { ?>
+				<td>
+					<?php 
+						if ($item->sub) {
+							if ((int)$item->sub->daysLeft > 0) echo 'Active: '.$item->sub->daysLeft.'  Days Left';
+							else echo 'Expired: '.abs((int)$item->sub->daysLeft).'  Days Ago';
+						} else {
+							echo 'No Subscription';
+						}
+					?>
+				</td>
+		        <?php } ?>
 			</tr>
 		<?php endforeach; ?>
 		</tbody>
