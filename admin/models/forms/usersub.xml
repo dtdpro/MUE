@@ -83,7 +83,7 @@
 			description="COM_MUE_USERSUB_FIELD_STATUS_DESC"
 			required="true">
 			<option value="notyetstarted">Not Yet Started</option>
-			<option value="verified">Assessment</option>
+			<option value="verified">Verified</option>
 			<option value="canceled">Canceled</option>
 			<option value="accepted">Accepted</option>
 			<option value="pending">Pending</option>

@@ -17,7 +17,7 @@ class plgSystemMUESub extends JPlugin
 		$user = JFactory::getUser();
 		$exceptions = Array();
 		$exceptions[]="com_mue";
-		$exceptions[]="com_mcor";
+		//$exceptions[]="com_mcor";
 		if (in_array(JRequest::getVar('option'),$exceptions) && $user->id) {
 			return;
 			
