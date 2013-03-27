@@ -15,6 +15,9 @@ function MUEBuildRoute(&$query)
 	static $logout;
 	static $lost;
 	static $userdir;
+	static $subscribe;
+	static $check;
+	static $ppconfirm;
 
 	// Initialise variables.
 	$segments = array();
@@ -55,11 +58,23 @@ function MUEBuildRoute(&$query)
 			// Check to see if we have found the lost info menu item.
 			if (empty($lost) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'lost')) {
 				$lost = $items[$i]->id;
-			}		
+			}
+					
 			// Check to see if we have found the user directory menu item.
 			if (empty($userdir) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'userdir')) {
 				$userdir = $items[$i]->id;
 			}		
+
+			// Check to see if we have found the subscribe/pay by check info menu item.
+			if (empty($subscribe) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'subscribe') && (empty($items[$i]->query['layout']) || ($items[$i]->query['layout'] == 'default'))) {
+				$subscribe = $items[$i]->id;
+			}
+			if (empty($check) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'subscribe') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'check')) {
+				$check = $items[$i]->id;
+			}
+			if (empty($ppconfirm) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'subscribe') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'ppconfirm')) {
+				$ppconfirm = $items[$i]->id;
+			}
 		}
 	}
 
@@ -139,6 +154,36 @@ function MUEBuildRoute(&$query)
 					unset ($query['view']);
 				} else {
 					$query['Itemid'] = $default;
+				}
+				break;
+				
+			case 'subscribe':
+				switch ($query['layout']) {
+					case 'check':
+						if ($query['Itemid'] = $check) {
+							unset ($query['view']);
+							unset ($query['layout']);
+						} else {
+							$query['Itemid'] = $default;
+						}
+						break;
+					case 'ppconfirm':
+						if ($query['Itemid'] = $ppconfirm) {
+							unset ($query['view']);
+							unset ($query['layout']);
+						} else {
+							$query['Itemid'] = $default;
+						}
+						break;
+					case 'default':
+					default:
+						if ($query['Itemid'] = $subscribe) {
+							unset ($query['view']);
+							//unset ($query['layout']);
+						} else {
+							$query['Itemid'] = $default;
+						}
+						break;
 				}
 				break;
 				

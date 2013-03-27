@@ -9,7 +9,7 @@ if ($cfg->subscribe){
 	$sub=MUEHelper::getActiveSub();
 	$numsubs=count(MUEHelper::getUserSubs());
 }
-
+echo $cfg->profile_top_content;
 echo '<p><a href='.JRoute::_("index.php?option=com_mue&view=user&layout=proedit").'" class="button">';
 echo 'Edit Profile</a>';
 
@@ -41,5 +41,6 @@ foreach ($this->userfields as $f) {
 }
 echo '<div style="clear:both;"></div>';
 echo '</div>';
+echo $cfg->profile_bottom_content;
 ?>
 </div>

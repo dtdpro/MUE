@@ -119,8 +119,27 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 				<td>
 					<?php 
 						if ($item->sub) {
-							if ((int)$item->sub->daysLeft > 0) echo 'Active: '.$item->sub->daysLeft.'  Days Left';
-							else echo 'Expired: '.abs((int)$item->sub->daysLeft).'  Days Ago';
+							if ((int)$item->sub->daysLeft > 0) {
+								switch ($item->sub->usrsub_status) {
+									case "notyetstarted": echo "Not Yet Started"; break;
+									case "verified": echo "Assessment"; break;
+									case "canceled": echo "Canceled"; break;
+									case "accepted": echo "Accepted"; break;
+									case "pending": echo "Pending"; break;
+									case "started": echo "Started"; break;
+									case "denied": echo "Denied"; break;
+									case "refunded": echo "Refunded"; break;
+									case "failed": echo "Failed"; break;
+									case "pending": echo "Pending"; break;
+									case "reversed": echo "Reversed"; break;
+									case "canceled_reversal": echo "Canceled Dispute"; break;
+									case "expired": echo "Expired"; break;
+									case "voided": echo "Voided"; break;
+									case "completed": echo "Active"; break;
+									case "dispute": echo "Dispute"; break;
+								}
+								echo ': '.$item->sub->daysLeft.'  Days Left';
+							} else echo 'Expired: '.abs((int)$item->sub->daysLeft).'  Days Ago';
 						} else {
 							echo 'No Subscription';
 						}

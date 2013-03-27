@@ -1,4 +1,4 @@
-<div id="continued">
+<div id="system">
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
 $config = MUEHelper::getConfig();

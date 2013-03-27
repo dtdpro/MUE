@@ -7,7 +7,7 @@
 	<authorUrl>http://www.dtdpro.com</authorUrl>
 	<copyright>Copyright 2012-2013 DtD Productions</copyright>
 	<license>GPL v2</license>
-	<version>1.5.0</version>
+	<version>1.5.1</version>
 	<releaseDate>2013.01.01</releaseDate>
 	<releaseType>Update</releaseType>
 	<downloadUrl>http://www.dtdpro.com/</downloadUrl>
@@ -28,6 +28,7 @@
 		<filename>mue.php</filename>
 		<filename>controller.php</filename>
 		<filename>paypalipn.php</filename>
+		<filename>subplans.php</filename>
 		<filename>metadata.xml</filename>
 		<folder>models</folder>
 		<folder>views</folder>

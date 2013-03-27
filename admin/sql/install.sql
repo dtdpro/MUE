@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS `#__mue_ufields` (
   `uf_min` int(11) NOT NULL DEFAULT '0',
   `uf_max` int(11) NOT NULL DEFAULT '0',
   `uf_default` varchar(255) NOT NULL,
+  `uf_userdir` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`uf_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
@@ -64,11 +65,12 @@ CREATE TABLE IF NOT EXISTS `#__mue_users` (
   PRIMARY KEY (`usr_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `#__mue_userdir` (
+CREATE TABLE IF NOT EXISTS `cdev_mue_userdir` (
   `ud_user` int(11) NOT NULL,
   `ud_lat` float NOT NULL,
   `ud_lon` float NOT NULL,
-  `ud_address` TEXT NOT NULL,
+  `ud_userinfo` text NOT NULL,
+  `ud_searchinfo` text NOT NULL,
   UNIQUE KEY `ud_user` (`ud_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -91,7 +93,7 @@ CREATE TABLE IF NOT EXISTS `#__mue_usersubs` (
   `usrsub_id` int(11) NOT NULL AUTO_INCREMENT,
   `usrsub_user` int(11) NOT NULL,
   `usrsub_sub` int(11) NOT NULL,
-  `usrsub_type` enum('paypal','redeem','admin','google','migrate') NOT NULL,
+  `usrsub_type` enum('paypal','redeem','admin','google','migrate','check') NOT NULL,
   `usrsub_transid` varchar(255) NOT NULL,
   `usrsub_email` varchar(255) NOT NULL,
   `usrsub_rpprofile` varchar(255) NOT NULL,

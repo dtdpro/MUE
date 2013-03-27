@@ -1,4 +1,4 @@
-<div id="continued">
+<div id="system">
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
 $config = MUEHelper::getConfig();
@@ -37,9 +37,10 @@ if ($this->usersubs) {
 			case "admin": echo "Admin"; break;
 			case "google": echo "Google"; break;
 			case "migrate": echo "Migrated"; break;
+			case "check": echo '<a href="'.JRoute::_("index.php?option=com_mue&view=subscribe&layout=check&plan=".$sub->sub_id).'" title="View Pay by Check Information">Check</a>'; break;
 		}
 		echo '</td><td>';
-		if (!$sub->sub_recurring) {
+		if (!$sub->sub_recurring || $sub->usrsub_type == 'check') {
 			switch ($sub->usrsub_status) {
 				case "notyetstarted": echo "Not Yet Started"; break;
 				case "canceled": echo "Canceled"; break;
@@ -65,8 +66,8 @@ if ($this->usersubs) {
 			}
 		}
 		echo '</td><td>';
-		if ($sub->usrsub_type == "paypal" || $sub->usrsub_type=="google") {
-			echo "$".$sub->sub_cost;
+		if ($sub->usrsub_type == "paypal" || $sub->usrsub_type=="google" || $sub->usrsub_type=="check") {
+			echo "$".number_format($sub->sub_cost,2);
 			if ($sub->sub_recurring) echo '/'.$sub->sub_length.' '.$sub->sub_period.'(s)';
 		}
 		echo '</td></tr>';

@@ -19,6 +19,7 @@
 			<option value="admin">Admin Add</option>
 			<option value="google">Google Checkout</option>
 			<option value="migrate">Migrated</option>
+			<option value="check">Check</option>
 		</field>
 		<field 
 			name="usrsub_sub" 

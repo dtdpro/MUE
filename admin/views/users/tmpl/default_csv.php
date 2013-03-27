@@ -25,7 +25,28 @@ foreach ($this->items as $i) {
 	if ($cfg->subscribe) {
 		$contents .= ',"';
 		if ($i->sub) {
-			if ((int)$i->sub->daysLeft > 0) $contents .=  'Active: '.$i->sub->daysLeft.'  Days Left';
+			if ((int)$i->sub->daysLeft > 0) {
+			
+				switch ($item->sub->usrsub_status) {
+					case "notyetstarted": $contents .=   "Not Yet Started"; break;
+					case "verified": $contents .=   "Assessment"; break;
+					case "canceled": $contents .=   "Canceled"; break;
+					case "accepted": $contents .=   "Accepted"; break;
+					case "pending": $contents .=   "Pending"; break;
+					case "started": $contents .=   "Started"; break;
+					case "denied": $contents .=   "Denied"; break;
+					case "refunded": $contents .=   "Refunded"; break;
+					case "failed": $contents .=   "Failed"; break;
+					case "pending": $contents .=   "Pending"; break;
+					case "reversed": $contents .=   "Reversed"; break;
+					case "canceled_reversal": $contents .=   "Canceled Dispute"; break;
+					case "expired": $contents .=   "Expired"; break;
+					case "voided": $contents .=   "Voided"; break;
+					case "completed": $contents .=   "Active"; break;
+					case "dispute": $contents .=   "Dispute"; break;
+				}
+				$contents .=  ': '.$i->sub->daysLeft.'  Days Left';
+			}
 			else $contents .=  'Expired: '.abs((int)$i->sub->daysLeft).'  Days Ago';
 		} else {
 			$contents .=  'No Subscription';

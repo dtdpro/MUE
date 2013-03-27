@@ -106,6 +106,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 						case "admin": echo "Admin"; break;
 						case "google": echo "Google"; break;
 						case "migrate": echo "Migrated"; break;
+						case "check": echo "Check"; break;
 					}
 					?>
 				</td>

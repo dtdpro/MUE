@@ -30,7 +30,7 @@ class MUEViewSubscribe extends JView
 		$model =& $this->getModel();
 		$planid = JRequest::getVar( 'plan' );
 		$user =& JFactory::getUser();
-		$this->pinfo = $model->getPlanInfo($planid);
+		if ($planid) $this->pinfo = $model->getPlanInfo($planid);
 
 		
 		switch ($layout) {
@@ -46,8 +46,14 @@ class MUEViewSubscribe extends JView
 			case "ppcancel":
 				$this->ppCancelPayment();
 				break;
-			case "redeem":
-				$this->redeemCode();
+			case "cartops":
+				$this->cartForm();
+				break;
+			case "paybycheck":
+				$this->payByCheck();
+				break;
+			case "check":
+				$this->checkInfo();
 				break;
 			case 'default':
 			default:
@@ -64,6 +70,14 @@ class MUEViewSubscribe extends JView
 		$this->plans=$model->getPlans();
 	}
 	
+	function cartForm() {
+
+	}
+	
+	function checkInfo() {
+		$this->print = JRequest::getVar('print',0);
+	}
+	
 	function ppSubmitPayment() {	
 		$user =& JFactory::getUser();	
 		$app=Jfactory::getApplication();
@@ -72,13 +86,12 @@ class MUEViewSubscribe extends JView
 		if ($sub) $end = $sub->usrsub_end;
 		else $sub = false;
 		if (!$user->id ) {
-			//take user to fm if not logged in
-			$app->redirect('index.php?option=com_mue&view=subscribe&Itemid='.JRequest::getVar( 'Itemid' ).'&plan='.$this->pinfo->sub_id);
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 		}
 		include_once 'components/com_mue/helpers/paypal.php';
 		$paypal = new PayPalAPI($muecfg->paypal_mode,$muecfg->paypal_username,$muecfg->paypal_password,$muecfg->paypal_signature);
 		if (!$paypal->submitPayment($this->pinfo,$end)) {
-			$app->redirect('index.php?option=com_mue&view=subscribe&Itemid='.JRequest::getVar( 'Itemid' ).'&plan='.$this->pinfo->sub_id,$paypal->error,'error');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id),$paypal->error,'error');
 		}
 	}
 	
@@ -89,13 +102,12 @@ class MUEViewSubscribe extends JView
 		$this->usid = JRequest::getVar( 'purchaseid' );
 		$token = JRequest::getVar( 'token' );
 		if (!$user->id ) {
-			//take user to fm if not logged in
-			$app->redirect('index.php?option=com_mue&view=subscribe&Itemid='.JRequest::getVar( 'Itemid' ).'&plan='.$this->pinfo->sub_id);
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 		}
 		include_once 'components/com_mue/helpers/paypal.php';
 		$paypal = new PayPalAPI($muecfg->paypal_mode,$muecfg->paypal_username,$muecfg->paypal_password,$muecfg->paypal_signature);
 		if (!$paypal->confirmPayment($this->pinfo,$this->usid,$token)) {
-			$app->redirect('index.php?option=com_mue&view=subscribe&Itemid='.JRequest::getVar( 'Itemid' ).'&plan='.$this->pinfo->sub_id,$paypal->error,'error');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id),$paypal->error,'error');
 		}
 	}
 	
@@ -106,17 +118,16 @@ class MUEViewSubscribe extends JView
 		$model =& $this->getModel();
 		$this->usid = JRequest::getVar( 'purchaseid' );
 		if (!$user->id ) {
-			//take user to fm if not logged in
-			$app->redirect('index.php?option=com_mue&view=subscribe&Itemid='.JRequest::getVar( 'Itemid' ).'&plan='.$this->pinfo->sub_id);
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 		}
 		include_once 'components/com_mue/helpers/paypal.php';
 		$paypal = new PayPalAPI($muecfg->paypal_mode,$muecfg->paypal_username,$muecfg->paypal_password,$muecfg->paypal_signature);
 		if (!$paypal->verifyPayment($this->pinfo,$this->usid)) {
-			$app->redirect('index.php?option=com_mue&view=subscribe&Itemid='.JRequest::getVar( 'Itemid' ).'&plan='.$this->pinfo->sub_id,$paypal->error,'error');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id),$paypal->error,'error');
 		} else {
 			$model->sendSubedEmail($this->pinfo);
 			$model->updateProfile();
-			$app->redirect('index.php?option=com_mue&view=user&layout=profile','Thank you, your subscription has been completed.');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'),'Thank you, your subscription has been completed.');
 			
 		}
 	}
@@ -127,32 +138,32 @@ class MUEViewSubscribe extends JView
 		$muecfg = MUEHelper::getConfig();
 		$this->usid = JRequest::getVar( 'purchaseid' );
 		if (!$user->id ) {
-			//take user to fm if not logged in
-			$app->redirect('index.php?option=com_mue&view=subscribe&Itemid='.JRequest::getVar( 'Itemid' ).'&plan='.$this->pinfo->sub_id);
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 		}
 		include_once 'components/com_mue/helpers/paypal.php';
 		$paypal = new PayPalAPI($muecfg->paypal_mode,$muecfg->paypal_username,$muecfg->paypal_password,$muecfg->paypal_signature);
 		$paypal->cancelPayment($this->pinfo,$this->usid);
-		$app->redirect('index.php?option=com_mue&view=subscribe&Itemid='.JRequest::getVar( 'Itemid' ).'&plan='.$this->pinfo->sub_id,'Canceled');
+		$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id),'Canceled');
 	}
 	
 	
 	
-	function redeemCode() {
+	function payByCheck() {
 		$user =& JFactory::getUser();
 		$app=Jfactory::getApplication();
 		$muecfg = MUEHelper::getConfig();
 		$model =& $this->getModel();
-		$code = JRequest::getVar( 'redeemcode' );
+		$sub = MUEHelper::getActiveSub();
+		if ($sub) $end = $sub->usrsub_end;
 		if (!$user->id ) {
-			//take user to fm if not logged in
-			$app->redirect('index.php?option=com_mue&view=subscribe&Itemid='.JRequest::getVar( 'Itemid' ).'&plan='.$this->pinfo->sub_id);
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 		}
-		if (!$model->redeemCode($this->pinfo,$code)) {
-			$app->redirect('index.php?option=com_mue&view=subscribe&Itemid='.JRequest::getVar( 'Itemid' ).'&plan='.$this->pinfo->sub_id,$model->codeError,'error');
+		if (!$subid = $model->payByCheck($this->pinfo,$end)) {
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id),"Could Not Pay by Check",'error');
 		} else {
-				
-			$app->redirect('index.php?option=com_mue&view=user&layout=profile','Thank you, your code has been accepted.');
+			$model->sendSubedEmail($this->pinfo);
+			$model->updateProfile();
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id.'&layout=check'),'Thank you, Please see details below.');
 				
 		}
 	}

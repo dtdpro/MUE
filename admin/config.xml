@@ -7,6 +7,8 @@
 		<field name="FROM_NAME" type="text" label="COM_MUE_CONFIG_FIELD_FROM_NAME_LABEL" description="COM_MUE_CONFIG_FIELD_FROM_NAME_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="WELCOME_SUBJECT" type="text" label="COM_MUE_CONFIG_FIELD_WELCOME_SUBJECT_LABEL" description="COM_MUE_CONFIG_FIELD_WELCOME_SUBJECT_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="LOSTINFO_SUBJECT" type="text" label="COM_MUE_CONFIG_FIELD_LOSTINFO_SUBJECT_LABEL" description="COM_MUE_CONFIG_FIELD_LOSTINFO_SUBJECT_DESC" size="70" class="inputbox" required="false" default="" /> 
+		<field name="profile_top_content" type="textarea" label="COM_MUE_CONFIG_FIELD_PROFILE_TOP_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_PROFILE_TOP_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
+		<field name="profile_bottom_content" type="textarea" label="COM_MUE_CONFIG_FIELD_PROFILE_BOTTOM_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_PROFILE_BOTTOM_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
 	</fieldset>
 	<fieldset name="reports" label="COM_MUE_CONFIG_REPORTS_LABEL" description="COM_MUE_CONFIG_REPORTS_DESC" addfieldpath="/administrator/components/com_mue/models/fields">
 		<field 
@@ -64,10 +66,11 @@
 		<field name="paypal_password" type="text" label="COM_MUE_CONFIG_FIELD_PAYPALPASSWORD_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPALPASSWORD_DESC" size="70" class="inputbox" required="false" default="" /> 
 		<field name="paypal_signature" type="text" label="COM_MUE_CONFIG_FIELD_PAYPALSIG_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPALSIG_DESC" size="70" class="inputbox" required="false" default="" /> 
 		<field name="spacer2" type="spacer" hr="true" />
-		<field name="redemption" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_REDEEM_LABEL" description="COM_MUE_CONFIG_FIELD_REDEEM_DESC" default="1">
+		<field name="paybycheck" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_PAYBYCHECK_LABEL" description="COM_MUE_CONFIG_FIELD_PAYBYCHECK_DESC" default="1">
 			<option value="0">No</option>
 			<option value="1">Yes</option>
 		</field>
+		<field name="paybycheck_content" type="textarea" label="COM_MUE_CONFIG_FIELD_PAYBYCHECK_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_PAYBYCHECK_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="true" filter="safehtml" buttons="false" />
 	</fieldset>
 	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" class="inputbox" validate="rules" filter="rules" component="com_continued" section="component" />
