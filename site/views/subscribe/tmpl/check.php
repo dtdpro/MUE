@@ -5,7 +5,7 @@ $user=JFactory::getUser();
 echo '<h2 class="componentheading">Subscription by Check</h2>';
 echo '<p>';
 if (!$this->print) echo '<a href="'.JRoute::_('index.php?option=com_mue&view=user&layout=subs').'" class="button">View All Subscription(s)</a>';
-if (!$this->print) echo ' <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe&layout=check&sub='.$this->pinfo->sub_id.'&tmpl=component&print=1').'" target="_blank" class="button">Print</a>';
+if (!$this->print) echo ' <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe&layout=check&plan='.$this->pinfo->sub_id.'&tmpl=component&print=1').'" target="_blank" class="button">Print</a>';
 else echo '<a href="javascript:print()" class="button">Print</a>';
 echo '</p>';
 

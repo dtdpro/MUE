@@ -44,6 +44,7 @@ class MUEViewUserSubs extends JView
 		JToolBarHelper::title(JText::_('COM_MUE_MANAGER_USERSUBS'), 'mue');
 		JToolBarHelper::addNew('usersub.add', 'JTOOLBAR_NEW');
 		JToolBarHelper::editList('usersub.edit', 'JTOOLBAR_EDIT');
+		JToolBarHelper::deleteList('', 'usersubs.delete', 'JTOOLBAR_EMPTY_TRASH');
 		JToolBarHelper::divider();
 		
 	}

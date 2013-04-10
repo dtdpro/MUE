@@ -14,7 +14,7 @@ $contents .= "\n";
 foreach ($this->items as $i) {
 	$contents .= '"'.$i->id.'",'; 
 	$contents .= '"'.$i->username.'",'; 
-	$contents .= '"'.$i->name.'",';
+	$contents .= '"'.preg_replace( "/\r|\n/", "", $i->name).'",';
 	$contents .= '"'.$i->email.'",'; 
 	$contents .= '"'.$i->ug_name.'",'; 
 	$contents .= '"'.$i->userg_siteurl.'",'; 
@@ -27,7 +27,7 @@ foreach ($this->items as $i) {
 		if ($i->sub) {
 			if ((int)$i->sub->daysLeft > 0) {
 			
-				switch ($item->sub->usrsub_status) {
+				switch ($i->sub->usrsub_status) {
 					case "notyetstarted": $contents .=   "Not Yet Started"; break;
 					case "verified": $contents .=   "Assessment"; break;
 					case "canceled": $contents .=   "Canceled"; break;
