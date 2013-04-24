@@ -14,9 +14,7 @@ $first=true;
 			jQuery('.mue-plan-pick-item',parent).removeClass('selected');
 			jQuery(this).addClass('selected');
 		});
-		jQuery(':radio').live('click',function(e){
-			
-			/* Send the data using post and put the results in a div */
+		jQuery(document).on("click", ":radio",function(e){
 			loadPaymentOptions();
 		});
 	
