@@ -19,7 +19,6 @@ $cecfg = MUEHelper::getConfig();
 			mapTypeControlOptions: {style: google.maps.MapTypeControlStyle.DROPDOWN_MENU}
 		});
 		infoWindow = new google.maps.InfoWindow();
-		jQuery.metadata.setType("attr", "validate");
 		jQuery("#userdirform").validate({
 			errorClass:"uf_error",
 			validClass:"uf_valid",
@@ -145,7 +144,7 @@ if ($this->sfields) echo '<div class="mue-user-dir-row"><div class="mue-user-dir
 echo '<div class="mue-user-dir-row">';
 echo '<div class="mue-user-dir-label">Location</div>';
 echo '<div class="mue-user-dir-value">';
-echo '<input placeholder="Address, City, State, and/or ZIP Code" type="text" id="addressInput" class="uf_field" validate="{required:true, messages:{required:\'This Field is required\'}}">';
+echo '<input placeholder="Address, City, State, and/or ZIP Code" type="text" id="addressInput" class="uf_field" data-rule-required="true" data-msg-required="This Field is required">';
 echo '</div><div class="mue-user-dir-error"></div></div>';
 echo '<div class="mue-user-dir-row">';
 echo '<div class="mue-user-dir-label">Distance</div>';
@@ -222,9 +221,6 @@ foreach($this->sfields as $f) {
 	//text area
 	if ($f->uf_type=="textar") {
 		echo '<textarea name="jform['.$sname.']" id="jform_'.$sname.'" cols="70" rows="4" class="uf_field"';
-		if ($f->uf_req) {
-			echo ' validate="{required:true, messages:{required:\'This Field is required\'}}"';
-		}
 		echo '>'.$f->value.'</textarea>';
 	}
 
@@ -232,8 +228,6 @@ foreach($this->sfields as $f) {
 
 	echo '</div>';
 	echo '<div class="mue-user-dir-error">';
-	//if ($f->uf_type=="multi" || $f->uf_type=="mcbox") echo '<label id="jform_'.$sname.'-lbl" for="jform['.$sname.']" class="uf_error"></label>';
-	//else echo '<label id="jform_'.$sname.'-lbl" for="jform_'.$sname.'" class="uf_error"></label>';
 	echo '</div>';
 	echo '</div>';
 }

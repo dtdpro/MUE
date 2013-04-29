@@ -8,7 +8,6 @@ echo '<h2 class="componentheading">Lost username/password</h2>';
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function() {
-		jQuery.metadata.setType("attr", "validate");
 		jQuery("#loginform").validate({
 			errorClass:"uf_error",
 			errorPlacement: function(error, element) {
@@ -39,7 +38,7 @@ echo '<div class="mue-lost-lost-row">';
 echo '<div class="mue-lost-lost-label">Email</div>';
 echo '<div class="mue-lost-lost-value">';
 echo '<input name="lost_email" id="lost_email" type="text" class="uf_lost" value=""';
-echo ' validate="{required:true, email:true, messages:{required:\'This Field is required\', email:\'Email address must be valid\'}}">';
+echo ' data-rule-required="true" data-msg-required="Required" data-rule-email="true" data-msg-email="Email address must be valid">';
 echo '</div>';
 echo '<div class="mue-lost-lost-error"></div>';
 echo '</div>';

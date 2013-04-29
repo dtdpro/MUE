@@ -8,7 +8,6 @@ $first=true;
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function() {
-		jQuery.metadata.setType("attr", "validate");
 		jQuery(".mue-plan-pick-item").click(function(){
 			var parent = jQuery(this).parents('.mue-plan-pick-row');
 			jQuery('.mue-plan-pick-item',parent).removeClass('selected');
@@ -45,7 +44,7 @@ if (!$user->id) {
 	echo '<form action="/components/com_mue/subplans.php" method="post" name="subform" id="subform">';
 	foreach ($this->plans as $g) {
 		echo '<input type="radio" name="plan" id="plan_'.$g->sub_id.'" value="'.$g->sub_id.'"';
-		if ($first) { echo ' validate="{required:true, messages:{required:\'Please select a plan\'}}"'; $first=false; }
+		if ($first) { echo ' data-rule-required"true" data-msg-required="Please select a plan"'; $first=false; }
 		if (count($this->plans) == 1) echo ' checked="checked"';
 		echo ' class="mue-plan-pick-radio">';
 		echo '<label class="mue-plan-pick-item';

@@ -6,7 +6,6 @@ defined('_JEXEC') or die('Restricted access');
 <h2 class="componentheading">User Profile Edit</h2>
 <script type="text/javascript">
 	jQuery(document).ready(function() {
-		jQuery.metadata.setType("attr", "validate");
 		jQuery("#regform").validate({
 			errorClass:"uf_error",
 			errorPlacement: function(error, element) {
@@ -47,7 +46,7 @@ foreach($this->userfields as $f) {
 			if (!empty($this->userinfo->$sname)) $checked = ($this->userinfo->$sname == '1') ? ' checked="checked"' : '';
 			else $checked = '';
 			echo '<input type="checkbox" name="jform['.$sname.']" id="jform_'.$sname.'" class="uf_radio"';
-			if ($f->uf_req && $f->uf_type=="cbox") { echo ' validate="{required:true, messages:{required:\'This Field is required\'}}"'; }
+			if ($f->uf_req && $f->uf_type=="cbox") { echo ' data-rule-required="true" data-msg-required="This Field is required"'; }
 			echo $checked.'/>'."\n";
 			echo '<label for="jform_'.$sname.'">';
 			echo ' '.$f->uf_name.'</label><br />'."\n";
@@ -61,13 +60,12 @@ foreach($this->userfields as $f) {
 				else $checked = '';
 				echo '<input type="checkbox" name="jform['.$sname.'][]" value="'.$o->value.'" class="uf_radio" id="jform_'.$sname.$o->value.'"';
 				if ($f->uf_req && $first) {
-					echo ' validate="{required:true';
-					if ($f->uf_min) echo ', minlength:'.$f->uf_min;
-					if ($f->uf_max) echo ', maxlength:'.$f->uf_max;
-					echo ', messages:{required:\'This Field is required\'';
-					if ($f->uf_min) echo ', minlength:\'Select at least '.$f->uf_min.'\'';
-					if ($f->uf_max) echo ', maxlength:\'Select at most '.$f->uf_max.'\'';
-					echo '}}"'; 
+					echo ' data-rule-required="true"';
+					if ($f->uf_min) echo ' data-rule-minlength="'.$f->uf_min.'"';
+					if ($f->uf_max) echo ' data-rule-maxlength="'.$f->uf_max.'"';
+					echo ' data-msg-required="This Field is required"';
+					if ($f->uf_min) echo ' data-msg-minlength="Select at least '.$f->uf_min.'"';
+					if ($f->uf_max) echo ' data-msg-maxlength="Select at most '.$f->uf_max.'"';
 					$first=false;
 				}
 				echo $checked.'/>'."\n";
@@ -84,7 +82,7 @@ foreach($this->userfields as $f) {
 				if (!empty($this->userinfo->$sname)) $checked = in_array($o->value,$this->userinfo->$sname) ? ' checked="checked"' : '';
 				else $checked = '';
 				echo '<input type="radio" name="jform['.$sname.']" value="'.$o->value.'" id="jform_'.$sname.$o->value.'" class="uf_radio"';
-				if ($f->uf_req && $first) { echo ' validate="{required:true, messages:{required:\'This Field is required\'}}"'; $first=false;}
+				if ($f->uf_req && $first) { echo ' data-rule-required="true" data-msg-required="This Field is required"'; $first=false;}
 				echo $checked.'/>'."\n";
 				echo '<label for="jform_'.$sname.$o->value.'">';
 				echo ' '.$o->text.'</label><br />'."\n";
@@ -95,7 +93,7 @@ foreach($this->userfields as $f) {
 		//dropdown
 		if ($f->uf_type=="dropdown") {
 			echo '<select id="jform_'.$sname.'" name="jform['.$sname.']" class="uf_field uf_select" size="1"';
-			if ($f->uf_req) { echo ' validate="{required:true, messages:{required:\'This Field is required\'}}"'; }
+			if ($f->uf_req) { echo ' data-rule-required="true" data-msg-required="This Field is required"'; }
 			echo '>';
 			foreach ($f->options as $o) {
 				if (!empty($this->userinfo->$sname)) $selected = in_array($o->value,$this->userinfo->$sname) ? ' selected="selected"' : '';
@@ -110,13 +108,12 @@ foreach($this->userfields as $f) {
 		if ($f->uf_type=="mlist") {
 			echo '<select id="jform_'.$sname.'" name="jform['.$sname.'][]" class="uf_field uf_mselect" size="4" multiple="multiple"';
 			if ($f->uf_req) {
-				echo ' validate="{required:true';
-				if ($f->uf_min) echo ', minlength:'.$f->uf_min;
-				if ($f->uf_max) echo ', maxlength:'.$f->uf_max;
-				echo ', messages:{required:\'This Field is required\'';
-				if ($f->uf_min) echo ', minlength:\'Select at least '.$f->uf_min.'\'';
-				if ($f->uf_max) echo ', maxlength:\'Select at most '.$f->uf_max.'\'';
-				echo '}}"'; 
+				echo ' data-rule-required="true"';
+				if ($f->uf_min) echo ' data-rule-minlength="'.$f->uf_min.'"';
+				if ($f->uf_max) echo ' data-rule-maxlength="'.$f->uf_max.'"';
+				echo ' data-msg-required="This Field is required"';
+				if ($f->uf_min) echo ' data-msg-minlength="Select at least '.$f->uf_min.'"';
+				if ($f->uf_max) echo ' data-msg-maxlength="Select at most '.$f->uf_max.'"';
 				$first=false;
 			}
 			echo '>';
@@ -133,21 +130,20 @@ foreach($this->userfields as $f) {
 		if ($f->uf_type=="textbox" || $f->uf_type=="email" || $f->uf_type=="username" || $f->uf_type=="phone") {
 			echo '<input name="jform['.$sname.']" id="jform_'.$sname.'" value="'.$this->userinfo->$sname.'" class="uf_field" type="text"';
 			if ($f->uf_req) { 
-				echo ' validate="{required:true';
-				if ($f->uf_min) echo ', minlength:'.$f->uf_min;
-				if ($f->uf_max) echo ', maxlength:'.$f->uf_max;
-				if ($f->uf_type=="email") echo ', email:true';
-				if ($f->uf_match) echo ', equalTo: \'#jform_'.$f->uf_match.'\'';
-				if ($f->uf_type == "username" && $f->uf_cms) echo ',remote: { url: \''.JURI::base( true ).'/components/com_mue/helpers/chkuser.php\', type: \'post\'}';
-				if ($f->uf_type == "email" && !$f->uf_match && $f->uf_cms) echo ',remote: { url: \''.JURI::base( true ).'/components/com_mue/helpers/chkemail.php\', type: \'post\'}';
-				echo ', messages:{required:\'This Field is required\'';
-				if ($f->uf_min) echo ', minlength:\'Min length '.$f->uf_min.' characters\'';
-				if ($f->uf_max) echo ', maxlength:\'Max length '.$f->uf_max.' characters\'';
-				if ($f->uf_type=="email") echo ', email:\'Email address must be valid\'';
-				if ($f->uf_match) echo ', equalTo: \'Fields must match\'';
-				if ($f->uf_type=="username" && $f->uf_cms) echo ', remote:\'Username already registered\'';
-				if ($f->uf_type=="email" && !$f->uf_match && $f->uf_cms) echo ', remote:\'Email Already registered\'';
-				echo '}}"'; 
+				echo ' data-rule-required="true"';
+				if ($f->uf_min) echo ' data-rule-minlength="'.$f->uf_min.'"';
+				if ($f->uf_max) echo ' data-rule-maxlength="'.$f->uf_max.'"';
+				if ($f->uf_type=="email") echo ' data-rule-email="true"';
+				if ($f->uf_match) echo ' data-rule-equalTo="#jform_'.$f->uf_match.'"';
+				if ($f->uf_type == "username" && $f->uf_cms) echo ' data-rule-remote="'.JURI::base( true ).'/components/com_mue/helpers/chkuser.php"';
+				if ($f->uf_type == "email" && !$f->uf_match && $f->uf_cms) echo ' data-rule-remote="'.JURI::base( true ).'/components/com_mue/helpers/chkemail.php"';
+				echo ' data-msg-required="This Field is required"';
+				if ($f->uf_min) echo ' data-msg-minlength="Min length '.$f->uf_min.' characters"';
+				if ($f->uf_max) echo ' data-msg-maxlength="Max length '.$f->uf_max.' characters"';
+				if ($f->uf_type=="email") echo ' data-msg-email="Email address must be valid"';
+				if ($f->uf_match) echo ' data-msg-equalTo="Fields must match"';
+				if ($f->uf_type=="username" && $f->uf_cms) echo ' data-msg-remote="Username already registered"';
+				if ($f->uf_type=="email" && !$f->uf_match && $f->uf_cms) echo ' data-msg-remote="Email Already registered"';
 			}
 			echo '>';
 		}
@@ -155,17 +151,17 @@ foreach($this->userfields as $f) {
 		//password
 		if ($f->uf_type=="password") {
 			echo '<input name="jform['.$sname.']" id="jform_'.$sname.'" class="uf_field" size="20" type="password" ';
-			echo 'validate="{minlength:8';
-			if ($f->uf_match) echo ', equalTo: \'#jform_'.$f->uf_match.'\'';
-			echo ', messages:{minlength:\'Minimum length 8 characters\'';
-			if ($f->uf_match) echo ', equalTo: \'Fields must match\'';
-			echo '}}">';
+			echo 'data-rule-required="true" data-rule-minlength="8"';
+			if ($f->uf_match) echo ' data-rule-equalTo="#jform_'.$f->uf_match.'"';
+			echo ' data-msg-required="This Field is required" data-msg-minlength="Minimum length 8 characters"';
+			if ($f->uf_match) echo ' data-msg-equalTo="Fields must match"';
+			echo '>';
 		}
 		
 		//text area
 		if ($f->uf_type=="textar") {
 			echo '<textarea name="jform['.$sname.']" id="jform_'.$sname.'" cols="70" rows="4" class="uf_field"';
-			if ($f->uf_req) { echo ' validate="{required:true, messages:{required:\'This Field is required\'}}"'; }
+			if ($f->uf_req) { echo ' data-rule-required="true" data-msg-required="This Field is required"'; }
 			echo '>'.$this->userinfo->$sname.'</textarea>';
 		}
 		

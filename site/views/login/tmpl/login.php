@@ -7,7 +7,6 @@ echo '<h2 class="componentheading">User Login</h2>';
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function() {
-		jQuery.metadata.setType("attr", "validate");
 		jQuery("#loginform").validate({
 			errorClass:"uf_error",
 			errorPlacement: function(error, element) {
@@ -48,7 +47,7 @@ echo '<div class="mue-login-login-row">';
 echo '<div class="mue-login-login-label">Username</div>';
 echo '<div class="mue-login-login-value">';
 echo '<input name="login_user" id="login_user" type="text" class="uf_login" value=""';
-echo ' validate="{required:true, messages:{required:\'Required\'}}">';
+echo ' data-rule-required="true" data-msg-required="Required">';
 echo '</div>';
 echo '<div class="mue-login-login-error"></div>';
 echo '</div>';
@@ -58,7 +57,7 @@ echo '<div class="mue-login-login-row">';
 echo '<div class="mue-login-login-label">Password</div>';
 echo '<div class="mue-login-login-value">';
 echo '<input name="login_pass" id="login_pass" type="password" class="uf_login" value=""';
-echo ' validate="{required:true, messages:{required:\'Required\'}}">';
+echo ' data-rule-required="true" data-msg-required="Required">';
 echo '</div>';
 echo '<div class="mue-login-login-error"></div>';
 echo '</div>';

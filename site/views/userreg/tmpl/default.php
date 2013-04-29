@@ -5,18 +5,6 @@ $cecfg = MUEHelper::getConfig();
 
 ?>
 <script type="text/javascript">
-	/*jQuery(document).ready(function() {
-		jQuery.metadata.setType("attr", "validate");
-		jQuery("#regpickform").validate({
-			errorClass:"uf_pickerror",
-			errorPlacement: function(error, element) {
-		    	error.appendTo( element.parent("div").next("div") );
-		    }
-	    });
-
-	
-	});
-*/
 	function submitGroup() {
 		var $form = jQuery( this ),
 	        url = $form.attr( 'action' );
