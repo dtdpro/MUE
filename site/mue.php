@@ -27,7 +27,6 @@ if (!JFactory::getApplication()->get('jquery')) {
 }
 $doc->addScript('media/com_mue/scripts/jquery.validate.js');
 $doc->addScript('media/com_mue/scripts/additional-methods.js');
-$doc->addScript('media/com_mue/scripts/jquery.metadata.js');
 $doc->addScript('media/com_mue/scripts/jquery.simplemodal.js');
 
 
