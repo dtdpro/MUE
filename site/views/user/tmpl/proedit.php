@@ -151,9 +151,9 @@ foreach($this->userfields as $f) {
 		//password
 		if ($f->uf_type=="password") {
 			echo '<input name="jform['.$sname.']" id="jform_'.$sname.'" class="uf_field" size="20" type="password" ';
-			echo 'data-rule-required="true" data-rule-minlength="8"';
+			echo 'data-rule-minlength="8"';
 			if ($f->uf_match) echo ' data-rule-equalTo="#jform_'.$f->uf_match.'"';
-			echo ' data-msg-required="This Field is required" data-msg-minlength="Minimum length 8 characters"';
+			echo ' data-msg-minlength="Minimum length 8 characters"';
 			if ($f->uf_match) echo ' data-msg-equalTo="Fields must match"';
 			echo '>';
 		}

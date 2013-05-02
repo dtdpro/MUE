@@ -47,7 +47,7 @@ class MUEHelper {
 					if ($useids && $u->uf_change) $user->$fn=$u->usr_data;
 					else $user->$fn = ($u->usr_data == "1") ? "Yes" : "No";
 				} else if ($u->uf_type == 'mailchimp') {
-					include_once 'components/com_mue/lib/mailchimp.php';
+					include_once JPATH_BASE.'/components/com_mue/lib/mailchimp.php';
 					$mc = new MailChimp($cfg->mckey,$cfg->mclist);
 					$mcresult = $mc->subStatus($user->email);
 					if ($mcresult) $onlist=true;

@@ -7,4 +7,4 @@ CREATE TABLE IF NOT EXISTS `#__mue_userdir` (
   UNIQUE KEY `ud_user` (`ud_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE  `lmbeu_mue_ufields` ADD  `uf_userdir` BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE  `#__mue_ufields` ADD  `uf_userdir` BOOLEAN NOT NULL DEFAULT FALSE;
