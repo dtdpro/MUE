@@ -40,6 +40,13 @@ JHtml::_('behavior.keepalive');
 				<a href="<?php echo JRoute::_('index.php?option=com_mue&view=user&layout=subs'); ?>"><?php echo JText::_('MOD_MUELOGIN_SUBS'); ?></a>
 			</li>
 			<?php endif; ?>
+			
+			<?php if(JComponentHelper::isEnabled('com_mcme', false)) : ?>
+			<li>
+				<a href="<?php echo JRoute::_('index.php?option=com_mue&view=user&layout=cerecords'); ?>"><?php echo JText::_('MOD_MUELOGIN_CERECORDS'); ?></a>
+			</li>
+			<?php endif; ?>
+
 
 		</ul>
 		<input type="hidden" name="option" value="com_mue">

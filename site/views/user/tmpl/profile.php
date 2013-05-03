@@ -10,7 +10,7 @@ if ($cfg->subscribe){
 	$numsubs=count(MUEHelper::getUserSubs());
 }
 echo $cfg->profile_top_content;
-echo '<p><a href='.JRoute::_("index.php?option=com_mue&view=user&layout=proedit").'" class="button">';
+echo '<p><a href="'.JRoute::_("index.php?option=com_mue&view=user&layout=proedit").'" class="button">';
 echo 'Edit Profile</a>';
 
 echo '<div id="mue-user-info">';

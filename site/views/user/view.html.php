@@ -11,6 +11,9 @@ class MUEViewUser extends JView
 		$layout = $this->getLayout();
 		
 		switch($layout) {
+			case "cerecords": 
+				$this->userCerts();
+				break;
 			case "subs": 
 				$this->userSubs();
 				break;
@@ -28,6 +31,18 @@ class MUEViewUser extends JView
 				break;
 		}
 		parent::display($tpl);
+	}
+	
+	protected function userCerts() {
+		$model =& $this->getModel();
+		$print = JRequest::getVar('print');
+		$user =& JFactory::getUser();
+		$userid = $user->id;
+		if ($userid != 0) {
+			$usercerts=$model->getUserCerts();
+			$this->assignRef('usercerts',$usercerts);
+		}
+		
 	}
 	
 	protected function userSubs() {
@@ -78,10 +93,10 @@ class MUEViewUser extends JView
 		if ($userid != 0) {
 			if (!$model->save()) {
 				$app=Jfactory::getApplication();
-				$app->redirect('index.php?option=com_mue&view=user&layout=proedit',$model->getError());
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=proedit'),$model->getError());
 			} else {
 				$app=Jfactory::getApplication();
-				$app->redirect('index.php?option=com_mue&view=user&layout=profile',"Profile Saved");
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'),"Profile Saved");
 			}
 		}
 		
@@ -98,10 +113,10 @@ class MUEViewUser extends JView
 		if ($userid != 0) {
 			if (!$paypal->cancelSub($sub)) {
 				$app=Jfactory::getApplication();
-				$app->redirect('index.php?option=com_mue&view=user&layout=subs',$paypal->error,'error');
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=subs'),$paypal->error,'error');
 			} else {
 				$app=Jfactory::getApplication();
-				$app->redirect('index.php?option=com_mue&view=user&layout=subs',"Recurring Subscription Cancellation Request Submitted");
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=subs'),"Recurring Subscription Cancellation Request Submitted");
 			}
 		}
 	

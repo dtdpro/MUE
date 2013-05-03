@@ -9,6 +9,7 @@ function MUEBuildRoute(&$query)
 	static $default;
 	static $userreg;
 	static $profile;
+	static $cerecords;
 	static $subs;
 	static $proedit;
 	static $login;
@@ -52,7 +53,10 @@ function MUEBuildRoute(&$query)
 				$subs = $items[$i]->id;
 			}
 			if (empty($proedit) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'user') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'proedit')) {
-				$peoedit = $items[$i]->id;
+				$proedit = $items[$i]->id;
+			}
+			if (empty($cerecords) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'user') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'cerecords')) {
+				$cerecords = $items[$i]->id;
 			}
 			
 			// Check to see if we have found the lost info menu item.
@@ -132,6 +136,15 @@ function MUEBuildRoute(&$query)
 		
 					case 'subs':
 						if ($query['Itemid'] = $subs) {
+							unset ($query['view']);
+							unset ($query['layout']);
+						} else {
+							$query['Itemid'] = $default;
+						}
+						break;
+		
+					case 'cerecords':
+						if ($query['Itemid'] = $cerecords) {
 							unset ($query['view']);
 							unset ($query['layout']);
 						} else {

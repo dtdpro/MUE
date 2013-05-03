@@ -9,6 +9,21 @@ jimport( 'joomla.application.component.model' );
  */
 class MUEModelUser extends JModel
 {
+	function getUserCerts() {
+		$db =& JFactory::getDBO();
+		$user=JFactory::getUser();
+		
+		$qci=$db->getQuery(true);
+		$qci->select('*');
+		$qci->from('#__mcme_certsissued as ci');
+		$qci->join('RIGHT','#__mcme_courses AS c ON ci.ci_course = c.course_id');
+		$qci->where('ci.ci_user = '.$user->id);
+		$qci->where('c.published >= 1');
+		$qci->order('ci.ci_issuedon DESC');
+		$db->setQuery($qci);
+		return $db->loadObjectList();
+	}
+	
 	function getUserFields($group,$showhidden=false,$all=false,$changable=false) {
 		$db =& JFactory::getDBO();
 		$qd = 'SELECT f.* FROM #__mue_uguf as g';
@@ -62,11 +77,12 @@ class MUEModelUser extends JModel
 			$fids = array();
 			$optfs = array();
 			$moptfs = array();
+			$mclists = array();
 			$flist = $this->getUserFields($ugroup,false,false,false);
 			foreach ($flist as $d) {
 				$fieldname = $d->uf_sname;
 				if ($d->uf_type == 'mailchimp') {
-					$mclist=$fieldname;
+					$mclists[]=$d;
 				} else if ($d->uf_type=='birthday') {
 					$fmonth = (int)$data[$fieldname.'_month'];
 					$fday = (int)$data[$fieldname.'_day'];
@@ -92,23 +108,26 @@ class MUEModelUser extends JModel
 				$optionsdata[$o->opt_id]=$o->opt_text;
 			}
 			
-			if ($mclist) {
+			foreach ($mclists as $mclist) {
 				include_once 'components/com_mue/lib/mailchimp.php';
-				if ($data[$mclist]) {
-					$mc = new MailChimp($cfg->mckey,$cfg->mclist);
+				if ($data[$mclist->uf_sname]) {
+					$mcf=$mclist->uf_sname;
+					$mc = new MailChimp($cfg->mckey,$mclist->uf_default);
 					$mcdata = array('FNAME'=>$item->fname, 'LNAME'=>$item->lname, 'OPTIN_IP'=>$_SERVER['REMOTE_ADDR'], 'OPTIN_TIME'=>$date->toSql(true));
-					$othervars=explode(",",$cfg->mcvars);
-					foreach ($othervars as $ov) {
-						list($mue, $mcv) = explode(":",$ov,2);
-						if (in_array($mue,$optfs)) $mcdata[$mcv] = $optionsdata[$item->$mue];
-						else if (in_array($mue,$moptfs)) {
-							$mcdata[$mcv] = "";
-							foreach (explode(" ",$item->$mue) as $mfo) {
-								$mcdata[$mcv] .= $optionsdata[$mfo]." ";
+					if ($cfg->mcvars) {
+						$othervars=explode(",",$cfg->mcvars);
+						foreach ($othervars as $ov) {
+							list($mue, $mcv) = explode(":",$ov,2);
+							if (in_array($mue,$optfs)) $mcdata[$mcv] = $optionsdata[$item->$mue];
+							else if (in_array($mue,$moptfs)) {
+								$mcdata[$mcv] = "";
+								foreach (explode(" ",$item->$mue) as $mfo) {
+									$mcdata[$mcv] .= $optionsdata[$mfo]." ";
+								}
 							}
-						}
-						else $mcdata[$mcv] = $item->$mue;
-					} 
+							else $mcdata[$mcv] = $item->$mue;
+						} 
+					}
 					if ($cfg->mcrgroup) {
 						if (!$substatus) $mcdata['GROUPINGS']=array(array("name"=>$cfg->mcrgroup,"groups"=>$cfg->mcreggroup));
 						else $mcdata['GROUPINGS']=array(array("name"=>$cfg->mcrgroup,"groups"=>$cfg->mcsubgroup));
@@ -116,20 +135,20 @@ class MUEModelUser extends JModel
 					$mcd=print_r($mcdata,true);
 					if ($mc->subStatus($item->email)) {
 						$mcresult = $mc->updateUser($item->email,$mcdata,false,"html");
-						if ($mcresult) { $item->$mclist=1; $usernotes .= $date->toSql(true)." EMail Subscription Updated on MailChimp List #".$cfg->mclist.' '.$mcd."\r\n"; }
-						else { $item->$mclist=1; $usernotes .= $date->toSql(true)." Could not update EMail subscription on MailChimp List #".$cfg->mclist." Error: ".$mc->error."\r\n"; }
+						if ($mcresult) { $item->$mcf=1; $usernotes .= $date->toSql(true)." EMail Subscription Updated on MailChimp List #".$mclist->uf_default.' '.$mcd."\r\n"; }
+						else { $item->$mcf=1; $usernotes .= $date->toSql(true)." Could not update EMail subscription on MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
 					}
 					else {
 						$mcresult = $mc->subscribeUser($item->email,$mcdata,false,"html");
-						if ($mcresult) { $item->$mclist=1; $usernotes .= $date->toSql(true)." EMail Subscribed to MailChimp List #".$cfg->mclist.' '.$mcd."\r\n"; }
-						else { $item->$mclist=0; $usernotes .= $date->toSql(true)." Could not subscribe EMail to MailChimp List #".$cfg->mclist." Error: ".$mc->error."\r\n"; }
+						if ($mcresult) { $item->$mcf=1; $usernotes .= $date->toSql(true)." EMail Subscribed to MailChimp List #".$mclist->uf_default.' '.$mcd."\r\n"; }
+						else { $item->$mcf=0; $usernotes .= $date->toSql(true)." Could not subscribe EMail to MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
 					}
 					
 				} else {
-					$mc = new MailChimp($cfg->mckey,$cfg->mclist);
+					$mc = new MailChimp($cfg->mckey,$mclist->uf_default);
 					$mcresult = $mc->unsubscribeUser($item->email);
-					if ($mcresult) { $item->$mclist=0; $usernotes .= $date->toSql(true)." EMail Unsubscribed from MailChimp List #".$cfg->mclist."\r\n"; }
-					else { $item->$mclist=0; $usernotes .= $date->toSql(true)." Could not unsubscribe EMail from MailChimp List #".$cfg->mclist." Error: ".$mc->error."\r\n"; }
+					if ($mcresult) { $item->$mcf=0; $usernotes .= $date->toSql(true)." EMail Unsubscribed from MailChimp List #".$mclist->uf_default."\r\n"; }
+					else { $item->$mcf=0; $usernotes .= $date->toSql(true)." Could not unsubscribe EMail from MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
 				}
 			}
 			

@@ -20,6 +20,11 @@ $config = MUEHelper::getConfig();
 				<a href="<?php echo JRoute::_('index.php?option=com_mue&view=user&layout=subs'); ?>"><?php echo JText::_('MOD_MUEUSERMENU_SUBS'); ?></a>
 			</li>
 			<?php endif; ?>
+			<?php  if (JComponentHelper::isEnabled('com_mcme', false)) : ?>
+			<li>
+				<a href="<?php echo JRoute::_('index.php?option=com_mue&view=user&layout=cerecords'); ?>"><?php echo JText::_('MOD_MUEUSERMENU_CERECORDS'); ?></a>
+			</li>
+			<?php endif; ?>
 			<li class="level1">
 				<a href="<?php echo JRoute::_('index.php?option=com_mue&view=login&layout=logout'); ?>" class="level1"><?php echo JText::_('MOD_MUEUSERMENU_LOGOUT'); ?></a>
 			</li>

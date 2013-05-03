@@ -84,11 +84,12 @@ class MUEModelUserReg extends JModel
 			//setup item and bind data
 			$fids = array();
 			$optfs = array();
+			$mclists = array();
 			$flist = $this->getUserFields($data['userGroupID'],false);
 			foreach ($flist as $d) {
 				$fieldname = $d->uf_sname;
 				if ($d->uf_type == 'mailchimp') {
-					$mclist=$fieldname;
+					$mclists[]=$d;
 				} else if ($d->uf_type == 'captcha') {
 					$capfield=$fieldname;
 				} else if ($d->uf_type=="mcbox" || $d->uf_type=="mlist") {
@@ -147,31 +148,34 @@ class MUEModelUserReg extends JModel
 			}
 			
 			//MailChimp List
-			if ($mclist) {
-				if ($data[$mclist])  {
+			foreach ($mclists as $mclist) {
+				if ($data[$mclist->uf_sname])  {
+					$mcf=$mclist->uf_sname;
 					include_once 'components/com_mue/lib/mailchimp.php';
-					$mc = new MailChimp($cfg->mckey,$cfg->mclist);
+					$mc = new MailChimp($cfg->mckey,$mclist->uf_default);
 					$mcdata = array('FNAME'=>$item->fname, 'LNAME'=>$item->lname, 'OPTIN_IP'=>$_SERVER['REMOTE_ADDR'], 'OPTIN_TIME'=>$date->toSql(true));
-					$othervars=explode(",",$cfg->mcvars);
-					foreach ($othervars as $ov) {
-						list($mue, $mcv) = explode(":",$ov,2);
-						if (in_array($mue,$optfs)) {
-							$mcdata[$mcv] = $optionsdata[$item->$mue];
-						} else if (in_array($mue,$moptfs)) {
-							$mcdata[$mcv] = "";
-							foreach (explode(" ",$item->$mue) as $mfo) {
-								$mcdata[$mcv] .= $optionsdata[$mfo]." ";
+					if ($cfg->mcvars) {
+						$othervars=explode(",",$cfg->mcvars);
+						foreach ($othervars as $ov) {
+							list($mue, $mcv) = explode(":",$ov,2);
+							if (in_array($mue,$optfs)) {
+								$mcdata[$mcv] = $optionsdata[$item->$mue];
+							} else if (in_array($mue,$moptfs)) {
+								$mcdata[$mcv] = "";
+								foreach (explode(" ",$item->$mue) as $mfo) {
+									$mcdata[$mcv] .= $optionsdata[$mfo]." ";
+								}
+							} else {
+								$mcdata[$mcv] = $item->$mue;
 							}
-						} else {
-							$mcdata[$mcv] = $item->$mue;
 						}
 					}
 					if ($cfg->mcrgroup) {
 						$mcdata['GROUPINGS']=array(array("name"=>$cfg->mcrgroup,"groups"=>$cfg->mcreggroup));
 					}
 					$mcresult = $mc->subscribeUser($item->email,$mcdata,false,"html");
-					if ($mcresult) { $item->$mclist=1; $usernotes .= $date->toSql(true)." Subscribed to MailChimp List #".$cfg->mclist."\r\n"; }
-					else { $item->$mclist=0; $usernotes .= $date->toSql(true)." Could not subscribe to MailChimp List #".$cfg->mclist." Error: ".$mc->error."\r\n"; }
+					if ($mcresult) { $item->$mcf=1; $usernotes .= $date->toSql(true)." Subscribed to MailChimp List #".$mclist->uf_default."\r\n"; }
+					else { $item->$mcf=0; $usernotes .= $date->toSql(true)." Could not subscribe to MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
 				} else {
 					$item->$mclist=0;
 				}
