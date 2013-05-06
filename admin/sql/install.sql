@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `#__mue_users` (
   PRIMARY KEY (`usr_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `cdev_mue_userdir` (
+CREATE TABLE IF NOT EXISTS `#__mue_userdir` (
   `ud_user` int(11) NOT NULL,
   `ud_lat` float NOT NULL,
   `ud_lon` float NOT NULL,
