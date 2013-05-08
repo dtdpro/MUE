@@ -109,7 +109,11 @@ class MUEModelUserReg extends JModel
 				if ($d->uf_type != 'captcha') $fids[]=$d->uf_id;
 				if ($d->uf_type != 'captcha' || $d->uf_type != 'password') $app->setUserState('mue.userreg.'.$fieldname, $item->$fieldname);
 			}
+
+			$ginfo=MUEHelper::getGroupInfo($data['userGroupID']);
+			$item->user_group = $ginfo->ug_name;
 			$item->site_url = JURI::base();
+			
 			if ($capfield) {
 				include_once 'components/com_mue/lib/securimage/securimage.php';
 				$securimage = new Securimage();
@@ -146,7 +150,7 @@ class MUEModelUserReg extends JModel
 				$this->setError('Save Error:'.$user->getError());
 				return false;
 			}
-			
+						
 			//MailChimp List
 			foreach ($mclists as $mclist) {
 				if ($data[$mclist->uf_sname])  {
@@ -177,7 +181,8 @@ class MUEModelUserReg extends JModel
 					if ($mcresult) { $item->$mcf=1; $usernotes .= $date->toSql(true)." Subscribed to MailChimp List #".$mclist->uf_default."\r\n"; }
 					else { $item->$mcf=0; $usernotes .= $date->toSql(true)." Could not subscribe to MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
 				} else {
-					$item->$mclist=0;
+					$mcf=$mclist->uf_sname;
+					$item->$mcf=0;
 				}
 			}
 			

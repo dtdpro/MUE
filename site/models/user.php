@@ -62,6 +62,7 @@ class MUEModelUser extends JModel
 		$isNew = true;
 		$db		= $this->getDbo();
 		$ugroup = $data['userGroupID'];
+		$ginfo=MUEHelper::getGroupInfo($ugroup);
 		$date = new JDate('now');
 		$usernotes = $date->toSql(true)." User Profile Updated"."\r\n";
 		$cfg = MUEHelper::getConfig();
@@ -99,6 +100,7 @@ class MUEModelUser extends JModel
 				$fids[]=$d->uf_id;
 			}
 			$item->site_url = JURI::base();
+			$item->user_group = $ginfo->ug_name;
 			
 			$odsql = "SELECT * FROM #__mue_ufields_opts";
 			$db->setQuery($odsql);
@@ -145,6 +147,7 @@ class MUEModelUser extends JModel
 					}
 					
 				} else {
+					$mcf=$mclist->uf_sname;
 					$mc = new MailChimp($cfg->mckey,$mclist->uf_default);
 					$mcresult = $mc->unsubscribeUser($item->email);
 					if ($mcresult) { $item->$mcf=0; $usernotes .= $date->toSql(true)." EMail Unsubscribed from MailChimp List #".$mclist->uf_default."\r\n"; }

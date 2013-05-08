@@ -21,7 +21,7 @@ class MUEHelper {
 		$user->userGroupID=$groupdata->userGroupID;
 		$user->userGroupName=$groupdata->userGroupName;
 		$user->lastUpdated=$groupdata->lastUpdated;
-		$qd = 'SELECT f.uf_sname,f.uf_type,u.usr_data,f.uf_change FROM #__mue_uguf as g';
+		$qd = 'SELECT f.*,u.usr_data FROM #__mue_uguf as g';
 		$qd.= ' RIGHT JOIN #__mue_ufields as f ON g.uguf_field = f.uf_id';
 		$qd.= ' RIGHT JOIN #__mue_users as u ON u.usr_field = f.uf_id && usr_user = '.$userid;
 		$qd.= ' WHERE g.uguf_group='.$user->userGroupID;
@@ -48,7 +48,7 @@ class MUEHelper {
 					else $user->$fn = ($u->usr_data == "1") ? "Yes" : "No";
 				} else if ($u->uf_type == 'mailchimp') {
 					include_once JPATH_BASE.'/components/com_mue/lib/mailchimp.php';
-					$mc = new MailChimp($cfg->mckey,$cfg->mclist);
+					$mc = new MailChimp($cfg->mckey,$u->uf_default);
 					$mcresult = $mc->subStatus($user->email);
 					if ($mcresult) $onlist=true;
 					else $onlist=false;
@@ -74,6 +74,18 @@ class MUEHelper {
 		$query = 'SELECT ug.userg_group AS userGroupID, ug.userg_update AS lastUpdated, g.* FROM #__mue_usergroup as ug ';
 		$query.= 'RIGHT JOIN #__mue_ugroups AS g ON ug.userg_group = g.ug_id ';
 		$query.= 'WHERE ug.userg_user="'.$userid.'"';
+		$db->setQuery($query);
+		$usergroup = $db->loadObject();
+		return $usergroup;
+	}
+	
+	function getGroupInfo($groupid) {
+		if (!$groupid) {
+			return false;
+		}
+		$db =& JFactory::getDBO();
+		$query = 'SELECT * FROM #__mue_ugroups ';
+		$query.= 'WHERE ug_id="'.$groupid.'"';
 		$db->setQuery($query);
 		$usergroup = $db->loadObject();
 		return $usergroup;
