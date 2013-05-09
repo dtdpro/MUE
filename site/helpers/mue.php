@@ -9,6 +9,24 @@ class MUEHelper {
 		return $cfg;
 	}
 	
+	function getDaysSinceLastUpdate() {
+		$user =& JFactory::getUser();
+		$userid = $user->id;
+		$db =& JFactory::getDBO();
+		$query = 'SELECT DATE(userg_update) FROM #__mue_usergroup ';
+		$query.= 'WHERE userg_user="'.$userid.'"';
+		$db->setQuery($query); 
+		$lu = $db->loadResult();
+		if ($lu != "0000-00-00") {
+			$datetime1 = new DateTime($lu);
+			$datetime2 = new DateTime('now');
+			$interval = $datetime1->diff($datetime2);
+			return (int)$interval->format('%a');
+		} else {
+			return -1;
+		}
+	}
+	
 	function getUserInfo($useids = false) {
 		$cfg = MUEHelper::getConfig();
 		$user =& JFactory::getUser();

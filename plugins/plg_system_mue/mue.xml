@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="2.5" type="plugin" group="system" method="upgrade">
+	<name>plg_system_mue</name>
+	<author>DtD Productions</author>
+	<creationDate>May 2013</creationDate>
+	<copyright>Copyright (C) 2013 DtD Prodcutions. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>info@dtdpro.com</authorEmail>
+	<authorUrl>www.dtdpro.com</authorUrl>
+	<version>1.0</version>
+	<description>PLG_MUE_XML_DESCRIPTION</description>
+	<files>
+		<filename plugin="mue">mue.php</filename>
+		<filename>index.html</filename>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.plg_system_mue.ini</language>
+		<language tag="en-GB">en-GB.plg_system_mue.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="forceupdate" type="radio" description="PLG_SYSTEM_MUE_FIELD_FORCEUPDATE_DESC" label="PLG_SYSTEM_MUE_FIELD_FORCEUPDATE_LABEL" default="0">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field name="updatedays" type="text" description="PLG_SYSTEM_MUE_FIELD_UPDATEDAYS_DESC" label="PLG_SYSTEM_MUE_FIELD_UPDATEDAYS_LABEL" filter="integer" default="180" />
+				<field name="quickicon" type="list" description="PLG_SYSTEM_MUE_FIELD_QUICKICON_DESC" label="PLG_SYSTEM_MUE_FIELD_QUICKICON_LABEL" filter="integer" default="1">
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>
