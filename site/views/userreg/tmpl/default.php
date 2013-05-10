@@ -22,7 +22,7 @@ $cecfg = MUEHelper::getConfig();
 echo $cecfg->REG_PAGE_CONTENT;
 echo '<div id="mue-user-reg">';
 $first = true;
-echo '<div class="mue-user-reg-row">';
+echo '<div class="mue-user-reg-row mue-rowh">';
 echo '<div class="mue-user-reg-label">User Group</div>';
 echo '<div class="mue-user-reg-hdr">';
 echo '<form action="'.JRoute::_("index.php?option=com_mue&view=userreg&tmpl=raw").'" method="post" name="regpickform" id="regpickform" class="">';

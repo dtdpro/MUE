@@ -21,9 +21,11 @@ if ($this->retry) echo '<div id="system">';
 <?php 
 if ($this->retry) echo '<div id="mue-user-reg">';
 echo '<form action="" method="post" name="regform" id="regform">';
-if ($this->retry) echo '<div class="mue-user-reg-row"><div class="mue-user-reg-label">User Group</div><div class="mue-user-reg-hdr">'.$this->groupinfo[0]->ug_name.'</div></div>';
+if ($this->retry) echo '<div class="mue-user-reg-row mue-rowh"><div class="mue-user-reg-label">User Group</div><div class="mue-user-reg-hdr">'.$this->groupinfo[0]->ug_name.'</div></div>';
 foreach($this->userfields as $f) {
-	echo '<div class="mue-user-reg-row">';
+	if ($ri==1) $ri=0;
+	else $ri=1;
+	echo '<div class="mue-user-reg-row mue-row'.($ri % 2).'">';
 	echo '<div class="mue-user-reg-label">';
 	if ($f->uf_req) echo "*";
 	$sname = $f->uf_sname;

@@ -10,7 +10,7 @@ $sub=MUEHelper::getActiveSub();
 
 if ($this->usercerts) {
 	echo '<table width="100%" class="zebra">';
-	echo '<thead><tr><th>Program</th><th>Issue Date</th><th>Credits</th><th></th></tr></thead><tbody>';
+	echo '<thead><tr><th>Program</th><th>Issue Date</th><th>Credits</th><th>Certificate</th></tr></thead><tbody>';
 	$total_credits = 0;
 	foreach ($this->usercerts as $course) {
 		echo '<tr><td><b>';
@@ -21,7 +21,7 @@ if ($this->usercerts) {
 		echo number_format($course->course_credits,2);
 		$total_credits = $total_credits + floatval($course->course_credits);
 		echo '</td><td> ';
-		echo '<a href="'.JURI::base( true ).'/components/com_mcme/gencert.php?certid='.$course->ci_id.'" target="_blank" class="button">Download Certificate</a>';
+		echo '<a href="'.JURI::base( true ).'/components/com_mcme/gencert.php?certid='.$course->ci_id.'" target="_blank" class="button">Download</a>';
 		echo '</td></tr>';
 	}
 	echo '</tbody>';

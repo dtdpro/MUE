@@ -20,11 +20,13 @@ defined('_JEXEC') or die('Restricted access');
 <?php 
 echo '<div id="mue-user-edit">';
 echo '<form action="" method="post" name="regform" id="regform">';
-echo '<div class="mue-user-edit-row"><div class="mue-user-edit-label">User Group</div><div class="mue-user-edit-hdr">'.$this->userinfo->userGroupName.'</div></div>';
+echo '<div class="mue-user-edit-row mue-rowh"><div class="mue-user-edit-label">User Group</div><div class="mue-user-edit-hdr">'.$this->userinfo->userGroupName.'</div></div>';
 foreach($this->userfields as $f) {
 	$sname = $f->uf_sname;
 	if ($f->uf_change) {
-		echo '<div class="mue-user-edit-row">';
+		if ($ri==1) $ri=0;
+		else $ri=1;
+		echo '<div class="mue-user-edit-row mue-row'.($ri % 2).'">';
 		echo '<div class="mue-user-edit-label">';
 		if ($f->uf_req) echo "*";
 		//field title
@@ -217,7 +219,9 @@ foreach($this->userfields as $f) {
 		echo '</div>';
 	} else {
 		if ($this->userinfo->$sname != '') {
-			echo '<div class="mue-user-edit-row">';
+			if ($ri==1) $ri=0;
+			else $ri=1;
+			echo '<div class="mue-user-edit-row mue-row'.($ri % 2).'">';
 			echo '<div class="mue-user-edit-label">';
 			if ($f->uf_req) echo "*";
 			//field title
