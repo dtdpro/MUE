@@ -5,11 +5,13 @@ defined('_JEXEC') or die('Restricted access');
 <h2 class="componentheading">User Profile</h2>
 <?php 
 $cfg=MUEHelper::getConfig();
+$sub=false;
 if ($cfg->subscribe){
 	$sub=MUEHelper::getActiveSub();
 	$numsubs=count(MUEHelper::getUserSubs());
 }
 echo $cfg->profile_top_content;
+if ($sub) echo $cfg->profile_sub_content;
 echo '<p><a href="'.JRoute::_("index.php?option=com_mue&view=user&layout=proedit").'" class="button">';
 echo 'Edit Profile</a>';
 

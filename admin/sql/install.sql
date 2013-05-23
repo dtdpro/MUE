@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS `#__mue_ufields` (
   `uf_max` int(11) NOT NULL DEFAULT '0',
   `uf_default` varchar(255) NOT NULL,
   `uf_userdir` tinyint(1) NOT NULL DEFAULT '0',
+  `params` TEXT NOT NULL
   PRIMARY KEY (`uf_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 

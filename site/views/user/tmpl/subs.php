@@ -13,6 +13,7 @@ if ($numsubs) {
 if (!$sub) {
 	echo '<p>Subscription Expired <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button">Renew Subscription</a></p>';
 } else {
+	echo $config->profile_sub_content;
 	if ((!$sub->sub_recurring || $sub->usrsub_rpstatus != "ActiveProfile") && $sub->daysLeft <= 10) {
 		echo '<p>Subscription Expires in '.$sub->daysLeft. ' day(s) <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button">Renew Subscription</a></p>';
 	}
