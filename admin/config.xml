@@ -49,11 +49,12 @@
 		<field name="sub_page_content" type="textarea" label="COM_MUE_CONFIG_FIELD_SUB_PAGE_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_SUB_PAGE_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
 		<field name="usersub_page_content" type="textarea" label="COM_MUE_CONFIG_FIELD_USERSUB_PAGE_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_USERSUB_PAGE_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
 		<field name="profile_sub_content" type="textarea" label="COM_MUE_CONFIG_FIELD_PROFILE_SUB_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_PROFILE_SUB_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
-		<field name="subemail_content" type="textarea" label="COM_MUE_CONFIG_FIELD_SUBEMAIL_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_SUBEMAIL_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
+		<field name="spacer1" type="spacer" hr="true" />
 		<field name="subemail_email" type="text" label="COM_MUE_CONFIG_FIELD_SUBEMAIL_EMAIL_LABEL" description="COM_MUE_CONFIG_FIELD_SUBEMAIL_EMAIL_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="subemail_name" type="text" label="COM_MUE_CONFIG_FIELD_SUBEMAIL_NAME_LABEL" description="COM_MUE_CONFIG_FIELD_SUBEMAIL_NAME_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="subemail_subject" type="text" label="COM_MUE_CONFIG_FIELD_SUBEMAIL_SUBJECT_LABEL" description="COM_MUE_CONFIG_FIELD_SUBEMAIL_SUBJECT_DESC" size="70" class="inputbox" required="false" default="" />
-		<field name="spacer1" type="spacer" hr="true" />
+		<field name="subemail_content" type="textarea" label="COM_MUE_CONFIG_FIELD_SUBEMAIL_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_SUBEMAIL_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
+		<field name="spacer2" type="spacer" hr="true" />
 		<field name="paypal" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_PAYPAL_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPAL_DESC" default="1">
 			<option value="0">No</option>
 			<option value="1">Yes</option>
@@ -65,7 +66,7 @@
 		<field name="paypal_username" type="text" label="COM_MUE_CONFIG_FIELD_PAYPALUSERNAME_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPALUSERNAME_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="paypal_password" type="text" label="COM_MUE_CONFIG_FIELD_PAYPALPASSWORD_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPALPASSWORD_DESC" size="70" class="inputbox" required="false" default="" /> 
 		<field name="paypal_signature" type="text" label="COM_MUE_CONFIG_FIELD_PAYPALSIG_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPALSIG_DESC" size="70" class="inputbox" required="false" default="" /> 
-		<field name="spacer2" type="spacer" hr="true" />
+		<field name="spacer3" type="spacer" hr="true" />
 		<field name="paybycheck" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_PAYBYCHECK_LABEL" description="COM_MUE_CONFIG_FIELD_PAYBYCHECK_DESC" default="1">
 			<option value="0">No</option>
 			<option value="1">Yes</option>

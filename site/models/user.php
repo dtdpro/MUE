@@ -9,17 +9,18 @@ jimport( 'joomla.application.component.model' );
  */
 class MUEModelUser extends JModel
 {
-	function getUserCerts() {
+	function getUserCERecords() {
 		$db =& JFactory::getDBO();
 		$user=JFactory::getUser();
 		
 		$qci=$db->getQuery(true);
 		$qci->select('*');
-		$qci->from('#__mcme_certsissued as ci');
-		$qci->join('RIGHT','#__mcme_courses AS c ON ci.ci_course = c.course_id');
-		$qci->where('ci.ci_user = '.$user->id);
+		$qci->from('#__mcme_sessions as s');
+		$qci->join('RIGHT','#__mcme_courses AS c ON s.sess_course = c.course_id');
+		$qci->join('LEFT','#__mcme_certsissued AS ci ON ci.ci_sess = s.sess_id');
+		$qci->where('s.sess_user = '.$user->id);
 		$qci->where('c.published >= 1');
-		$qci->order('ci.ci_issuedon DESC');
+		$qci->order('s.sess_start DESC');
 		$db->setQuery($qci);
 		return $db->loadObjectList();
 	}

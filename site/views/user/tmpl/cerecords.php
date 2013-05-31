@@ -8,20 +8,31 @@ $config = MUEHelper::getConfig();
 
 $sub=MUEHelper::getActiveSub();
 
-if ($this->usercerts) {
+if ($this->userrecs) {
 	echo '<table width="100%" class="zebra">';
-	echo '<thead><tr><th>Program</th><th>Issue Date</th><th>Credits</th><th>Certificate</th></tr></thead><tbody>';
+	echo '<thead><tr><th>Program</th><th>Completed</th><th>Status</th><th>Credits</th><th>Certificate</th></tr></thead><tbody>';
 	$total_credits = 0;
-	foreach ($this->usercerts as $course) {
+	foreach ($this->userrecs as $course) {
 		echo '<tr><td><b>';
-		echo $course->course_certtitle;
+		echo $course->course_title;
 		echo '</b></td><td>';
-		echo date("F d, Y", strtotime($course->ci_issuedon));
+		if ($course->sess_end != "0000-00-00 00:00:00") echo date("F d, Y", strtotime($course->sess_end));
 		echo '</td><td>';
-		echo number_format($course->course_credits,2);
-		$total_credits = $total_credits + floatval($course->course_credits);
+		switch ($course->sess_pstatus) {
+			case "incomplete": echo "Incomplete"; break;
+			case "pass": echo "Pass"; break;
+			case "fail": echo "Fail"; break;
+			default: echo "Complete"; break;
+		}
+		echo '</td><td>';
+		if ($course->sess_pstatus == "pass") {
+			echo number_format($course->course_credits,2);
+			$total_credits = $total_credits + floatval($course->course_credits);
+		}
 		echo '</td><td> ';
-		echo '<a href="'.JURI::base( true ).'/components/com_mcme/gencert.php?certid='.$course->ci_id.'" target="_blank" class="button">Download</a>';
+		if ($course->sess_pstatus == "pass" && $course->course_hascert) {
+			echo '<a href="'.JURI::base( true ).'/components/com_mcme/gencert.php?certid='.$course->ci_id.'" target="_blank" class="button">Download</a>';
+		}
 		echo '</td></tr>';
 	}
 	echo '</tbody>';

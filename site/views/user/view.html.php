@@ -39,8 +39,8 @@ class MUEViewUser extends JView
 		$user =& JFactory::getUser();
 		$userid = $user->id;
 		if ($userid != 0) {
-			$usercerts=$model->getUserCerts();
-			$this->assignRef('usercerts',$usercerts);
+			$userrecs=$model->getUserCERecords();
+			$this->assignRef('userrecs',$userrecs);
 		}
 		
 	}
