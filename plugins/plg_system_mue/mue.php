@@ -19,7 +19,7 @@ class plgSystemMUE extends JPlugin
 		$exceptions[]="com_mue";
 		//$exceptions[]="com_mcor";
 		if (in_array(JRequest::getVar('option'),$exceptions) && $user->id) {
-			return;
+			
 		} else if ($this->params->get('forceupdate', false) && $user->id) {
 			// Load helper
 			require_once('components/com_mue'.DS.'helpers'.DS.'mue.php');
@@ -29,6 +29,38 @@ class plgSystemMUE extends JPlugin
 				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=proedit'));
 			}
 		}
+		
+		//Redirect com_users
+		if ( JRequest::getVar('option') == 'com_users' && $this->params->get('usersredir', false)) {
+			switch ( JRequest::getVar('view') ) {
+				case 'profile':
+					$view='user';
+					$layout = 'profile';
+					break;
+				case 'registration':
+					$view =	'userreg';
+					break;
+				case 'reset':
+				case 'remind':
+					$view = 'lost';
+					break;
+				case 'logout':
+					$view = 'login';
+					$layout = 'logout';
+					break;
+				case 'login':
+				default:
+					$view = 'login';
+					$layout = 'login';
+					break;
+			}
+		
+			$url = 'index.php?option=com_mue&view='.$view. ( $layout ? '&layout=' . $layout : null );
+		
+			$app->redirect(JRoute::_( $url ));
+		}
+		
+		return;
 	}
 	
 

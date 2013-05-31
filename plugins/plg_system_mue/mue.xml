@@ -7,7 +7,7 @@
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>info@dtdpro.com</authorEmail>
 	<authorUrl>www.dtdpro.com</authorUrl>
-	<version>1.0</version>
+	<version>1.1</version>
 	<description>PLG_MUE_XML_DESCRIPTION</description>
 	<files>
 		<filename plugin="mue">mue.php</filename>
@@ -25,6 +25,10 @@
 					<option value="1">JYES</option>
 				</field>
 				<field name="updatedays" type="text" description="PLG_SYSTEM_MUE_FIELD_UPDATEDAYS_DESC" label="PLG_SYSTEM_MUE_FIELD_UPDATEDAYS_LABEL" filter="integer" default="180" />
+				<field name="usersredir" type="radio" description="PLG_SYSTEM_MUE_FIELD_USERSREDIR_DESC" label="PLG_SYSTEM_MUE_FIELD_USERSREDIR_LABEL" default="1">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
 				<field name="quickicon" type="list" description="PLG_SYSTEM_MUE_FIELD_QUICKICON_DESC" label="PLG_SYSTEM_MUE_FIELD_QUICKICON_LABEL" filter="integer" default="1">
 					<option value="1">JYES</option>
 					<option value="0">JNO</option>
