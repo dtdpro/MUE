@@ -20,7 +20,7 @@ $config = MUEHelper::getConfig();
 				<a href="<?php echo JRoute::_('index.php?option=com_mue&view=user&layout=subs'); ?>"><?php echo JText::_('MOD_MUEUSERMENU_SUBS'); ?></a>
 			</li>
 			<?php endif; ?>
-			<?php  if (JComponentHelper::isEnabled('com_mcme', false)) : ?>
+			<?php  if ($params->get('mcme_installed', 0)) : ?>
 			<li>
 				<a href="<?php echo JRoute::_('index.php?option=com_mue&view=user&layout=cerecords'); ?>"><?php echo JText::_('MOD_MUEUSERMENU_CERECORDS'); ?></a>
 			</li>
