@@ -9,6 +9,31 @@ jimport( 'joomla.application.component.model' );
  */
 class MUEModelUser extends JModel
 {
+	function getGroups() {
+		$db =& JFactory::getDBO();
+		$user =& JFactory::getUser();
+		$aid = $user->getAuthorisedViewLevels();
+		$qd = 'SELECT ug.* FROM #__mue_ugroups as ug WHERE ug.access IN ('.implode(",",$aid).')';
+		$qd.= ' ORDER BY ug.ordering';
+		$db->setQuery( $qd );
+		$ugroups = $db->loadObjectList();
+		return $ugroups;
+	}
+	
+	function saveGroup($groupid) {
+		$db =& JFactory::getDBO();
+		$user=JFactory::getUser();
+		$date = new JDate('now');
+		$usernotes = "User Group Changed\r\n";
+		$qud = 'UPDATE #__mue_usergroup SET userg_group = '.$groupid.', userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->getEscaped($usernotes).'") WHERE userg_user = '.$user->id;
+		$db->setQuery($qud);
+		if (!$db->query()) {
+			$this->setError($db->getErrorMsg());
+			return false;
+		}
+		return true;
+	}
+	
 	function getUserCERecords() {
 		$db =& JFactory::getDBO();
 		$user=JFactory::getUser();

@@ -301,4 +301,152 @@ class MUEModelUser extends JModelAdmin
 
 		return true;
 	}
+	
+	public function batch($commands, $pks, $contexts)
+	{
+		// Sanitize user ids.
+		$pks = array_unique($pks);
+		JArrayHelper::toInteger($pks);
+	
+		// Remove any values of zero.
+		if (array_search(0, $pks, true))
+		{
+			unset($pks[array_search(0, $pks, true)]);
+		}
+	
+		if (empty($pks))
+		{
+			$this->setError(JText::_('COM_MUE_USERS_NO_ITEM_SELECTED'));
+			return false;
+		}
+	
+		$done = false;
+	
+		if (!empty($commands['group_id']))
+		{
+			$cmd = JArrayHelper::getValue($commands, 'group_action', 'add');
+	
+			if (!$this->batchUser((int) $commands['group_id'], $pks, $cmd))
+			{
+				return false;
+			}
+			$done = true;
+		}
+	
+		if (!$done)
+		{
+			$this->setError(JText::_('JLIB_APPLICATION_ERROR_INSUFFICIENT_BATCH_INFORMATION'));
+			return false;
+		}
+	
+		// Clear the cache
+		$this->cleanCache();
+	
+		return true;
+	}
+	
+	public function batchUser($group_id, $user_ids, $action)
+	{
+		// Get the DB object
+		$db = $this->getDbo();
+	
+		JArrayHelper::toInteger($user_ids);
+	
+		// Non-super admin cannot work with super-admin group
+		if ((!JFactory::getUser()->get('isRoot') && JAccess::checkGroup($group_id, 'core.admin')) || $group_id < 1)
+		{
+			$this->setError(JText::_('COM_USERS_ERROR_INVALID_GROUP'));
+			return false;
+		}
+	
+		switch ($action)
+		{
+			// Sets users to a selected group
+			case 'set':
+				$doDelete	= 'all';
+				$doAssign	= true;
+				break;
+	
+				// Remove users from a selected group
+			case 'del':
+				$doDelete	= 'group';
+				break;
+	
+				// Add users to a selected group
+			case 'add':
+			default:
+				$doAssign	= true;
+				break;
+		}
+	
+		// Remove the users from the group if requested.
+		if (isset($doDelete))
+		{
+			$query = $db->getQuery(true);
+	
+			// Remove users from the group
+			$query->delete($db->quoteName('#__user_usergroup_map'));
+			$query->where($db->quoteName('user_id') . ' IN (' . implode(',', $user_ids) . ')');
+	
+			// Only remove users from selected group
+			if ($doDelete == 'group')
+			{
+				$query->where($db->quoteName('group_id') . ' = ' . (int) $group_id);
+			}
+	
+			$db->setQuery($query);
+	
+			// Check for database errors.
+			if (!$db->query())
+			{
+				$this->setError($db->getErrorMsg());
+				return false;
+			}
+		}
+	
+		// Assign the users to the group if requested.
+		if (isset($doAssign))
+		{
+			$query = $db->getQuery(true);
+	
+			// First, we need to check if the user is already assigned to a group
+			$query->select($db->quoteName('user_id'));
+			$query->from($db->quoteName('#__user_usergroup_map'));
+			$query->where($db->quoteName('group_id') . ' = ' . (int) $group_id);
+			$db->setQuery($query);
+			$users = $db->loadColumn();
+	
+			// Build the values clause for the assignment query.
+			$query->clear();
+			$groups = false;
+			foreach ($user_ids as $id)
+			{
+				if (!in_array($id, $users))
+				{
+					$query->values($id . ',' . $group_id);
+					$groups = true;
+				}
+			}
+	
+			// If we have no users to process, throw an error to notify the user
+			if (!$groups)
+			{
+				$this->setError(JText::_('COM_USERS_ERROR_NO_ADDITIONS'));
+				return false;
+			}
+	
+			$query->insert($db->quoteName('#__user_usergroup_map'));
+			$query->columns(array($db->quoteName('user_id'), $db->quoteName('group_id')));
+			$db->setQuery($query);
+	
+			// Check for database errors.
+			if (!$db->query())
+			{
+				$this->setError($db->getErrorMsg());
+				return false;
+			}
+		}
+	
+		return true;
+	}
 }

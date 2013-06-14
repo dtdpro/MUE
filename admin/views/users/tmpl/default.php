@@ -53,6 +53,9 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_GROUP' , 'g.ug_name', $listDirn, $listOrder); ?>
 				</th>
 				<th width="150">
+					<?php echo JText::_('COM_MUE_USER_HEADING_JGROUP'); ?>
+				</th>
+				<th width="150">
 					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_JOINSITE' , 'g.userg_siteurl', $listDirn, $listOrder); ?>
 				</th>
 				<th class="nowrap" width="5%">
@@ -99,6 +102,9 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 				</td>
 				<td class="center">
 					<?php echo $item->ug_name; ?>
+				</td>
+				<td class="center">
+					<?php echo implode('<br />',$item->jgroups); ?>
 				</td>
 				<td class="center">
 					<?php echo $item->userg_siteurl; ?>
@@ -150,7 +156,32 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 		<?php endforeach; ?>
 		</tbody>
 	</table>
+	<?php 
+	$options = array(
+	JHtml::_('select.option', 'add', JText::_('COM_USERS_BATCH_ADD')),
+	JHtml::_('select.option', 'del', JText::_('COM_USERS_BATCH_DELETE')),
+	JHtml::_('select.option', 'set', JText::_('COM_USERS_BATCH_SET'))
+	);
 	
+	?>
+	<fieldset class="batch">
+		<legend><?php echo JText::_('COM_USERS_BATCH_OPTIONS');?></legend>
+		<label id="batch-choose-action-lbl" for="batch-choose-action"><?php echo JText::_('COM_USERS_BATCH_GROUP') ?></label>
+		<fieldset id="batch-choose-action" class="combo">
+			<select name="batch[group_id]" class="inputbox" id="batch-group-id">
+				<option value=""><?php echo JText::_('JSELECT') ?></option>
+				<?php echo JHtml::_('select.options', JHtml::_('user.groups', JFactory::getUser()->get('isRoot'))); ?>
+			</select>
+			<?php echo JHtml::_('select.radiolist', $options, 'batch[group_action]', '', 'value', 'text', 'add') ?>
+		</fieldset>
+	
+		<button type="submit" onclick="Joomla.submitbutton('user.batch');">
+			<?php echo JText::_('JGLOBAL_BATCH_PROCESS'); ?>
+		</button>
+		<button type="button" onclick="document.id('batch-group-id').value=''">
+			<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>
+		</button>
+	</fieldset>
 	<div>
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />

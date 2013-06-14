@@ -23,6 +23,12 @@ class MUEViewUser extends JView
 			case "proedit": 
 				$this->userEdit();
 				break;
+			case "chggroup": 
+				$this->changeGroup();
+				break;
+			case "savegroup": 
+				$this->saveGroup();
+				break;
 			case "saveuser": 
 				$this->saveUser();
 				break;
@@ -31,6 +37,38 @@ class MUEViewUser extends JView
 				break;
 		}
 		parent::display($tpl);
+	}
+	
+	protected function saveGroup() {
+		JRequest::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$model =& $this->getModel();
+		$newgroup = JRequest::getVar('newgroup');
+		$user =& JFactory::getUser();
+		$userid = $user->id;
+		if ($userid != 0) {
+			if (!$model->saveGroup($newgroup)) {
+				$app=Jfactory::getApplication();
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'),'Could not change group');
+			} else {
+				$app=Jfactory::getApplication();
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'),"User Group Changed");
+			}
+		}
+		
+	}
+	
+	protected function changeGroup() {
+		$model =& $this->getModel();
+		$print = JRequest::getVar('print');
+		$user =& JFactory::getUser();
+		$userid = $user->id;
+		if ($userid != 0) {
+			$userinfo=MUEHelper::getUserInfo(true);
+			$groups=$model->getGroups();
+			$this->assignRef('currentgroup',$userinfo->userGroupID);
+			$this->assignRef('groups',$groups);
+		}
+		
 	}
 	
 	protected function userCerts() {

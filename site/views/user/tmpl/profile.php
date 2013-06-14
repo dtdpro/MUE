@@ -16,7 +16,7 @@ echo '<p><a href="'.JRoute::_("index.php?option=com_mue&view=user&layout=proedit
 echo 'Edit Profile</a>';
 
 echo '<div id="mue-user-info">';
-echo '<div class="mue-user-info-row mue-rowh"><div class="mue-user-info-label">User Group</div><div class="mue-user-info-hdr">'.$this->userinfo->userGroupName.'</div></div>';
+echo '<div class="mue-user-info-row mue-rowh"><div class="mue-user-info-label">User Group</div><div class="mue-user-info-hdr">'.$this->userinfo->userGroupName.' <a href="'.JRoute::_('index.php?option=com_mue&view=user&layout=chggroup').'" class="button">Change Group</a></div></div>';
 if ($cfg->subscribe){
 	if ($numsubs) {
 		if (!$sub) {

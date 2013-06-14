@@ -260,7 +260,19 @@ class MUEControllerUser extends JControllerForm
 
 		return true;
 	}
+
+	public function batch($model = null)
+	{
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 	
+		// Set the model
+		$model = $this->getModel('User', '', array());
+	
+		// Preset the redirect
+		$this->setRedirect(JRoute::_('index.php?option=com_mue&view=users' . $this->getRedirectToListAppend(), false));
+	
+		return parent::batch($model);
+	}
 
 
 	

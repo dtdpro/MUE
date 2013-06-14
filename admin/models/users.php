@@ -77,6 +77,7 @@ class MUEModelUsers extends JModelList
 		}
 	
 		$items=$this->getSubStatus($items);
+		$items=$this->getJoomlaGroups($items);
 		// Add the items to the internal cache.
 		$this->cache[$store] = $items;
 	
@@ -146,6 +147,21 @@ class MUEModelUsers extends JModelList
 			$db->setQuery($query);
 			$sub = $db->loadObject();
 			$i->sub = $sub;
+		}
+		return $items;
+	}
+	
+	protected function getJoomlaGroups($items) {
+		foreach ($items as &$i) {
+			$db =& JFactory::getDBO();
+			$query = $db->getQuery(true);
+			$query->select('g2.title')
+				->from('#__user_usergroup_map AS map')
+				->where('map.user_id = '.$i->id)
+				->join('LEFT', '#__usergroups AS g2 ON g2.id = map.group_id');
+			$db->setQuery($query);
+			$jgroups = $db->loadResultArray();
+			$i->jgroups = $jgroups;
 		}
 		return $items;
 	}

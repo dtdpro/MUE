@@ -57,7 +57,7 @@
 			rows="4"
 			cols="70"
 			class="inputbox"
-			required="true"
+			required="false"
 			filter="safehtml"
 			buttons="false"
 		/>
