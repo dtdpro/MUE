@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="1.7" method="upgrade">
+	<name>com_mue</name>
+	<creationDate>2012.06.01</creationDate>
+	<author>DtD Productions</author>
+	<authorEmail>info@dtdpro.com</authorEmail>
+	<authorUrl>http://www.dtdpro.com</authorUrl>
+	<copyright>Copyright 2012-2013 DtD Productions</copyright>
+	<license>GPL v2</license>
+	<version>1.6.4</version>
+	<releaseDate>2013.05.15</releaseDate>
+	<releaseType>Update</releaseType>
+	<downloadUrl>http://www.dtdpro.com/</downloadUrl>
+	<description>COM_MUE_DESC</description>
+	<install>
+		<sql>
+			<file charset="utf8" driver="mysql">sql/install.sql</file>
+		</sql>
+	</install>	
+	<update>
+		<schemas>
+			<schemapath type="mysql">sql/updates</schemapath>
+		</schemas>
+	</update>
+	<files folder="site">
+		<filename>index.html</filename>
+		<filename>router.php</filename>
+		<filename>mue.php</filename>
+		<filename>controller.php</filename>
+		<filename>paypalipn.php</filename>
+		<filename>subplans.php</filename>
+		<filename>metadata.xml</filename>
+		<folder>models</folder>
+		<folder>views</folder>
+		<folder>lib</folder>
+		<folder>helpers</folder>
+	</files>
+    <media destination="com_mue" folder="media">
+            <filename>index.html</filename>
+            <folder>scripts</folder>
+			<folder>images</folder>
+    </media>
+	<administration>
+		<!-- Administration Menu Section -->
+		<menu img="../media/com_mue/images/mue-16x16.png">COM_MUE_MENU</menu>
+		<submenu>
+			<menu view="ugroups">COM_MUE_SUBMENU_UGROUPS</menu>
+			<menu view="ufields">COM_MUE_SUBMENU_UFIELDS</menu>
+			<menu view="uplans">COM_MUE_SUBMENU_UPLANS</menu>
+			<menu view="users">COM_MUE_SUBMENU_USERS</menu>
+			<menu view="usersubs">COM_MUE_SUBMENU_USERSUBS</menu>
+		</submenu>
+		<files folder="admin">
+			<filename>index.html</filename>
+			<filename>controller.php</filename>
+			<filename>mue.php</filename>
+			<filename>access.xml</filename>
+			<filename>config.xml</filename>
+			<folder>models</folder>
+			<folder>controllers</folder>
+			<folder>tables</folder>
+			<folder>views</folder>
+			<folder>helpers</folder>
+			<folder>sql</folder>
+		</files>
+		<languages folder="admin">
+			<language tag="en-GB">language/en-GB.com_mue.ini</language>
+			<language tag="en-GB">language/en-GB.com_mue.sys.ini</language>
+		</languages>	
+	</administration>
+</extension>

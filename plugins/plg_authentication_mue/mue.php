@@ -1,0 +1,25 @@
+<?php
+
+// No direct access
+defined('_JEXEC') or die;
+
+class plgAuthenticationMUE extends JPlugin
+{
+	function onUserAuthenticate($credentials, $options, &$response) {
+		
+	}
+	function onUserAuthorisation($user, $options)
+	{
+		require_once('components/com_mue'.DS.'helpers'.DS.'mue.php');
+		$config=MUEHelper::getConfig();
+		$db =& JFactory::getDBO();
+		$query = $db->getQuery(true);
+		$query->select($db->quoteName('id'));
+		$query->from($db->quoteName('#__users'));
+		$query->where($db->quoteName('username') . ' = ' . $db->Quote($user->username));
+		$db->setQuery($query);
+		$userid = $db->loadResult();
+		MUEHelper::updateSubJoomlaGroup($userid);
+		return true;
+	}
+}
