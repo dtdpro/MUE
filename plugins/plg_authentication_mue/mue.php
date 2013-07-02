@@ -10,6 +10,10 @@ class plgAuthenticationMUE extends JPlugin
 	}
 	function onUserAuthorisation($user, $options)
 	{
+		$app = JFactory::getApplication();
+		if ($app->isAdmin()) {
+			return true;
+		}
 		require_once('components/com_mue'.DS.'helpers'.DS.'mue.php');
 		$config=MUEHelper::getConfig();
 		$db =& JFactory::getDBO();
