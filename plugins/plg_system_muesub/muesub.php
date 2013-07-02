@@ -23,7 +23,7 @@ class plgSystemMUESub extends JPlugin
 			
 		} else if ($user->id) {
 			// Load helper
-			require_once('components/com_mue'.DS.'helpers'.DS.'mue.php');
+			require_once('components/com_mue/helpers/mue.php');
 			$config=MUEHelper::getConfig();
 			$numsubs=count(MUEHelper::getUserSubs());
 			if ($config->subscribe && $user->id) {

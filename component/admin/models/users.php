@@ -56,6 +56,8 @@ class MUEModelUsers extends JModelList
 	
 	public function getItems()
 	{
+		$cfg = MUEHelper::getConfig();
+		
 		// Get a storage key.
 		$store = $this->getStoreId();
 	
@@ -76,7 +78,12 @@ class MUEModelUsers extends JModelList
 			return false;
 		}
 	
-		$items=$this->getSubStatus($items);
+		//Get Subscription Information if enabled
+		if ($cfg->subscribe) {
+			$items=$this->getSubStatus($items);
+		}
+		
+		//Get Joomla Groups
 		$items=$this->getJoomlaGroups($items);
 		// Add the items to the internal cache.
 		$this->cache[$store] = $items;
@@ -94,9 +101,8 @@ class MUEModelUsers extends JModelList
 
 		// Select some fields
 		$query->select('u.*');
-
-		// From the hello table
 		$query->from('#__users as u');
+		
 		// Join over the users.
 		$query->select('ug.userg_update as lastUpdate,ug.userg_notes,ug.userg_siteurl');
 		$query->join('LEFT', '#__mue_usergroup AS ug ON u.id = ug.userg_user');
@@ -130,23 +136,34 @@ class MUEModelUsers extends JModelList
 		$orderCol	= $this->state->get('list.ordering');
 		$orderDirn	= $this->state->get('list.direction');
 		
-		
-		
 		$query->order($db->escape($orderCol.' '.$orderDirn));
 				
 		return $query;
 	}
 	
 	protected function getSubStatus($items) {
+		$db =& JFactory::getDBO();
 		foreach ($items as &$i) {
-			$db =& JFactory::getDBO();
-			$query = 'SELECT s.*,p.*,DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft FROM #__mue_usersubs as s ';
-			$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
-			$query.= 'WHERE s.usrsub_status != "notyetstarted" && s.usrsub_user="'.$i->id.'" ';
-			$query.= 'ORDER BY daysLeft DESC, s.usrsub_end DESC, s.usrsub_time DESC LIMIT 1';
-			$db->setQuery($query);
-			$sub = $db->loadObject();
-			$i->sub = $sub;
+			//Days Left
+			$query = $db->getQuery(true);
+			$query->select('s.*,p.*,DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft');
+			$query->from('#__mue_usersubs as s');
+			$query->join('LEFT','#__mue_subs AS p ON s.usrsub_sub = p.sub_id');
+			$query->where('s.usrsub_status != "notyetstarted"');
+			$query->where('s.usrsub_user="'.$i->id.'"');
+			$query->order('daysLeft DESC, s.usrsub_end DESC, s.usrsub_time DESC');
+			$db->setQuery($query,0,1);
+			$i->sub = $db->loadObject();
+			
+			//Member Since
+			$query->clear();
+			$query->select('s.usrsub_start');
+			$query->from('#__mue_usersubs as s');
+			$query->where('s.usrsub_status IN ("completed","verified","accepted")');
+			$query->where('s.usrsub_user="'.$i->id.'"');
+			$query->order('s.usrsub_start ASC');
+			$db->setQuery($query,0,1);
+			$i->member_since = $db->loadResult();
 		}
 		return $items;
 	}
@@ -167,9 +184,10 @@ class MUEModelUsers extends JModelList
 	}
 	
 	public function getUGroups() {
-		$query = 'SELECT ug_id AS value, ug_name AS text' .
-				' FROM #__mue_ugroups' .
-				' ORDER BY ug_name';
+		$query = $this->_db->getQuery(true);
+		$query->select('ug_id AS value, ug_name AS text');
+		$query->from('#__mue_ugroups');
+		$query->order('ug_name ASC');
 		$this->_db->setQuery($query);
 		return $this->_db->loadObjectList();
 	}
@@ -187,7 +205,11 @@ class MUEModelUsers extends JModelList
 	public function getItemsCSVEml() {
 		$db = JFactory::getDBO();
 		$cfg = MUEHelper::getConfig();
-		$q = 'SELECT usr_user FROM #__mue_users WHERE usr_field = '.$cfg->on_list_field.' && usr_data = "1"';
+		$q = $db->getQuery(true);
+		$q->select('usr_user');
+		$q->from('#__mue_users');
+		$q->where('usr_field = '.$cfg->on_list_field);
+		$q->where('usr_data = "1"');
 		$db->setQuery($q);
 		$ulist = $db->loadColumn();
 		$query=$this->getListQuery($ulist);
@@ -200,9 +222,13 @@ class MUEModelUsers extends JModelList
 	
 	public function getFields() {
 		$db =& JFactory::getDBO();
-		$q2  = 'SELECT * FROM #__mue_ufields ';
-		$q2 .= 'WHERE uf_cms = 0 && published >= 1  ';
-		$q2 .= 'ORDER BY ordering';
+		$q2 = $db->getQuery(true);
+		$q2->select('*');
+		$q2->from('#__mue_ufields');
+		$q2->where('uf_cms = 0');
+		$q2->where('published >= 1');
+		$q2->where('uf_type NOT IN ("message","captcha","password")');
+		$q2->order('ordering');
 		$db->setQuery($q2);
 		$fields = $db->loadObjectList();
 		return $fields;
@@ -215,8 +241,10 @@ class MUEModelUsers extends JModelList
 				$sname = $f->uf_sname;
 				$ud = Array();
 				$fid=$f->uf_id;
-				$q2  = 'SELECT usr_user,usr_data FROM #__mue_users ';
-				$q2 .= 'WHERE usr_field = '.$fid;
+				$q2 = $db->getQuery(true);
+				$q2->select('usr_user,usr_data');
+				$q2->from('#__mue_users');
+				$q2->where('usr_field = '.$fid);
 				$db->setQuery($q2);
 				$opts = $db->loadObjectList();
 				foreach ($opts as $o) {
@@ -236,8 +264,11 @@ class MUEModelUsers extends JModelList
 		foreach ($fdata as $f) {
 			if (!$f->uf_cms) $fids[]=$f->uf_id;
 		}
-		$q2  = 'SELECT * FROM #__mue_ufields_opts ';
-		$q2 .= 'WHERE opt_field IN ('.implode(",",$fids).') && published >= 1  ';
+		$q2 = $db->getQuery(true);
+		$q2->select('*');
+		$q2->from('#__mue_ufields_opts');
+		$q2->where('opt_field IN ('.implode(",",$fids).')');
+		$q2->where('published >= 1');
 		$db->setQuery($q2);
 		$opts = $db->loadObjectList();
 		$fod = Array();

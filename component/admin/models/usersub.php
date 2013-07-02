@@ -60,6 +60,7 @@ class MUEModelUserSub extends JModelAdmin
 	public function save($data) {
 		$cfg = MUEHelper::getConfig();
 		$db = $this->getDbo();
+		if ($cfg->subgroup <= 2) return parent::save($data);
 		if (in_array($data['usrsub_status'],array("completed","verified","accepted"))) {
 			$query = $db->getQuery(true);
 			$query->select($db->quoteName('user_id'));

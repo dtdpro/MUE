@@ -9,7 +9,7 @@ jimport( 'joomla.application.component.controlleradmin' );
 class MUEControllerUOpts extends JControllerAdmin
 {
 
-	protected $text_prefix = "COM_MUE_UOpt";
+	protected $text_prefix = "COM_MUE_UOPT";
 	
 	public function getModel($name = 'UOpt', $prefix = 'MUEModel') 
 	{

@@ -71,13 +71,14 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_REGISTERED' , 'u.registerDate', $listDirn, $listOrder); ?>
 				</th>
 				<?php if ($cfg->subscribe) { ?>
+					<th width="150"><?php echo JText::_('COM_MUE_USER_SINCE'); ?></th>
 					<th width="150"><?php echo JText::_('COM_MUE_USER_SUBSTATUS'); ?></th>
 				<?php }	?>
 			</tr>
 		</thead>
 		<tfoot>
 		<tr>
-			<td colspan="<?php echo ($cfg->subscribe) ? '12' : '11'; ?>"><?php echo $this->pagination->getListFooter(); ?></td>
+			<td colspan="<?php echo ($cfg->subscribe) ? '14' : '12'; ?>"><?php echo $this->pagination->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
 		<tbody>
@@ -122,6 +123,9 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 					<?php echo $item->registerDate; ?>
 				</td>
 				<?php if ($cfg->subscribe) { ?>
+				<td class="center">
+					<?php echo $item->member_since; ?>
+				</td>
 				<td>
 					<?php 
 						if ($item->sub) {

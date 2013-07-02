@@ -20,9 +20,9 @@ $ordering	= ($listOrder == 'o.ordering');
 				<option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
 				<?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
 			</select>
-			<select name="filter_question" class="inputbox" onchange="this.form.submit()">
-				<option value=""><?php echo JText::_('COM_MUE_ANSWER_SELECT_QUESTION');?></option>
-				<?php echo $html[] = JHtml::_('select.options',$this->flist,"value","text",$this->state->get('filter.field')); ?>
+			<select name="filter_field" class="inputbox" onchange="this.form.submit()">
+				<option value=""><?php echo JText::_('COM_MUE_SELECT_QUESTION');?></option>
+				<?php echo $html[] = JHtml::_('select.options',$this->fields,"value","text",$this->state->get('filter.field')); ?>
 			</select>
 		</div>
 	</fieldset>
@@ -71,31 +71,31 @@ $ordering	= ($listOrder == 'o.ordering');
 				<td class="center">
 					<?php echo JHtml::_('jgrid.published', $item->published, $i, 'uopts.', true);?>
 				</td>
-				<td class="order">
+				<td class="order">	<div class="input-prepend">
 						<?php if ($saveOrder) :?>
 							<?php if ($listDirn == 'asc') : ?>
-								<span><?php echo $this->pagination->orderUpIcon($i, ($item->opt_field == @$this->items[$i-1]->opt_field), 'uopts.orderup', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
-								<span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, ($item->opt_field == @$this->items[$i+1]->opt_field), 'uopts.orderdown', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
+								<span class="add-on"><?php echo $this->pagination->orderUpIcon($i, ($item->opt_field == @$this->items[$i-1]->opt_field), 'uopts.orderup', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
+								<span class="add-on"><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, ($item->opt_field == @$this->items[$i+1]->opt_field), 'uopts.orderdown', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
 							<?php elseif ($listDirn == 'desc') : ?>
-								<span><?php echo $this->pagination->orderUpIcon($i, ($item->opt_field == @$this->items[$i-1]->opt_field), 'uopts.orderdown', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
-								<span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, ($item->opt_field == @$this->items[$i+1]->opt_field), 'uopts.orderup', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
+								<span class="add-on"><?php echo $this->pagination->orderUpIcon($i, ($item->opt_field == @$this->items[$i-1]->opt_field), 'uopts.orderdown', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
+								<span class="add-on"><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, ($item->opt_field == @$this->items[$i+1]->opt_field), 'uopts.orderup', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
 							<?php endif; ?>
 						<?php endif; ?>
 						<?php $disabled = $saveOrder ?  '' : 'disabled="disabled"'; ?>
-						<input type="text" name="order[]" size="5" value="<?php echo $item->ordering;?>" <?php echo $disabled ?> class="text-area-order" />
+						<input type="text" name="order[]" size="5" value="<?php echo $item->ordering;?>" <?php echo $disabled ?> class="text-area-order width-20" />
 		
-				</td>
+				</div></td>
 			
 			</tr>
 		<?php endforeach; ?></tbody>
 	</table>
-	<div>
+
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />
 		<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />
 		<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
-	</div>
+
 </form>
 
 

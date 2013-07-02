@@ -8,23 +8,26 @@ jimport('joomla.application.component.view');
 
 class MUEViewUOpts extends JViewLegacy
 {
+	protected $items;
+	protected $pagination;
+	protected $state;
+	protected $fields;
+	
 	function display($tpl = null) 
 	{
 		// Get data from the model
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
-		$this->state		= $this->get('State');
-		$flist = $this->get('Fields');
+		$this->state = $this->get('State');
+		$this->pagination = $this->get('Pagination');
+		$this->items = $this->get('Items');
+		$this->fields = $this->get('UFields');
+		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) 
 		{
 			JError::raiseError(500, implode('<br />', $errors));
 			return false;
 		}
-		// Assign data to the view
-		$this->items = $items;
-		$this->pagination = $pagination;
-		$this->flist = $flist;
+		
 		// Set the toolbar
 		$this->addToolBar();
 
@@ -37,7 +40,6 @@ class MUEViewUOpts extends JViewLegacy
 
 	protected function addToolBar() 
 	{
-		$state	= $this->get('State');
 		JToolBarHelper::title(JText::_('COM_MUE_MANAGER_UOPTS'), 'mue');
 		JToolBarHelper::addNew('uopt.add', 'JTOOLBAR_NEW');
 		JToolBarHelper::editList('uopt.edit', 'JTOOLBAR_EDIT');
@@ -46,7 +48,7 @@ class MUEViewUOpts extends JViewLegacy
 		JToolBarHelper::custom('uopts.publish', 'publish.png', 'publish_f2.png','JTOOLBAR_PUBLISH', true);
 		JToolBarHelper::custom('uopts.unpublish', 'unpublish.png', 'unpublish_f2.png','JTOOLBAR_UNPUBLISH', true);
 		JToolBarHelper::divider();
-		if ($state->get('filter.published') == -2) {
+		if ($this->state->get('filter.published') == -2) {
 			JToolBarHelper::deleteList('', 'uopts.delete', 'JTOOLBAR_EMPTY_TRASH');
 			JToolBarHelper::divider();
 		} else  {

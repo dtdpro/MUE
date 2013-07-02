@@ -89,9 +89,10 @@ class MUEModelUserSubs extends JModelList
 	
 	public function getPlans() {
 		$app = JFactory::getApplication('administrator');
-		$query = 'SELECT sub_id AS value, sub_inttitle AS text' .
-				' FROM #__mue_subs' .
-				' ORDER BY sub_inttitle';
+		$query = $this->_db->getQuery(true);
+		$query->select('sub_id AS value, sub_inttitle AS text');
+		$query->from('#__mue_subs');
+		$query->order('sub_inttitle');
 		$this->_db->setQuery($query);
 		return $this->_db->loadObjectList();
 	}

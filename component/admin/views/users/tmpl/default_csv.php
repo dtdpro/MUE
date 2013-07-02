@@ -4,8 +4,8 @@ $cfg=MUEHelper::getConfig();
 $filename = 'MUE_Users_Report' . '-' . date("Y-m-d").'.csv';
 $contents = "";
 
-$contents .= '"User Id","Username","Name","email","User Group","Join Site","Notes","LastVisit","Last Update","Registered"';
-if ($cfg->subscribe) $contents .= ',"Subcription Status"';
+$contents .= '"User Id","Username","Name","email","User Group","Join Site","LastVisit","Last Update","Registered"';
+if ($cfg->subscribe) $contents .= ',"Member Since","Subcription Status"';
 foreach ($this->fdata as $f) {
 	$contents .= ',"'.$f->uf_name.'"';
 }
@@ -18,11 +18,11 @@ foreach ($this->items as $i) {
 	$contents .= '"'.$i->email.'",'; 
 	$contents .= '"'.$i->ug_name.'",'; 
 	$contents .= '"'.$i->userg_siteurl.'",'; 
-	$contents .= '"'.$i->userg_notes.'",'; 
 	$contents .= '"'.$i->lastvisitDate.'",'; 
 	$contents .= '"'.$i->lastUpdate.'",'; 
 	$contents .= '"'.$i->registerDate.'"'; 
 	if ($cfg->subscribe) {
+		$contents .= ',"'.$i->member_since.'"'; 
 		$contents .= ',"';
 		if ($i->sub) {
 			if ((int)$i->sub->daysLeft > 0) {
@@ -64,7 +64,7 @@ foreach ($this->items as $i) {
 				foreach ($ansarr as $a) {
 					$contents .= $this->adata[$a]." "; 
 				}
-			} else if ($f->uf_type == 'cbox' || $f->uf_type == 'yesno') {
+			} else if ($f->uf_type == 'cbox' || $f->uf_type == 'yesno' || $f->uf_type == 'mailchimp') {
 				$contents .= ($udf[$uid] == "1") ? "Yes" : "No";
 			} else if ($f->uf_type == 'birthday') {
 				if ($udf[$uid]) $contents .= date("F j",strtotime('2000-'.substr($udf[$uid],0,2)."-".substr($udf[$uid],2,2).''));

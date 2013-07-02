@@ -88,20 +88,20 @@ $ordering	= ($listOrder == 'f.ordering');
 				<td class="center">
 					<?php if ($item->uf_id > 9) echo JHtml::_('jgrid.published', $item->published, $i, 'ufields.', true);?>
 				</td>
-		        <td class="order">
+		        <td class="order">	<div class="input-prepend">
 						<?php if ($saveOrder) :?>
 							<?php if ($listDirn == 'asc') : ?>
-								<span><?php echo $this->pagination->orderUpIcon($i, true, 'ufields.orderup', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
-								<span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, true, 'ufields.orderdown', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
+								<span class="add-on"><?php echo $this->pagination->orderUpIcon($i, true, 'ufields.orderup', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
+								<span class="add-on"><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, true, 'ufields.orderdown', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
 							<?php elseif ($listDirn == 'desc') : ?>
-								<span><?php echo $this->pagination->orderUpIcon($i, true, 'ufields.orderdown', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
-								<span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, true, 'ufields.orderup', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
+								<span class="add-on"><?php echo $this->pagination->orderUpIcon($i, true, 'ufields.orderdown', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
+								<span class="add-on"><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, true, 'ufields.orderup', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
 							<?php endif; ?>
 						<?php endif; ?>
 						<?php $disabled = $saveOrder ?  '' : 'disabled="disabled"'; ?>
-						<input type="text" name="order[]" size="5" value="<?php echo $item->ordering;?>" <?php echo $disabled ?> class="text-area-order" />
+						<input type="text" name="order[]" size="5" value="<?php echo $item->ordering;?>" <?php echo $disabled ?> class="width-20 text-area-order" />
 		
-				</td>
+				</div></td>
 				<td>
 					<?php 
 					switch ($item->uf_type) {

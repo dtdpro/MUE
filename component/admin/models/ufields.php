@@ -60,8 +60,6 @@ class MUEModelUFields extends JModelList
 		$orderCol	= $this->state->get('list.ordering');
 		$orderDirn	= $this->state->get('list.direction');
 		
-		
-		
 		$query->order($db->escape($orderCol.' '.$orderDirn));
 				
 		return $query;

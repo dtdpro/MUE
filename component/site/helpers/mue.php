@@ -146,6 +146,7 @@ class MUEHelper {
 		if (!$userid) return false;
 		$hasactsub = MUEHelper::getActiveSub($userid);
 		$db =& JFactory::getDBO();
+		if ($cfg->subgroup <= 2) return;
 		if ($hasactsub) {
 			$query = $db->getQuery(true);
 			$query->select($db->quoteName('user_id'));

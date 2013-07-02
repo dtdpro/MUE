@@ -40,7 +40,7 @@ class MUEModelUOpts extends JModelList
 		// List state information.
 		parent::populateState('o.ordering', 'asc');
 	}
-	
+		
 	protected function getListQuery() 
 	{
 		// Create a new query object.
@@ -61,7 +61,7 @@ class MUEModelUOpts extends JModelList
 			$query->where('(o.published IN (0, 1))');
 		}
 
-		// Filter by poll.
+		// Filter by field.
 		$qId = $this->getState('filter.field');
 		if (is_numeric($qId)) {
 			$query->where('o.opt_field = '.(int) $qId);
@@ -69,20 +69,19 @@ class MUEModelUOpts extends JModelList
 				
 		$orderCol	= $this->state->get('list.ordering');
 		$orderDirn	= $this->state->get('list.direction');
-		
-		
-		
+
 		$query->order($db->escape($orderCol.' '.$orderDirn));
 				
 		return $query;
 	}
 	
-	public function getFields() {
+	public function getUFields() {
 		$app = JFactory::getApplication('administrator');
-		$query = 'SELECT uf_id AS value, uf_sname AS text' .
-				' FROM #__mue_ufields' .
-				' WHERE uf_type IN ("mcbox","multi","dropdown") ' .
-				' ORDER BY ordering';
+		$query = $this->_db->getQuery(true);
+		$query->select('uf_id AS value, uf_sname AS text');
+		$query->from('#__mue_ufields');
+		$query->where('uf_type IN ("mcbox","multi","dropdown")');
+		$query->order('ordering');
 		$this->_db->setQuery($query);
 		return $this->_db->loadObjectList();
 	}
