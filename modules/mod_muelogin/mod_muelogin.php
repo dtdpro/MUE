@@ -9,7 +9,7 @@ jimport('joomla.application.component.helper');
 require_once dirname(__FILE__).'/helper.php';
 
 // Load helper
-require_once('components/com_mue'.DS.'helpers'.DS.'mue.php');
+require_once('components/com_mue/helpers/mue.php');
 
 
 $params->def('greeting', 1);

@@ -22,7 +22,7 @@ class plgSystemMUE extends JPlugin
 			
 		} else if ($this->params->get('forceupdate', false) && $user->id) {
 			// Load helper
-			require_once('components/com_mue'.DS.'helpers'.DS.'mue.php');
+			require_once('components/com_mue/helpers/mue.php');
 			$dayssince=MUEHelper::getDaysSinceLastUpdate();
 			if ($dayssince >=  $this->params->get('updatedays', 180) || $dayssince == -1) {
 				JError::raiseNotice('mueupdateprofile','Please update your user profile');
@@ -52,10 +52,13 @@ class plgSystemMUE extends JPlugin
 				default:
 					$view = 'login';
 					$layout = 'login';
+					$return = JRequest::getVar('return', '', 'POST', 'BASE64');
 					break;
 			}
 		
-			$url = 'index.php?option=com_mue&view='.$view. ( $layout ? '&layout=' . $layout : null );
+			$url = 'index.php?option=com_mue&view='.$view;
+			$url .= ( $layout ? '&layout=' . $layout : null );
+			$url .= ( $return ? '&return=' . $return : null );
 		
 			$app->redirect(JRoute::_( $url ));
 		}
