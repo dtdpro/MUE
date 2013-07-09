@@ -10,6 +10,7 @@ abstract class MUEHelper
 		JSubMenuHelper::addEntry(JText::_('COM_MUE_SUBMENU_MUE'), 'index.php?option=com_mue', $submenu == 'mue');
 		JSubMenuHelper::addEntry(JText::_('COM_MUE_SUBMENU_UGROUPS'), 'index.php?option=com_mue&view=ugroups', $submenu == 'ugroups');
 		JSubMenuHelper::addEntry(JText::_('COM_MUE_SUBMENU_UFIELDS'), 'index.php?option=com_mue&view=ufields', $submenu == 'ufields');
+		JSubMenuHelper::addEntry(JText::_('COM_MUE_SUBMENU_TALLY'), 'index.php?option=com_mue&view=tally', $submenu == 'tally');
 		JSubMenuHelper::addEntry(JText::_('COM_MUE_SUBMENU_UPLANS'), 'index.php?option=com_mue&view=uplans', $submenu == 'uplans');
 		JSubMenuHelper::addEntry(JText::_('COM_MUE_SUBMENU_USERS'), 'index.php?option=com_mue&view=users', $submenu == 'users');
 		JSubMenuHelper::addEntry(JText::_('COM_MUE_SUBMENU_USERSUBS'), 'index.php?option=com_mue&view=usersubs', $submenu == 'usersubs');
