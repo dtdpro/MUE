@@ -52,7 +52,7 @@ class plgSystemMUE extends JPlugin
 				default:
 					$view = 'login';
 					$layout = 'login';
-					$return = JRequest::getVar('return', '', 'POST', 'BASE64');
+					$return = JRequest::getVar('return', '');
 					break;
 			}
 		

@@ -54,7 +54,7 @@ class MUEViewUser extends JViewLegacy
 			// For new records, check the create permission.
 			JToolBarHelper::apply('user.apply', 'JTOOLBAR_APPLY');
 			JToolBarHelper::save('user.save', 'JTOOLBAR_SAVE');
-			ToolBarHelper::custom('user.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
+			JToolBarHelper::custom('user.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
 			JToolBarHelper::cancel('user.cancel', 'JTOOLBAR_CANCEL');
 		}
 		else
