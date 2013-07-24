@@ -89,17 +89,19 @@ class MUEModelSubscribe extends JModelLegacy
 		$db =& JFactory::getDBO();
 		$date = new JDate('now');
 		$usernotes = "\r\n".$date->toSql(true)." User Subcription Added\r\n";
-		if ($cfg->mcrgroup) {
-			include_once 'components/com_mue/lib/mailchimp.php';
-			
-			$mc = new MailChimp($cfg->mckey,$cfg->mclist);
-			$mcdata=array();
-			$mcdata['GROUPINGS']=array(array("name"=>$cfg->mcrgroup,"groups"=>$cfg->mcsubgroup));
-			$mcd=print_r($mcdata,true);
-			if ($mc->subStatus($user->email)) {
-				$mcresult = $mc->updateUser($user->email,$mcdata,false,"html");
-				if ($mcresult) { $usernotes .= $date->toSql(true)." EMail Subscription Updated on MailChimp List #".$cfg->mclist.' '.$mcd."\r\n"; }
-				else { $usernotes .= $date->toSql(true)." Could not update EMail subscription on MailChimp List #".$cfg->mclist." Error: ".$mc->error."\r\n"; }
+		foreach ($this->getMCFields() as $f) {
+			if ($f->params->mcrgroup) {
+				include_once 'components/com_mue/lib/mailchimp.php';
+				
+				$mc = new MailChimp($cfg->mckey,$f->uf_default);
+				$mcdata=array();
+				$mcdata['GROUPINGS']=array(array("name"=>$f->params->mcrgroup,"groups"=>$f->params->mcsubgroup));
+				$mcd=print_r($mcdata,true);
+				if ($mc->subStatus($user->email)) {
+					$mcresult = $mc->updateUser($user->email,$mcdata,false,"html");
+					if ($mcresult) { $usernotes .= $date->toSql(true)." EMail Subscription Updated on MailChimp List #".$f->uf_default.' '.$mcd."\r\n"; }
+					else { $usernotes .= $date->toSql(true)." Could not update EMail subscription on MailChimp List #".$f->uf_default." Error: ".$mc->error."\r\n"; }
+				}
 			}
 		}
 		//Update update date
@@ -109,6 +111,22 @@ class MUEModelSubscribe extends JModelLegacy
 			$this->setError($db->getErrorMsg());
 			return false;
 		}
+	}
+	
+	function getMCFields() {
+		$db =& JFactory::getDBO();
+		$qd = 'SELECT f.* FROM #__mue_ufields as f ';
+		$qd.= ' WHERE f.published = 1 ';
+		$qd .= ' && f.uf_type = "mailchimp"';
+		$qd.= ' ORDER BY f.ordering';
+		$db->setQuery( $qd );
+		$ufields = $db->loadObjectList();
+		foreach ($ufields as &$f) {
+			$registry = new JRegistry();
+			$registry->loadString($f->params);
+			$f->params = $registry->toObject();
+		}
+		return $ufields;
 	}
 	
 }

@@ -6,7 +6,7 @@ class MailChimp {
 	var $datacenter='';
 	var $errormsg='';
 	
-	function MailChimp($apikey,$listid) {
+	function MailChimp($apikey,$listid="") {
 		$this->apikey=$apikey;
 		$this->listid=$listid;
 		if (strstr($apikey,"-")){
@@ -15,14 +15,15 @@ class MailChimp {
         }
 	}
 	
-	function updateUser($email,$info=NULL,$send_welcome,$email_type="html") {
+	function updateUser($email,$info=NULL,$send_welcome,$email_type="html",$list="") {
+		if (!$list) $list = $this->listid;
 		$replace_interests=true;
          
 		$data = array(
 		        'email_address'=>$email,
 		        'apikey'=>$this->apikey,
 		        'merge_vars' => $info,
-		        'id' => $this->listid,
+		        'id' => $list,
 		        'replace_interests' => $replace_interests,
 		        'email_type' => $email_type
 		    );
@@ -34,7 +35,8 @@ class MailChimp {
 		
 	}
 	
-	function subscribeUser($email,$info=NULL,$send_welcome,$email_type="html") {
+	function subscribeUser($email,$info=NULL,$send_welcome,$email_type="html",$list="") {
+		if (!$list) $list = $this->listid;
 		$double_optin=false;
 		$update_existing=true;
 		$replace_interests=true;
@@ -43,7 +45,7 @@ class MailChimp {
 		        'email_address'=>$email,
 		        'apikey'=>$this->apikey,
 		        'merge_vars' => $info,
-		        'id' => $this->listid,
+		        'id' => $list,
 		        'double_optin' => $double_optin,
 		        'update_existing' => $update_existing,
 		        'replace_interests' => $replace_interests,
@@ -58,7 +60,8 @@ class MailChimp {
 		
 	}
 	
-	function unsubscribeUser($email) {
+	function unsubscribeUser($email,$list="") {
+		if (!$list) $list = $this->listid;
 		$delete_member=false;
 		$send_goodbye=false;
 		$send_notify=false;
@@ -66,7 +69,7 @@ class MailChimp {
 		$data = array(
 		        'email_address'=>$email,
 		        'apikey'=>$this->apikey,
-		        'id' => $this->listid,
+		        'id' => $list,
 		        'delete_member' => $delete_member,
 		        'send_goodbye' => $send_goodbye,
 		        'send_notify' => $send_notify
@@ -78,16 +81,65 @@ class MailChimp {
 		return true;
 	}
 	
-	function subStatus($email) {
+	function subStatus($email,$list="") {
+		if (!$list) $list = $this->listid;
 		$data = array(
 	        'email_address'=>$email,
 	        'apikey'=>$this->apikey,
-	        'id' => $this->listid
+	        'id' => $list
 	    );
 	    $payload = json_encode($data);
 	    $result = $this->sendData("listMemberInfo", $payload);
 	    if ($result->data[0]->error || $result->data[0]->status != "subscribed") return false;
 	    else return $result->data[0];
+	}
+	
+	function getLists($list="") {
+		if (!$list) $list = $this->listid;
+		$data = array(
+	        'apikey'=>$this->apikey,
+			'limit'=>"100"
+	    );
+		if ($list) {
+			$filters=array("list_id"=>$list);
+			$data["filters"]=$filters;
+		}
+	    $payload = json_encode($data);
+	    $result = $this->sendData("lists", $payload);
+	    return $result->data;
+	}
+	
+	function getListInterestGroupings($list="") {
+		if (!$list) $list = $this->listid;
+		$data = array(
+	        'apikey'=>$this->apikey,
+			'id'=>$list
+	    );
+	    $payload = json_encode($data);
+	    $result = $this->sendData("listInterestGroupings", $payload);
+	    return $result;
+	}
+	
+	function getListMergeVars($list="") {
+		if (!$list) $list = $this->listid;
+		$data = array(
+	        'apikey'=>$this->apikey,
+			'id'=>$list
+	    );
+	    $payload = json_encode($data);
+	    $result = $this->sendData("listMergeVars", $payload);
+	    return $result;
+	}
+	
+	function getListMembers($list="") {
+		if (!$list) $list = $this->listid;
+		$data = array(
+	        'apikey'=>$this->apikey,
+			'id'=>$list
+	    );
+	    $payload = json_encode($data);
+	    $result = $this->sendData("listMembers", $payload);
+	    return $result->data;
 	}
 	
 	protected function sendData($method,$payload) {

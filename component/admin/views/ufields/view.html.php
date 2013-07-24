@@ -50,6 +50,8 @@ class MUEViewUFields extends JViewLegacy
 		} else  {
 			JToolBarHelper::trash('ufields.trash');
 		}		
+		JToolBarHelper::divider();
+		JToolBarHelper::preferences('com_mue');
 	}
 	
 	protected function setDocument() 

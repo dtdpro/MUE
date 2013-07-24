@@ -48,6 +48,8 @@ class MUEViewUsers extends JViewLegacy
 		$tbar =& JToolBar::getInstance('toolbar');
 		$tbar->appendButton('Link','export','Export CSV','index.php?option=com_mue&view=users&format=csv" target="_blank');
 		$tbar->appendButton('Link','send','Email List','index.php?option=com_mue&view=users&format=csveml" target="_blank');
+		JToolBarHelper::divider();
+		JToolBarHelper::preferences('com_mue');
 	}
 	/**
 	 * Method to set up the document properties

@@ -163,6 +163,15 @@ $ordering	= ($listOrder == 'f.ordering');
 						$db->setQuery( $query );
 						echo ' ['.$db->loadResult().']</a>'; 
 					}
+					if ($item->uf_type=="mailchimp") {
+						if ($item->uf_default) {
+							JHtml::_('behavior.modal', 'a.modal');
+							$link = 'index.php?option=com_mue&amp;view=mclist&amp;tmpl=component&amp;field='.$item->uf_id;
+							echo '<a class="modal button" title="Edit List Options"  href="'.$link.'" rel="{handler: \'iframe\', size: {x: 800, y: 450}}">List Options</a>';
+						} else {
+							echo "LIST NOT SET";
+						}
+					}
 				
 				?>
 				</td>

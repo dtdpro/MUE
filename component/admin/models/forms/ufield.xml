@@ -104,10 +104,8 @@
 			default="0" />
 		<field
 			name="uf_default"
-			type="text"
-			extension="com_continued"
+			type="muedefault"
 			class="inputbox"
-			size="40"
 			label="COM_MUE_UFIELD_FIELD_DEFAULT_LABEL"
 			description="COM_MUE_UFIELD_FIELD_DEFAULT_DESC"
 			required="false" />

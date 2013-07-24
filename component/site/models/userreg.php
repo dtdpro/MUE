@@ -32,25 +32,27 @@ class MUEModelUserReg extends JModelLegacy
 		$qd.= ' ORDER BY f.ordering';
 		$db->setQuery( $qd ); 
 		$ufields = $db->loadObjectList();
-		if ($all) {
-			foreach ($ufields as &$f) {
-				switch ($f->uf_type) {
+		foreach ($ufields as &$u) {
+			$registry = new JRegistry();
+			$registry->loadString($u->params);
+			$u->params = $registry->toObject();
+			
+			if ($all) {
+				switch ($u->uf_type) {
 					case 'multi':
 					case 'dropdown':
 					case 'mlist':
 					case 'mcbox':
-						$qo = 'SELECT opt_id as value, opt_text as text FROM #__mue_ufields_opts WHERE opt_field='.$f->uf_id.' && published > 0 ORDER BY ordering';
+						$qo = 'SELECT opt_id as value, opt_text as text FROM #__mue_ufields_opts WHERE opt_field='.$u->uf_id.' && published > 0 ORDER BY ordering';
 						$this->_db->setQuery($qo);
-						$f->options = $this->_db->loadObjectList();
+						$u->options = $this->_db->loadObjectList();
 						break;
 				}
-			}
-		
-			foreach ($ufields as &$u) {
+				
 				$fn=$u->uf_sname;
 				if ($u->uf_type == 'multi' || $u->uf_type == 'dropdown' || $u->uf_type == 'mcbox' || $u->uf_type == 'mlist') {
-					$u->value=explode(" ",$app->getUserState('mue.userreg.'.$fn,$u->uf_default)); 
-				} else if ($u->uf_type == 'cbox' || $u->uf_type == 'yesno') {
+					$u->value=explode(" ",$app->getUserState('mue.userreg.'.$fn,$u->uf_default));
+				} else if ($u->uf_type == 'cbox' || $u->uf_type == 'yesno' || $u->uf_type == 'mailchimp') {
 					$u->value=$app->getUserState('mue.userreg.'.$fn,$u->uf_default);
 				} else if ($u->uf_type == 'birthday') {
 					$u->value=$app->getUserState('mue.userreg.'.$fn,$u->uf_default);
@@ -158,24 +160,25 @@ class MUEModelUserReg extends JModelLegacy
 					include_once 'components/com_mue/lib/mailchimp.php';
 					$mc = new MailChimp($cfg->mckey,$mclist->uf_default);
 					$mcdata = array('FNAME'=>$item->fname, 'LNAME'=>$item->lname, 'OPTIN_IP'=>$_SERVER['REMOTE_ADDR'], 'OPTIN_TIME'=>$date->toSql(true));
-					if ($cfg->mcvars) {
-						$othervars=explode(",",$cfg->mcvars);
-						foreach ($othervars as $ov) {
-							list($mue, $mcv) = explode(":",$ov,2);
-							if (in_array($mue,$optfs)) {
-								$mcdata[$mcv] = $optionsdata[$item->$mue];
-							} else if (in_array($mue,$moptfs)) {
-								$mcdata[$mcv] = "";
-								foreach (explode(" ",$item->$mue) as $mfo) {
-									$mcdata[$mcv] .= $optionsdata[$mfo]." ";
+					if ($mclist->params->mcvars) {
+						$othervars=$mclist->params->mcvars;
+						foreach ($othervars as $mcv=>$mue) {
+							if ($mue) {
+								if (in_array($mue,$optfs)) {
+									$mcdata[$mcv] = $optionsdata[$item->$mue];
+								} else if (in_array($mue,$moptfs)) {
+									$mcdata[$mcv] = "";
+									foreach (explode(" ",$item->$mue) as $mfo) {
+										$mcdata[$mcv] .= $optionsdata[$mfo]." ";
+									}
+								} else {
+									$mcdata[$mcv] = $item->$mue;
 								}
-							} else {
-								$mcdata[$mcv] = $item->$mue;
 							}
 						}
 					}
-					if ($cfg->mcrgroup) {
-						$mcdata['GROUPINGS']=array(array("name"=>$cfg->mcrgroup,"groups"=>$cfg->mcreggroup));
+					if ($mclist->params->mcrgroup) {
+						$mcdata['GROUPINGS']=array(array("name"=>$mclist->params->mcrgroup,"groups"=>$mclist->params->mcreggroup));
 					}
 					$mcresult = $mc->subscribeUser($item->email,$mcdata,false,"html");
 					if ($mcresult) { $item->$mcf=1; $usernotes .= $date->toSql(true)." Subscribed to MailChimp List #".$mclist->uf_default."\r\n"; }

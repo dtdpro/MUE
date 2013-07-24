@@ -61,16 +61,20 @@ class MUEModelUser extends JModelLegacy
 		$qd.= ' ORDER BY f.ordering';
 		$db->setQuery( $qd ); 
 		$ufields = $db->loadObjectList();
-		if ($all) {
-			foreach ($ufields as &$f) {
-				switch ($f->uf_type) {
+		foreach ($ufields as &$u) {
+			$registry = new JRegistry();
+			$registry->loadString($u->params);
+			$u->params = $registry->toObject();
+			
+			if ($all) {
+				switch ($u->uf_type) {
 					case 'multi':
 					case 'dropdown':
-					case 'mcbox':
 					case 'mlist':
-						$qo = 'SELECT opt_id as value, opt_text as text FROM #__mue_ufields_opts WHERE opt_field='.$f->uf_id.' && published > 0 ORDER BY ordering';
+					case 'mcbox':
+						$qo = 'SELECT opt_id as value, opt_text as text FROM #__mue_ufields_opts WHERE opt_field='.$u->uf_id.' && published > 0 ORDER BY ordering';
 						$this->_db->setQuery($qo);
-						$f->options = $this->_db->loadObjectList();
+						$u->options = $this->_db->loadObjectList();
 						break;
 				}
 			}
@@ -142,23 +146,24 @@ class MUEModelUser extends JModelLegacy
 					$mcf=$mclist->uf_sname;
 					$mc = new MailChimp($cfg->mckey,$mclist->uf_default);
 					$mcdata = array('FNAME'=>$item->fname, 'LNAME'=>$item->lname, 'OPTIN_IP'=>$_SERVER['REMOTE_ADDR'], 'OPTIN_TIME'=>$date->toSql(true));
-					if ($cfg->mcvars) {
-						$othervars=explode(",",$cfg->mcvars);
-						foreach ($othervars as $ov) {
-							list($mue, $mcv) = explode(":",$ov,2);
-							if (in_array($mue,$optfs)) $mcdata[$mcv] = $optionsdata[$item->$mue];
-							else if (in_array($mue,$moptfs)) {
-								$mcdata[$mcv] = "";
-								foreach (explode(" ",$item->$mue) as $mfo) {
-									$mcdata[$mcv] .= $optionsdata[$mfo]." ";
+					if ($mclist->params->mcvars) {
+						$othervars=$mclist->params->mcvars;
+						foreach ($othervars as $mcv=>$mue) {
+							if ($mue) {
+								if (in_array($mue,$optfs)) $mcdata[$mcv] = $optionsdata[$item->$mue];
+								else if (in_array($mue,$moptfs)) {
+									$mcdata[$mcv] = "";
+									foreach (explode(" ",$item->$mue) as $mfo) {
+										$mcdata[$mcv] .= $optionsdata[$mfo]." ";
+									}
 								}
+								else $mcdata[$mcv] = $item->$mue;
 							}
-							else $mcdata[$mcv] = $item->$mue;
 						} 
 					}
-					if ($cfg->mcrgroup) {
-						if (!$substatus) $mcdata['GROUPINGS']=array(array("name"=>$cfg->mcrgroup,"groups"=>$cfg->mcreggroup));
-						else $mcdata['GROUPINGS']=array(array("name"=>$cfg->mcrgroup,"groups"=>$cfg->mcsubgroup));
+					if ($mclist->params->mcrgroup) {
+						if (!$substatus) $mcdata['GROUPINGS']=array(array("name"=>$mclist->params->mcrgroup,"groups"=>$mclist->params->mcreggroup));
+						else $mcdata['GROUPINGS']=array(array("name"=>$mclist->params->mcrgroup,"groups"=>$mclist->params->mcsubgroup));
 					}
 					$mcd=print_r($mcdata,true);
 					if ($mc->subStatus($item->email)) {
