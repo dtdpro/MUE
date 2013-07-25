@@ -69,7 +69,7 @@ $ordering	= ($listOrder == 'f.ordering');
 		</thead>
 		<tfoot>
 			<tr>
-				<td colspan="10"><?php echo $this->pagination->getListFooter(); ?></td>
+				<td colspan="12"><?php echo $this->pagination->getListFooter(); ?></td>
 			</tr>
 		</tfoot>
 		<tbody>
@@ -167,7 +167,7 @@ $ordering	= ($listOrder == 'f.ordering');
 						if ($item->uf_default) {
 							JHtml::_('behavior.modal', 'a.modal');
 							$link = 'index.php?option=com_mue&amp;view=mclist&amp;tmpl=component&amp;field='.$item->uf_id;
-							echo '<a class="modal button" title="Edit List Options"  href="'.$link.'" rel="{handler: \'iframe\', size: {x: 800, y: 450}}">List Options</a>';
+							echo '<a class="modal" title="Edit List Options"  href="'.$link.'" rel="{handler: \'iframe\', size: {x: 800, y: 450}}">List Options</a>';
 						} else {
 							echo "LIST NOT SET";
 						}

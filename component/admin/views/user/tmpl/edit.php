@@ -77,7 +77,7 @@ JHtml::_('behavior.formvalidation');
 					}
 					
 					//Yes no
-					if ($f->uf_type=="yesno" || $f->uf_type=="cbox") {
+					if ($f->uf_type=="yesno" || $f->uf_type=="cbox" || $f->uf_type=="mailchimp") {
 						echo '<select id="jform_'.$sname.'" name="jform['.$sname.']" class="inputbox" size="1">';
 						$selected = ' selected="selected"';
 						echo '<option value="1"';

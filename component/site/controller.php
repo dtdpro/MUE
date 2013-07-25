@@ -1,9 +1,4 @@
 <?php
-/**
- * ContinuEd default controller
- *
- */
-
 jimport('joomla.application.component.controller');
 
 class MUEController extends JControllerLegacy {
@@ -42,8 +37,9 @@ class MUEController extends JControllerLegacy {
 
 				case 'userdir':
 					if (!$user->id) {
-						// Redirect to profile page.
-						$this->setRedirect(JRoute::_('index.php?option=com_mue&view=login&layout=login', false));
+						$return = JRoute::_("index.php?option=com_mue&view=".$vName.'&layout='.$lName);
+						// Redirect to login page.
+						$this->setRedirect(JRoute::_('index.php?option=com_mue&view=login&layout=login&return='.base64_encode($return), false));
 						return;
 					}
 
@@ -67,8 +63,9 @@ class MUEController extends JControllerLegacy {
 
 					// If the user is a guest, redirect to the login page.
 					if ($user->get('guest') == 1) {
+						$return = JRoute::_("index.php?option=com_mue&view=".$vName.'&layout='.$lName);
 						// Redirect to login page.
-						$this->setRedirect(JRoute::_('index.php?option=com_mue&view=login&layout=login', false));
+						$this->setRedirect(JRoute::_('index.php?option=com_mue&view=login&layout=login&return='.base64_encode($return), false));
 						return;
 					}
 					$model = $this->getModel($vName);
@@ -78,8 +75,9 @@ class MUEController extends JControllerLegacy {
 
 					// If the user is a guest, redirect to the login page.
 					if ($user->get('guest') == 1) {
+						$return = JRoute::_("index.php?option=com_mue&view=".$vName.'&layout='.$lName);
 						// Redirect to login page.
-						$this->setRedirect(JRoute::_('index.php?option=com_mue&view=login&layout=login', false));
+						$this->setRedirect(JRoute::_('index.php?option=com_mue&view=login&layout=login&return='.base64_encode($return), false));
 						return;
 					}
 					$model = $this->getModel($vName);

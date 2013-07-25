@@ -91,7 +91,27 @@ JHtml::_('behavior.formvalidation');
 	
 	//Ops
 	echo JHtml::_('tabs.panel', "Operations", 'mclist-membership');
-	echo '<p><button type="button" onclick="Joomla.submitform(\'mclist.syncField\', this.form);">Sync MUE FIeld</button> This Process is very DB Intensive, use with care</p>';
+	echo '<p><button type="button" onclick="Joomla.submitform(\'mclist.syncField\', this.form);">Sync MUE Field</button> This Process is very DB Intensive, use with care</p>';
+	echo '<p><button type="button" onclick="Joomla.submitform(\'mclist.syncList\', this.form);">Sync MC List</button> This Process is very DB Intensive, use with care. You should run Sync MUE Field First.</p>';
+	echo '<div class="clr"></div>';
+	
+	//Webhooks
+	echo JHtml::_('tabs.panel', "Webhooks", 'mclist-membership');
+	if ($this->list->list_webhooks) {
+		echo '<p>';
+		foreach ($this->list->list_webhooks as $h) {
+			foreach ($h->actions as $act=>$on) { if ($on) $acts[] = $act; }
+			foreach ($h->sources as $src=>$on) { if ($on) $sources[] = $src; }
+			echo '<strong>'.$h->url.'</strong><br />Actions: '.implode(", ",$acts).'<br />Sources: '.implode(", ",$sources).'<br /><br />';
+			
+		}
+
+		
+		echo '</p>';
+	} else {
+		echo '<p><strong>Use Webhook URL: </strong>'.str_replace("administrator/","",JURI::base()).'components/com_mue/helpers/mchook.php</p>';
+	}
+	
 	echo '<div class="clr"></div>';
 	
 	echo JHtml::_('tabs.end');
