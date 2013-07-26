@@ -29,7 +29,7 @@ class MUETableUField extends JTable
 	public function store($updateNulls = false)
 	{
 		// Verify that the alias is unique
-		if (!$this->uf_default && ($this->uf_type=="mailchimp" || $this->uf_type=="cmlist")) {
+		if ($this->uf_id && !$this->uf_default && ($this->uf_type=="mailchimp" || $this->uf_type=="cmlist")) {
 			$this->setError(JText::_('COM_MUE_ERROR_LISTID'));
 			return false;
 		}

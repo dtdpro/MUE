@@ -30,6 +30,9 @@ class JFormFieldMUEDefault extends JFormField
 			case "mailchimp":
 				$html = $this->getMailChimp();
 				break;
+			case "cmlist":
+				$html = $this->getCMList();
+				break;
 			case "textbox":
 			case "textar":
 			default:
@@ -53,6 +56,38 @@ class JFormFieldMUEDefault extends JFormField
 		
 		return '<input type="text" name="' . $this->name . '" id="' . $this->id . '"' . ' value="'
 				. htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"' . $class . $size . $disabled . $readonly . $onchange . $maxLength . '/>';
+	}
+	
+	protected function getCMList()
+	{
+		require_once(JPATH_ROOT.'/administrator/components/com_mue/helpers/mue.php');
+		require_once(JPATH_ROOT.'/components/com_mue/lib/campaignmonitor.php');
+		
+		$app =& JFactory::getApplication('site');
+		$db  =& JFactory::getDBO();
+		$cfg=MUEHelper::getConfig();
+		if (!$cfg->cmkey) return $this->getTextField();
+		$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
+		
+		
+		// Initialize variables.
+		$html = array();
+		$attr = '';
+		$db = JFactory::getDBO();
+		// Initialize some field attributes.
+		$attr .= $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
+		$attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
+		
+	
+		// Initialize JavaScript field attributes.
+		$attr .= $this->element['onchange'] ? ' onchange="'.(string) $this->element['onchange'].'"' : '';
+	
+	
+		$lists = $cm->getLists(); 
+		$html[] = JHtml::_('select.genericlist',$lists,$this->name,$attr, "ListID","Name",$this->value);
+	
+	
+		return implode($html);
 	}
 	
 	protected function getMailchimp()

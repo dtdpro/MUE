@@ -69,6 +69,7 @@
 			<option value="birthday">Birthday</option>
 			<option value="captcha">Captcha</option>
 			<option value="mailchimp">MailChimp List</option>
+			<option value="cmlist">Campaign Monitor List</option>
 		</field>
 		<field
 			name="uf_req"

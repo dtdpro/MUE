@@ -109,6 +109,7 @@ JHtml::_('behavior.formvalidation');
 		
 		echo '</p>';
 	} else {
+		echo '<p><button type="button" onclick="Joomla.submitform(\'mclist.addWebhook\', this.form);">Add Default Web Hook</button> This will set up the default web hook for MUE.</p>';
 		echo '<p><strong>Use Webhook URL: </strong>'.str_replace("administrator/","",JURI::base()).'components/com_mue/helpers/mchook.php</p>';
 	}
 	

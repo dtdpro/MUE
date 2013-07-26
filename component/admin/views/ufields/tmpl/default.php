@@ -121,6 +121,7 @@ $ordering	= ($listOrder == 'f.ordering');
 						case "birthday": echo "Birthday"; break;
 						case "captcha": echo "Captcha"; break;
 						case "mailchimp": echo "MailChimp List"; break;
+						case "cmlist": echo 'Campaign Monitor List'; break;
 					}
 					?>
 				</td>

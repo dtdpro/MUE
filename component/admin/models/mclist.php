@@ -295,6 +295,37 @@ class MUEModelMCList extends JModelLegacy
 		
 	}
 	
+	function addWebhook($field)
+	{
+		require_once(JPATH_ROOT.'/administrator/components/com_mue/helpers/mue.php');
+		require_once(JPATH_ROOT.'/components/com_mue/lib/mailchimp.php');
+		
+		// Initialise variables.
+		$field = $this->getState('mclist.field');
+		
+		$db = JFactory::getDBO();
+		$query = $db->getQuery(true);
+		$query->select("*");
+		$query->from('#__mue_ufields');
+		$query->where('uf_id = '.$field);
+		$db->setQuery($query);
+		$list = $db->loadObject();
+		
+		$cfg=MUEHelper::getConfig();
+		if (!$cfg->mckey) return false;
+		$mc = new MailChimp($cfg->mckey);
+		
+		$action=array("subscribe"=>true,"unsubscribe"=>true,"profile"=>true,"cleaned"=>true,"upemail"=>true,"campaign"=>true);
+		$sources=array("user"=>true,"admin"=>true,"api"=>false);
+		$url=str_replace("administrator/","",JURI::base()).'components/com_mue/helpers/mchook.php';
+		if (!$res = $mc->addListWebhook($list->uf_default,$url,$actions,$sources)) {
+			$this->setError($mc->error);
+			return false;
+		}	
+		
+		return true;
+	}
+	
 	function getList()
 	{
 		require_once(JPATH_ROOT.'/administrator/components/com_mue/helpers/mue.php');

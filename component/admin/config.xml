@@ -34,8 +34,12 @@
 		<field name="userdir_userinfo" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_USERINFO_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_USERINFO_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="userdir_searchinfo" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_SEARCHINFO_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_SEARCHINFO_DESC" size="70" class="inputbox" required="false" default="" />
 	</fieldset>
-	<fieldset name="mailchimp" label="COM_MUE_CONFIG_MAILCHIMP_LABEL" description="COM_MUE_CONFIG_MAILCHIMP_DESC">
+	<fieldset name="integrations" label="COM_MUE_CONFIG_INTEGRATIONS_LABEL" description="COM_MUE_CONFIG_INTEGRATIONS_DESC">
 		<field name="mckey" type="text" label="COM_MUE_CONFIG_FIELD_MCKEY_LABEL" description="COM_MUE_CONFIG_FIELD_MCKEY_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="spacer_apis1" type="spacer" hr="true" />
+		<field name="cmkey" type="text" label="COM_MUE_CONFIG_FIELD_CMKEY_LABEL" description="COM_MUE_CONFIG_FIELD_MCKEY_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="cmclient" type="text" label="COM_MUE_CONFIG_FIELD_CMCLIENT_LABEL" description="COM_MUE_CONFIG_FIELD_CMCLIENT_DESC" size="70" class="inputbox" required="false" default="" />
+		
 	</fieldset>
 	<fieldset name="subscribing" label="COM_MUE_CONFIG_SUBSCRIBE_LABEL" description="COM_MUE_CONFIG_SUBSCRIBE_DESC">
 		<field name="subscribe" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_SUBSCRIBE_LABEL" description="COM_MUE_CONFIG_FIELD_SUBSCRIBE_DESC" default="0">

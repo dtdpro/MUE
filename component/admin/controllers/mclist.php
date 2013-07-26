@@ -138,4 +138,33 @@ class MUEControllerMCList extends JControllerLegacy
 				
 		return true; 
 	}
+
+	function addWebhook()
+	{
+		// Check for request forgeries.
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		// Initialise variables.
+		$app	= JFactory::getApplication();
+		$model	= $this->getModel('MCList');
+		$field	= JRequest::getInt('field');
+
+		// Check if the user is authorized to do this.
+		if (!JFactory::getUser()->authorise('core.admin', $field))
+		{
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			return;
+		}
+
+		// Attempt to save the configuration.
+		if (!$model->addWebhook($field)) {
+			$message = JText::sprintf('COM_MUE_MCLIST_WHADD_FAILED', $model->getError());
+			$this->setRedirect('index.php?option=com_mue&view=mclist&field='.$field.'&tmpl=component', $message, 'error');
+			return false;
+		} 
+		
+		$message = JText::_('COM_MUE_MCLIST_WHADD_SUCCESS');
+		$this->setRedirect('index.php?option=com_mue&view=mclist&field='.$field.'&tmpl=component&refresh=1', $message);	
+		return true; 
+	}
 }

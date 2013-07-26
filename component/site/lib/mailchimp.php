@@ -177,6 +177,21 @@ class MailChimp {
 	    return $result;
 	}
 	
+	function addListWebhook($list="",$url,$actions,$sources) {
+		if (!$list) $list = $this->listid;
+		$data = array(
+	        'apikey'=>$this->apikey,
+			'id'=>$list,
+			'url'=>$url,
+			'actions'=>$actions,
+			'sources'=>$sources
+	    );
+	    $payload = json_encode($data);
+	    $result = $this->sendData("listWebhookAdd", $payload);
+	    if ($result->error) { $this->error=$this->datacenter.": ".$result->code." ".$result->error; return false; }
+	    else return true;
+	}
+	
 	
 	protected function sendData($method,$payload) {
 		$submit_url = "https://".$this->datacenter.".api.mailchimp.com/1.3/?method=".$method;
