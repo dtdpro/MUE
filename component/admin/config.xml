@@ -11,13 +11,7 @@
 		<field name="profile_bottom_content" type="textarea" label="COM_MUE_CONFIG_FIELD_PROFILE_BOTTOM_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_PROFILE_BOTTOM_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
 	</fieldset>
 	<fieldset name="reports" label="COM_MUE_CONFIG_REPORTS_LABEL" description="COM_MUE_CONFIG_REPORTS_DESC" addfieldpath="/administrator/components/com_mue/models/fields">
-		<field 
-			name="on_list_field" 
-			type="FieldInclude" 
-			class="inputbox"
-			label="COM_MUE_CONFIG_FIELD_ONLIST_LABEL"
-			description="COM_MUE_CONFIG_FIELD_ONLIST_DESC" 
-		/>
+		<field name="on_list_field" type="FieldInclude" class="inputbox" label="COM_MUE_CONFIG_FIELD_ONLIST_LABEL" description="COM_MUE_CONFIG_FIELD_ONLIST_DESC" />
 	</fieldset>
 	<fieldset name="userdirectory" label="COM_MUE_CONFIG_USERDIR_LABEL" description="COM_MUE_CONFIG_USERDIR_DESC" addfieldpath="/administrator/components/com_mue/models/fields">
 		<field name="userdir" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_USERDIR_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_DESC" default="0">
@@ -35,8 +29,10 @@
 		<field name="userdir_searchinfo" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_SEARCHINFO_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_SEARCHINFO_DESC" size="70" class="inputbox" required="false" default="" />
 	</fieldset>
 	<fieldset name="integrations" label="COM_MUE_CONFIG_INTEGRATIONS_LABEL" description="COM_MUE_CONFIG_INTEGRATIONS_DESC">
+		<field name="spacer_apis0" type="spacer" label="COM_MUE_CONFIG_MAILCHIMP_LABEL" />
 		<field name="mckey" type="text" label="COM_MUE_CONFIG_FIELD_MCKEY_LABEL" description="COM_MUE_CONFIG_FIELD_MCKEY_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="spacer_apis1" type="spacer" hr="true" />
+		<field name="spacer_apis2" type="spacer" label="COM_MUE_CONFIG_CAMPAIGNMONITOR_LABEL" />
 		<field name="cmkey" type="text" label="COM_MUE_CONFIG_FIELD_CMKEY_LABEL" description="COM_MUE_CONFIG_FIELD_MCKEY_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="cmclient" type="text" label="COM_MUE_CONFIG_FIELD_CMCLIENT_LABEL" description="COM_MUE_CONFIG_FIELD_CMCLIENT_DESC" size="70" class="inputbox" required="false" default="" />
 		
@@ -46,13 +42,7 @@
 			<option value="0">No</option>
 			<option value="1">Yes</option>
 		</field>
-		<field
-			name="subgroup"
-			type="usergroup"
-			default="2"
-			label="COM_MUE_CONFIG_SUBSCRIBEGROUP_LABEL"
-			description="COM_MUE_CONFIG_SUBSCRIBEGROUP_DESC">
-		</field>
+		<field name="subgroup" type="usergroup" default="2" label="COM_MUE_CONFIG_SUBSCRIBEGROUP_LABEL" description="COM_MUE_CONFIG_SUBSCRIBEGROUP_DESC" />
 		<field name="sub_page_content" type="textarea" label="COM_MUE_CONFIG_FIELD_SUB_PAGE_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_SUB_PAGE_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
 		<field name="usersub_page_content" type="textarea" label="COM_MUE_CONFIG_FIELD_USERSUB_PAGE_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_USERSUB_PAGE_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
 		<field name="profile_sub_content" type="textarea" label="COM_MUE_CONFIG_FIELD_PROFILE_SUB_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_PROFILE_SUB_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
