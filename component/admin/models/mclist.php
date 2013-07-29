@@ -187,7 +187,7 @@ class MUEModelMCList extends JModelLegacy
 				$query->select('s.*,p.*,DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft');
 				$query->from('#__mue_usersubs as s');
 				$query->join('LEFT','#__mue_subs AS p ON s.usrsub_sub = p.sub_id');
-				$query->where('s.usrsub_status != "notyetstarted"');
+				$query->where('s.usrsub_status IN ("completed","verified","accepted")');
 				$query->where('s.usrsub_user="'.$i->id.'"');
 				$query->order('daysLeft DESC, s.usrsub_end DESC, s.usrsub_time DESC');
 				$db->setQuery($query,0,1);
@@ -270,7 +270,7 @@ class MUEModelMCList extends JModelLegacy
 				}
 			}
 			if ($list->params->mcrgroup && $cfg->subscribe) {
-				if (!$substatus) $mcdata['GROUPINGS']=array(array("name"=>$list->params->mcrgroup,"groups"=>$list->params->mcreggroup));
+				if (!$u->substatus) $mcdata['GROUPINGS']=array(array("name"=>$list->params->mcrgroup,"groups"=>$list->params->mcreggroup));
 				else $mcdata['GROUPINGS']=array(array("name"=>$list->params->mcrgroup,"groups"=>$list->params->mcsubgroup));
 			}
 			$mcbatch[] = $mcdata;
@@ -279,7 +279,7 @@ class MUEModelMCList extends JModelLegacy
 				$resinfo['add_count'] = $res_info['add_count'] + $result->add_count;
 				$resinfo['update_count'] = $res_info['update_count'] + $result->update_count;
 				$resinfo['error_count'] = $res_info['error_count'] + $result->error_count;
-				$resinfo['errors'] = array_merge($resinfo['errors'],$restul->errors);
+				$resinfo['errors'] = array_merge($resinfo['errors'],$result->errors);
 				$mcbatch = array();
 			}
 		}
@@ -288,7 +288,7 @@ class MUEModelMCList extends JModelLegacy
 		$resinfo['add_count'] = $res_info['add_count'] + $result->add_count;
 		$resinfo['update_count'] = $res_info['update_count'] + $result->update_count;
 		$resinfo['error_count'] = $res_info['error_count'] + $result->error_count;
-		$resinfo['errors'] = array_merge($resinfo['errors'],$restul->errors);
+		$resinfo['errors'] = array_merge($resinfo['errors'],$result->errors);
 		$resinfo['total'] = count($users);
 		return $resinfo;
 				

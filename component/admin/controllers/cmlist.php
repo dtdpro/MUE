@@ -45,7 +45,7 @@ class MUEControllerCMList extends JControllerLegacy
 		switch ($this->getTask())
 		{
 			case 'apply':
-				$message = JText::_('COM_MUE_MCLIST_SAVE_SUCCESS');
+				$message = JText::_('COM_MUE_CMLIST_SAVE_SUCCESS');
 				$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field.'&tmpl=component&refresh=1', $message);
 				break;
 
@@ -82,13 +82,13 @@ class MUEControllerCMList extends JControllerLegacy
 		if ($return === false)
 		{
 			// Save failed, go back to the screen and display a notice.
-			$message = JText::sprintf('COM_MUE_MCLIST_SYNC_FAILED', $model->getError());
+			$message = JText::sprintf('COM_MUE_CMLIST_SYNC_FAILED', $model->getError());
 			$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field.'&tmpl=component', $message, 'error');
 			return false;
 		}
 
 		
-		$message = JText::_('COM_MUE_MCLIST_SYNC_SUCCESS');
+		$message = JText::_('COM_MUE_CMLIST_SYNC_SUCCESS');
 		if ($return['users']) $message .= '<br>Users Processed: '.$return['users'];
 		if ($return['members']) $message .= '<br>List Memebrs: '.$return['members'];
 		$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field.'&tmpl=component&refresh=1', $message);
@@ -121,13 +121,13 @@ class MUEControllerCMList extends JControllerLegacy
 		if ($return === false)
 		{
 			// Save failed, go back to the screen and display a notice.
-			$message = JText::sprintf('COM_MUE_MCLIST_SYNC_FAILED', $model->getError());
+			$message = JText::sprintf('COM_MUE_CMLIST_SYNC_FAILED', $model->getError());
 			$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field.'&tmpl=component', $message, 'error');
 			return false;
 		}
 
 		
-		$message = JText::_('COM_MUE_MCLIST_SYNC_SUCCESS');
+		$message = JText::_('COM_MUE_CMLIST_SYNC_SUCCESS');
 		if ($return['total']) $message .= '<br>Users Processed: '.$return['total'];
 		if ($return['add_count']) $message .= '<br>added: '.$return['add_count'];
 		if ($return['update_count']) $message .= '<br>Updated: '.$return['update_count'];
@@ -158,12 +158,12 @@ class MUEControllerCMList extends JControllerLegacy
 
 		// Attempt to save the configuration.
 		if (!$model->addWebhook($field)) {
-			$message = JText::sprintf('COM_MUE_MCLIST_WHADD_FAILED', $model->getError());
+			$message = JText::sprintf('COM_MUE_CMLIST_WHADD_FAILED', $model->getError());
 			$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field.'&tmpl=component', $message, 'error');
 			return false;
 		} 
 		
-		$message = JText::_('COM_MUE_MCLIST_WHADD_SUCCESS');
+		$message = JText::_('COM_MUE_CMLIST_WHADD_SUCCESS');
 		$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field.'&tmpl=component&refresh=1', $message);	
 		return true; 
 	}

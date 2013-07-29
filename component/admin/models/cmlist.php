@@ -50,22 +50,21 @@ class MUEModelCMList extends JModelLegacy
 		$list = $db->loadObject();
 		
 		$cfg=MUEHelper::getConfig();
-		if (!$cfg->mckey) { $this->setError("MailChimp not Configured"); return false; }
-		$mc = new MailChimp($cfg->mckey);
+		if (!$cfg->cmkey) return false;
+		$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
 		
-		$cmlist=$mc->getLists($list->uf_default);
-		$list->list_info=$cmlist[0];
-		$totalmembers = $list->list_info->stats->member_count;
+		$list->list_info=$cm->getListDetails($list->uf_default);
+		$list->list_stats=$cm->getListStats($list->uf_default);
+		$totalmembers = $list->list_stats->TotalActiveSubscribers;
 		
 		$listmembers = array();
-		$start=0;
+		$start=1;
 		while (count($listmembers) < $totalmembers) {
-			$lm = array();
-			if (!$lm=$mc->getListMembers($list->uf_default,500,$start)) {
-				$this->setError($mc->getError());
+			if (!$lm=$cm->getActiveSubscribers($list->uf_default,$start,500)) {
+				$this->setError($cm->error);
 				return false;
 			}
-			$listmembers = array_merge($lm,$listmembers);
+			$listmembers = array_merge($lm->Results,$listmembers);
 			$start = $start+1;
 		} 
 		
@@ -74,7 +73,7 @@ class MUEModelCMList extends JModelLegacy
 			$q=$db->getQuery(true);
 			$q->select('id');
 			$q->from('#__users');
-			$q->where('email="'.$l->email.'"');
+			$q->where('email="'.$l->EmailAddress.'"');
 			$db->setQuery($q);
 			$res=$db->loadResult();
 			if ($res) $userids[]=$res;
@@ -146,8 +145,8 @@ class MUEModelCMList extends JModelLegacy
 		}
 		
 		$cfg=MUEHelper::getConfig();
-		if (!$cfg->mckey) { $this->setError("MailChimp not Configured"); return false; }
-		$mc = new MailChimp($cfg->mckey);
+		if (!$cfg->cmkey) return false;
+		$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
 		
 		//Users in list
 		$query = $db->getQuery(true);
@@ -160,7 +159,7 @@ class MUEModelCMList extends JModelLegacy
 		
 		//Fields for Merge Data
 		$muef=array("fname","lname","email");
-		foreach ($list->params->mcvars as $mcv=>$mue) { $muef[]=$mue; }
+		foreach ($list->params->cmfields as $mcv=>$mue) { $muef[]=$mue; }
 		$query = $db->getQuery(true);
 		$query->select("*");
 		$query->from('#__mue_ufields');
@@ -187,7 +186,7 @@ class MUEModelCMList extends JModelLegacy
 				$query->select('s.*,p.*,DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft');
 				$query->from('#__mue_usersubs as s');
 				$query->join('LEFT','#__mue_subs AS p ON s.usrsub_sub = p.sub_id');
-				$query->where('s.usrsub_status != "notyetstarted"');
+				$query->where('s.usrsub_status IN ("completed","verified","accepted")');
 				$query->where('s.usrsub_user="'.$i->id.'"');
 				$query->order('daysLeft DESC, s.usrsub_end DESC, s.usrsub_time DESC');
 				$db->setQuery($query,0,1);
@@ -244,51 +243,61 @@ class MUEModelCMList extends JModelLegacy
 			$optionsdata[$o->opt_id] = $o->opt_text;
 		}
 		
-		//Build MC Batch Data
-		$mcbatch=array(); 
+		//Build CM Batch Data
+		$cmbatch=array(); 
 		$resinfo=array();
 		$resinfo['errors']=array();
 		foreach ($users as $u) {
 			$userid=$u->id; 
-			$mcdata = array('FNAME'=>$udata->fname[$userid], 'LNAME'=>$udata->lname[$userid],'EMAIL'=>$u->email);
-			if ($list->params->mcvars) {
-				$othervars=$list->params->mcvars;
-				foreach ($othervars as $mcv=>$mue) { $ufield = $udata->$mue;
-					if ($mue == 'username') { $mcdata[$mcv] = $u->username; }
-					else if ($mue == 'user_group') { $mcdata[$mcv] = $u->ug_name; }
-					else if ($mue == 'site_url') { $mcdata[$mcv] = $u->userg_siteurl; }
-					else if ($mue && $udata->$mue) { 
-						if (in_array($mue,$optfs)) $mcdata[$mcv] = $optionsdata[$ufield[$userid]];
+			
+			$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
+			$cmdata = array('Name'=>$udata->fname[$userid].' '.$udata->lname[$userid], 'EmailAddress'=>$u->email);
+			$customfields = array();
+			if ($list->params->cmfields) {
+				$othervars=$list->params->cmfields;
+				foreach ($othervars as $cmf=>$mue) {
+					$ufield = $udata->$mue;
+					$newcmf=array();
+					$newcmf['Key']=$cmf;
+					if ($mue == 'username') { $newcmf['Key']=$cmf; $newcmf['Value'] = $u->username; }
+					else if ($mue == 'user_group') { $newcmf['Key']=$cmf; $newcmf['Value'] = $u->ug_name; }
+					else if ($mue == 'site_url') { $newcmf['Key']=$cmf; $newcmf['Value'] = $u->userg_siteurl; }
+					else if ($mue && $udata->$mue) {
+						if (in_array($mue,$optfs)) $newcmf['Value'] = $optionsdata[$ufield[$userid]];
 						else if (in_array($mue,$moptfs)) {
-							$mcdata[$mcv] = "";
+							$newcmf['Value'] = "";
 							foreach (explode(" ",$ufield[$userid]) as $mfo) {
-								$mcdata[$mcv] .= $optionsdata[$mfo]." ";
+								$newcmf['Value'] .= $optionsdata[$mfo]." ";
 							}
 						}
-						else $mcdata[$mcv] = $ufield[$userid];
+						else $newcmf['Value'] = $ufield[$userid];
 					}
+					if (!$mue || $newcmf['Value'] == "") $newcmf['Clear']='true';
+					$customfields[]=$newcmf;
 				}
 			}
-			if ($list->params->mcrgroup && $cfg->subscribe) {
-				if (!$substatus) $mcdata['GROUPINGS']=array(array("name"=>$list->params->mcrgroup,"groups"=>$list->params->mcreggroup));
-				else $mcdata['GROUPINGS']=array(array("name"=>$list->params->mcrgroup,"groups"=>$list->params->mcsubgroup));
+			if ($list->params->msgroup->field && $cfg->subscribe) {
+				$newcmf=array();
+				$newcmf['Key']=$list->params->msgroup->field;
+				if (!$u->substatus) { $newcmf['Value']=$list->params->msgroup->reg; }
+				else { $newcmf['Value']=$list->params->msgroup->sub; }
+				$customfields[]=$newcmf;
 			}
-			$mcbatch[] = $mcdata;
-			if (count($mcbatch) == 3000) {
-				$result = $mc->listBatchSubscribe($mcbatch,$list->uf_default);
-				$resinfo['add_count'] = $res_info['add_count'] + $result->add_count;
-				$resinfo['update_count'] = $res_info['update_count'] + $result->update_count;
-				$resinfo['error_count'] = $res_info['error_count'] + $result->error_count;
-				$resinfo['errors'] = array_merge($resinfo['errors'],$restul->errors);
+			$cmdata['CustomFields']=$customfields;
+			$cmbatch[] = $cmdata;
+			if (count($cmbatch) == 500) {
+				if (!$result = $cm->importSubscribers($list->uf_default,$cmbatch)) {$this->setError($cm->error); return false;}
+				$resinfo['add_count'] = $res_info['add_count'] + $result->TotalNewSubscribers;
+				$resinfo['update_count'] = $res_info['update_count'] + $result->TotalExistingSubscribers;
+				$resinfo['errors'] = array_merge($resinfo['errors'],$result->FailureDetails);
 				$mcbatch = array();
 			}
 		}
 		
-		$result = $mc->listBatchSubscribe($mcbatch,$list->uf_default);
-		$resinfo['add_count'] = $res_info['add_count'] + $result->add_count;
-		$resinfo['update_count'] = $res_info['update_count'] + $result->update_count;
-		$resinfo['error_count'] = $res_info['error_count'] + $result->error_count;
-		$resinfo['errors'] = array_merge($resinfo['errors'],$restul->errors);
+		if (!$result = $cm->importSubscribers($list->uf_default,$cmbatch)) {$this->setError($cm->error); return false;}
+		$resinfo['add_count'] = $res_info['add_count'] + $result->TotalNewSubscribers;
+		$resinfo['update_count'] = $res_info['update_count'] + $result->TotalExistingSubscribers;
+		$resinfo['errors'] = array_merge($resinfo['errors'],$result->FailureDetails);
 		$resinfo['total'] = count($users);
 		return $resinfo;
 				
@@ -312,14 +321,13 @@ class MUEModelCMList extends JModelLegacy
 		$list = $db->loadObject();
 		
 		$cfg=MUEHelper::getConfig();
-		if (!$cfg->mckey) return false;
-		$mc = new MailChimp($cfg->mckey);
+		if (!$cfg->cmkey) return false;
+		$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
 		
-		$action=array("subscribe"=>true,"unsubscribe"=>true,"profile"=>true,"cleaned"=>true,"upemail"=>true,"campaign"=>true);
-		$sources=array("user"=>true,"admin"=>true,"api"=>false);
-		$url=str_replace("administrator/","",JURI::base()).'components/com_mue/helpers/mchook.php';
-		if (!$res = $mc->addListWebhook($list->uf_default,$url,$actions,$sources)) {
-			$this->setError($mc->error);
+		$url=str_replace("administrator/","",JURI::base()).'components/com_mue/helpers/cmhook.php';
+		$webhook=array("Events"=>array("Subscribe","Deactivate","Update"),"Url"=>$url,"PayloadFormat"=>"json");
+		if (!$res = $cm->addListWebhook($list->uf_default,$webhook)) {
+			$this->setError($cm->error);
 			return false;
 		}	
 		

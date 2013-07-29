@@ -93,7 +93,7 @@ JHtml::_('behavior.formvalidation');
 	//Ops
 	echo JHtml::_('tabs.panel', "Operations", 'cmlist-membership');
 	echo '<p><button type="button" onclick="Joomla.submitform(\'cmlist.syncField\', this.form);">Sync MUE Field</button> This Process is very DB Intensive, use with care</p>';
-	echo '<p><button type="button" onclick="Joomla.submitform(\'cmlist.syncList\', this.form);">Sync MC List</button> This Process is very DB Intensive, use with care. You should run Sync MUE Field First.</p>';
+	echo '<p><button type="button" onclick="Joomla.submitform(\'cmlist.syncList\', this.form);">Sync CM List</button> This Process is very DB Intensive, use with care. You should run Sync MUE Field First.</p>';
 	echo '<div class="clr"></div>';
 	
 	//Webhooks
@@ -112,9 +112,6 @@ JHtml::_('behavior.formvalidation');
 		echo '<p><button type="button" onclick="Joomla.submitform(\'cmlist.addWebhook\', this.form);">Add Default Web Hook</button> This will set up the default web hook for MUE.</p>';
 		echo '<p><strong>Use Webhook URL: </strong>'.str_replace("administrator/","",JURI::base()).'components/com_mue/helpers/cmhook.php</p>';
 	}
-	echo '<pre>';
-	print_r($this->list);
-	echo '</pre>';
 	echo '<div class="clr"></div>';
 	
 	echo JHtml::_('tabs.end');

@@ -87,11 +87,14 @@ class MUEModelUserReg extends JModelLegacy
 			$fids = array();
 			$optfs = array();
 			$mclists = array();
+			$cmlists = array();
 			$flist = $this->getUserFields($data['userGroupID'],false);
 			foreach ($flist as $d) {
 				$fieldname = $d->uf_sname;
 				if ($d->uf_type == 'mailchimp') {
 					$mclists[]=$d;
+				} else if ($d->uf_type == 'cmlist') {
+					$cmlists[]=$d;
 				} else if ($d->uf_type == 'captcha') {
 					$capfield=$fieldname;
 				} else if ($d->uf_type=="mcbox" || $d->uf_type=="mlist") {
@@ -153,6 +156,57 @@ class MUEModelUserReg extends JModelLegacy
 				return false;
 			}
 						
+			//Campaign Monitor Integration
+			foreach ($cmlists as $cmlist) {
+				include_once 'components/com_mue/lib/campaignmonitor.php';
+				if ($data[$cmlist->uf_sname]) {
+					$cmf=$cmlist->uf_sname;
+					$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
+					$cmdata = array('Name'=>$item->fname.' '.$item->lname, 'EmailAddress'=>$item->email, 'Resubscribe'=>'true');
+					$customfields = array();
+					if ($cmlist->params->cmfields) {
+						$othervars=$cmlist->params->cmfields;
+						foreach ($othervars as $cmf=>$mue) {
+							if ($mue) {
+								$newcmf=array();
+								$newcmf['Key']=$cmf;
+								if (in_array($mue,$optfs)) $newcmf['Value'] = $optionsdata[$item->$mue];
+								else if (in_array($mue,$moptfs)) {
+									$newcmf['Value'] = "";
+									foreach (explode(" ",$item->$mue) as $mfo) {
+										$newcmf['Value'] .= $optionsdata[$mfo]." ";
+									}
+								}
+								else $newcmf['Value'] = $item->$mue;
+							}
+							if (!$mue || $newcmf['Value'] == "") $newcmf['Clear']='true';
+							$customfields[]=$newcmf;
+						}
+					}
+					if ($cmlist->params->msgroup->field) {
+						$newcmf=array(); 
+						$newcmf['Key']=$cmlist->params->msgroup->field; 
+						if (!$substatus) { $newcmf['Value']=$cmlist->params->msgroup->reg; }
+						else { $newcmf['Value']=$cmlist->params->msgroup->sub; }
+						$customfields[]=$newcmf;
+					}
+					$cmdata['CustomFields']=$customfields;
+					$cmd=print_r($cmdata,true);
+					if ($cm->getSubscriberDetails($cmlist->uf_default,$item->email)) {
+						$cmresult = $cm->updateSubscriber($cmlist->uf_default,$item->email,$cmdata);
+						if ($cmresult) { $item->$cmf=1; $usernotes .= $date->toSql(true)." EMail Subscription Updated on Campaign Monitor List #".$cmlist->uf_default.' '.$cmd."\r\n"; }
+						else { $item->$cmf=1; $usernotes .= $date->toSql(true)." Could not update EMail subscription on Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
+					} else {
+						$cmresult = $cm->addSubscriber($cmlist->uf_default,$cmdata);
+						if ($cmresult) { $item->$cmf=1; $usernotes .= $date->toSql(true)." EMail Subscribed to Campaign Monitor List #".$cmlist->uf_default.' '.$cmd."\r\n"; }
+						else { $item->$cmf=0; $usernotes .= $date->toSql(true)." Could not subscribe EMail to Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
+					}
+						
+				} else {
+					$item->$cmf=0;
+				}
+			}
+			
 			//MailChimp List
 			foreach ($mclists as $mclist) {
 				if ($data[$mclist->uf_sname])  {

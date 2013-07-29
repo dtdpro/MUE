@@ -72,6 +72,14 @@ class MUEHelper {
 					else $onlist=false;
 					if ($useids && $u->uf_change) $user->$fn=$onlist;
 					else $user->$fn = ($onlist) ? "Yes" : "No";
+				} else if ($u->uf_type == 'cmlist') {
+					include_once JPATH_BASE.'/components/com_mue/lib/campaignmonitor.php';
+					$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
+					$cmresult = $cm->getSubscriberDetails($u->uf_default,$user->email);
+					if ($cmresult){ if ($cmresult->State=="Active")  { $onlist=true;} else { $onlist=false; } }
+					else $onlist=false;
+					if ($useids && $u->uf_change) $user->$fn=$onlist;
+					else $user->$fn = ($onlist) ? "Yes" : "No";
 				} else if ($u->uf_type == 'birthday') {
 					if ($useids && $u->uf_change) $user->$fn=$u->usr_data;
 					else $user->$fn = date("F j",strtotime('2000-'.substr($u->usr_data,0,2)."-".substr($u->usr_data,2,2).''));
