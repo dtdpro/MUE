@@ -108,6 +108,18 @@ class CampaignMonitor {
 		}
 	}
 	
+	function updateFieldOptions($listid="",$key="",$options=array(),$keep_existing=false) {
+		if (!$listid || !$options || !$key) return false;
+		$list = $this->getListObject($listid);
+		$result = $list->update_field_options($key,$options,$keep_existing);
+		if($result->was_successful()) {
+			return true;
+		} else {
+			$this->error = 'Failed with code '.$result->http_status_code.' '.print_r($result->response,true);
+			return false;
+		}
+	}
+	
 	function addSubscriber($listid="",$subinfo="") {
 		if (!$listid || !$subinfo) return false;
 		$sub = $this->getSubscriberObject($listid);

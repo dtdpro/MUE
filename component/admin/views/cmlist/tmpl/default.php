@@ -73,21 +73,39 @@ JHtml::_('behavior.formvalidation');
 	echo '</ul>';
 	echo '<div class="clr"></div>';
 
+	//CM Fields
 	echo JHtml::_('tabs.panel', "Fields", 'cmlist-membership');
-	//Merge Vars
-	echo '<ul class="config-option-list">';
+	echo '<table class="adminlist table table-striped">';
+	echo '<thead><tr><th>CM Field</th><th>Type</th><th>MUE Field</th></tr></thead><tbody>';
 	foreach ($this->list->list_fields as $v) {
 		$key=$v->Key;
+		echo '<tr><td>'.$v->FieldName.'</td>';
+		if ($v->Key != $this->list->params->msgroup->field) echo '<td>'.$v->DataType.'<input type="hidden" name="jform[cmfieldtypes]['.$key.']" value="'.$v->DataType.'"></td><td>';
+		else echo '<td>&nbsp;</td><td>';
 		if ($v->DataType == "Text") {
-			echo '<li><label for="jform_'.$key.'" id="jform_'.$key.'-lbl">'.$v->FieldName.'</label>';
 			echo '<select name="jform[cmfields]['.$key.']" id="jform_'.$v->FieldName.'" class="inputbox">';
 			echo '<option value="">None</option>';
-			echo JHtml::_('select.options', $this->ufields, 'value', 'text', $this->list->params->cmfields->$key, true);
+			echo JHtml::_('select.options', $this->ufields->text, 'value', 'text', $this->list->params->cmfields->$key, true);
 			echo '</select>';
-			echo '</li>';
 		}
+		if ($v->DataType == "MultiSelectOne" && $v->Key != $this->list->params->msgroup->field) {
+			echo '<select name="jform[cmfields]['.$key.']" id="jform_'.$v->FieldName.'" class="inputbox">';
+			echo '<option value="">None</option>';
+			echo JHtml::_('select.options', $this->ufields->mso, 'value', 'text', $this->list->params->cmfields->$key, true);
+			echo '</select>';
+		}
+		if ($v->DataType == "MultiSelectMany") {
+			echo '<select name="jform[cmfields]['.$key.']" id="jform_'.$v->FieldName.'" class="inputbox">';
+			echo '<option value="">None</option>';
+			echo JHtml::_('select.options', $this->ufields->msm, 'value', 'text', $this->list->params->cmfields->$key, true);
+			echo '</select>';
+		}
+		if ($v->Key == $this->list->params->msgroup->field) {
+			echo 'Used for Membership Grouping';
+		}
+		echo '</td></tr>';
 	}
-	echo '</ul>';
+	echo '</tbody></table>';
 	echo '<div class="clr"></div>';
 	
 	//Ops

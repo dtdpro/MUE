@@ -16,7 +16,7 @@ class MUEModelCMList extends JModelLegacy
 	function getUFields() {
 		$app = JFactory::getApplication('administrator');
 		$query = $this->_db->getQuery(true);
-		$query->select('uf_sname AS value, CONCAT(uf_name," [",uf_sname,"]") AS text');
+		$query->select('*');
 		$query->from('#__mue_ufields');
 		$query->where('uf_type NOT IN ("mailchimp","captcha")');
 		$query->where('uf_cms = 0');
@@ -25,12 +25,16 @@ class MUEModelCMList extends JModelLegacy
 		$this->_db->setQuery($query);
 		$data=$this->_db->loadObjectList();
 		
-		$fields = array();
-		$fields[] = JHtml::_('select.option', "user_group","MUE User Group [user_group]");
-		$fields[] = JHtml::_('select.option', "site_url","Site URL [site_url]");
-		$fields[] = JHtml::_('select.option', "username","Username [username]");
+		$fields->text = array();
+		$fields->mso = array();
+		$fields->msm = array();
+		$fields->text[] = JHtml::_('select.option', "user_group","MUE User Group [user_group]");
+		$fields->text[] = JHtml::_('select.option', "site_url","Site URL [site_url]");
+		$fields->text[] = JHtml::_('select.option', "username","Username [username]");
 		foreach ($data as $d) {
-			$fields[] = JHtml::_('select.option', $d->value,$d->text);
+			$fields->text[] = JHtml::_('select.option', $d->uf_sname,$d->uf_name." [".$d->uf_sname."]");
+			if ($d->uf_type == "multi" || $d->uf_type == "dropdown") $fields->mso[] = JHtml::_('select.option', $d->uf_sname,$d->uf_name." [".$d->uf_sname."]");
+			if ($d->uf_type == "mlist" || $d->uf_type == "mcbox") $fields->msm[] = JHtml::_('select.option', $d->uf_sname,$d->uf_name." [".$d->uf_sname."]");
 		}
 		return $fields;
 	}
@@ -257,23 +261,40 @@ class MUEModelCMList extends JModelLegacy
 				$othervars=$list->params->cmfields;
 				foreach ($othervars as $cmf=>$mue) {
 					$ufield = $udata->$mue;
-					$newcmf=array();
-					$newcmf['Key']=$cmf;
-					if ($mue == 'username') { $newcmf['Key']=$cmf; $newcmf['Value'] = $u->username; }
-					else if ($mue == 'user_group') { $newcmf['Key']=$cmf; $newcmf['Value'] = $u->ug_name; }
-					else if ($mue == 'site_url') { $newcmf['Key']=$cmf; $newcmf['Value'] = $u->userg_siteurl; }
-					else if ($mue && $udata->$mue) {
-						if (in_array($mue,$optfs)) $newcmf['Value'] = $optionsdata[$ufield[$userid]];
-						else if (in_array($mue,$moptfs)) {
-							$newcmf['Value'] = "";
+					if ($list->params->cmfieldtypes->$cmf == "MultiSelectMany") {
+						if (in_array($mue,$moptfs)) {
 							foreach (explode(" ",$ufield[$userid]) as $mfo) {
-								$newcmf['Value'] .= $optionsdata[$mfo]." ";
+								$newcmf=array();
+								$newcmf['Key']=$cmf;
+								$newcmf['Value'] = $optionsdata[$mfo];
+								$customfields[]=$newcmf;
 							}
+						} else {
+							$newcmf=array();
+							$newcmf['Key']=$cmf;
+							$newcmf['Value'] == "";
+							$newcmf['Clear']='true';
+							$customfields[]=$newcmf;
 						}
-						else $newcmf['Value'] = $ufield[$userid];
+					} else {
+						$newcmf=array();
+						$newcmf['Key']=$cmf;
+						if ($mue == 'username') { $newcmf['Key']=$cmf; $newcmf['Value'] = $u->username; }
+						else if ($mue == 'user_group') { $newcmf['Key']=$cmf; $newcmf['Value'] = $u->ug_name; }
+						else if ($mue == 'site_url') { $newcmf['Key']=$cmf; $newcmf['Value'] = $u->userg_siteurl; }
+						else if ($mue && $udata->$mue) {
+							if (in_array($mue,$optfs)) $newcmf['Value'] = $optionsdata[$ufield[$userid]];
+							else if (in_array($mue,$moptfs)) {
+								$newcmf['Value'] = "";
+								foreach (explode(" ",$ufield[$userid]) as $mfo) {
+									$newcmf['Value'] .= $optionsdata[$mfo]." ";
+								}
+							}
+							else $newcmf['Value'] = $ufield[$userid];
+						}
+						if (!$mue || $newcmf['Value'] == "") $newcmf['Clear']='true';
+						$customfields[]=$newcmf;
 					}
-					if (!$mue || $newcmf['Value'] == "") $newcmf['Clear']='true';
-					$customfields[]=$newcmf;
 				}
 			}
 			if ($list->params->msgroup->field && $cfg->subscribe) {
@@ -378,17 +399,65 @@ class MUEModelCMList extends JModelLegacy
 			$registry->loadString($list->params);
 			$list->params = $registry->toObject();
 		}
+		
+		if ($list->list_info->UnsubscribeSetting == "AllClientLists") JError::raiseNotice('allclientlists','List Unsubscribe set to Unsubscribe from All Lists');
 
 		return $list;
 	}
 
 	public function save($data,$field)
 	{
+		require_once(JPATH_ROOT.'/components/com_mue/lib/campaignmonitor.php');
+		
+		$db = JFactory::getDBO();
+		$cfg=MUEHelper::getConfig();
+		if (!$cfg->cmkey) return false;
+		$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
+		
+		$db = JFactory::getDBO();
+		$query = $db->getQuery(true);
+		$query->select("*");
+		$query->from('#__mue_ufields');
+		$query->where('uf_id = '.$field);
+		$db->setQuery($query);
+		$list = $db->loadObject();
+		
 		$parameter = new JRegistry;
 		$parameter->loadArray($data);
 		$params = (string)$parameter;
+		$pdata = $parameter->toObject();
 		
-		$db = JFactory::getDBO();
+		foreach ($pdata->cmfieldtypes as $cmf=>$cmft) {
+			if (($cmft == "MultiSelectOne" || $cmft == "MultiSelectMany") && $cmft != $pdata->msgroup->field) {
+				$mue = $pdata->cmfields->$cmf;
+				
+				$query = $db->getQuery(true);
+				$query->select("uf_id");
+				$query->from('#__mue_ufields');
+				$query->where('uf_sname = "'.$mue.'"');
+				$db->setQuery($query);
+				if (!$muefid = $db->loadResult()){
+					$this->setError($db->getQuery());
+					return false;
+				}
+				
+				$q2 = $db->getQuery(true);
+				$q2->select('opt_text');
+				$q2->from('#__mue_ufields_opts');
+				$q2->where('opt_field = '.$muefid);
+				$db->setQuery($q2);
+				if (!$opts = $db->loadColumn()) {
+					$this->setError($db->getQuery());
+					return false;
+				}
+				
+				if (!$cm->updateFieldOptions($list->uf_default,'['.$cmf.']',$opts)) {
+					$this->setError('MC API Error: '.$cm->error);
+					return false;
+				}
+			}
+		}
+		
 		$query = $db->getQuery(true);
 		$query->update('#__mue_ufields');
 		$query->set('params = '.$db->quote($params));

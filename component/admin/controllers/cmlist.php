@@ -36,7 +36,7 @@ class MUEControllerCMList extends JControllerLegacy
 		if ($return === false)
 		{
 			// Save failed, go back to the screen and display a notice.
-			$message = JText::sprintf('JERROR_SAVE_FAILED', $model->getError());
+			$message = JText::sprintf('COM_MUE_CMLIST_SAVE_FAILED', $model->getError());
 			$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field.'&tmpl=component', $message, 'error');
 			return false;
 		}

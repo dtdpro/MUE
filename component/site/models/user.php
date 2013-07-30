@@ -154,20 +154,37 @@ class MUEModelUser extends JModelLegacy
 					if ($cmlist->params->cmfields) {
 						$othervars=$cmlist->params->cmfields;
 						foreach ($othervars as $cmf=>$mue) {
-							if ($mue) {
-								$newcmf=array();
-								$newcmf['Key']=$cmf;
-								if (in_array($mue,$optfs)) $newcmf['Value'] = $optionsdata[$item->$mue];
-								else if (in_array($mue,$moptfs)) {
-									$newcmf['Value'] = "";
+							if ($cmlist->params->cmfieldtypes->$cmf == "MultiSelectMany") {
+								if (in_array($mue,$moptfs)) {
 									foreach (explode(" ",$item->$mue) as $mfo) {
-										$newcmf['Value'] .= $optionsdata[$mfo]." ";
+										$newcmf=array();
+										$newcmf['Key']=$cmf;
+										$newcmf['Value'] = $optionsdata[$mfo];
+										$customfields[]=$newcmf;
 									}
+								} else {
+									$newcmf=array();
+									$newcmf['Key']=$cmf;
+									$newcmf['Value'] == "";
+									$newcmf['Clear']='true';
+									$customfields[]=$newcmf;
 								}
-								else $newcmf['Value'] = $item->$mue;
+							} else {
+								if ($mue) {
+									$newcmf=array();
+									$newcmf['Key']=$cmf;
+									if (in_array($mue,$optfs)) $newcmf['Value'] = $optionsdata[$item->$mue];
+									else if (in_array($mue,$moptfs)) {
+										$newcmf['Value'] = "";
+										foreach (explode(" ",$item->$mue) as $mfo) {
+											$newcmf['Value'] .= $optionsdata[$mfo]." ";
+										}
+									}
+									else $newcmf['Value'] = $item->$mue;
+								}
+								if (!$mue || $newcmf['Value'] == "") $newcmf['Clear']='true';
+								$customfields[]=$newcmf;
 							}
-							if (!$mue || $newcmf['Value'] == "") $newcmf['Clear']='true';
-							$customfields[]=$newcmf;
 						}
 					}
 					if ($cmlist->params->msgroup->field) {
