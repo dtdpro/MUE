@@ -147,7 +147,7 @@ class MUEModelUser extends JModelLegacy
 			foreach ($cmlists as $cmlist) {
 				include_once 'components/com_mue/lib/campaignmonitor.php';
 				if ($data[$cmlist->uf_sname]) {
-					$cmf=$cmlist->uf_sname;
+					$cmuf=$cmlist->uf_sname;
 					$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
 					$cmdata = array('Name'=>$item->fname.' '.$item->lname, 'EmailAddress'=>$item->email, 'Resubscribe'=>'true');
 					$customfields = array();
@@ -198,12 +198,12 @@ class MUEModelUser extends JModelLegacy
 					$cmd=print_r($cmdata,true);
 					if ($cm->getSubscriberDetails($cmlist->uf_default,$item->email)) {
 						$cmresult = $cm->updateSubscriber($cmlist->uf_default,$item->email,$cmdata);
-						if ($cmresult) { $item->$cmf=1; $usernotes .= $date->toSql(true)." EMail Subscription Updated on Campaign Monitor List #".$cmlist->uf_default.' '.$cmd."\r\n"; }
-						else { $item->$cmf=1; $usernotes .= $date->toSql(true)." Could not update EMail subscription on Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
+						if ($cmresult) { $item->$cmuf=1; $usernotes .= $date->toSql(true)." EMail Subscription Updated on Campaign Monitor List #".$cmlist->uf_default.' '.$cmd."\r\n"; }
+						else { $item->$cmuf=1; $usernotes .= $date->toSql(true)." Could not update EMail subscription on Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
 					} else {
 						$cmresult = $cm->addSubscriber($cmlist->uf_default,$cmdata);
-						if ($cmresult) { $item->$cmf=1; $usernotes .= $date->toSql(true)." EMail Subscribed to Campaign Monitor List #".$cmlist->uf_default.' '.$cmd."\r\n"; }
-						else { $item->$cmf=0; $usernotes .= $date->toSql(true)." Could not subscribe EMail to Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
+						if ($cmresult) { $item->$cmuf=1; $usernotes .= $date->toSql(true)." EMail Subscribed to Campaign Monitor List #".$cmlist->uf_default.' '.$cmd."\r\n"; }
+						else { $item->$cmuf=0; $usernotes .= $date->toSql(true)." Could not subscribe EMail to Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
 					}
 						
 				} else {

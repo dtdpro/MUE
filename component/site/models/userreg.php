@@ -52,8 +52,10 @@ class MUEModelUserReg extends JModelLegacy
 				$fn=$u->uf_sname;
 				if ($u->uf_type == 'multi' || $u->uf_type == 'dropdown' || $u->uf_type == 'mcbox' || $u->uf_type == 'mlist') {
 					$u->value=explode(" ",$app->getUserState('mue.userreg.'.$fn,$u->uf_default));
-				} else if ($u->uf_type == 'cbox' || $u->uf_type == 'yesno' || $u->uf_type == 'mailchimp') {
+				} else if ($u->uf_type == 'cbox' || $u->uf_type == 'yesno') {
 					$u->value=$app->getUserState('mue.userreg.'.$fn,$u->uf_default);
+				} else if ($u->uf_type == 'mailchimp' || $u->uf_type == 'cmlist') {
+					$u->value=$app->getUserState('mue.userreg.'.$fn,"1");
 				} else if ($u->uf_type == 'birthday') {
 					$u->value=$app->getUserState('mue.userreg.'.$fn,$u->uf_default);
 				} else if ($u->uf_type != 'captcha') {
@@ -86,6 +88,7 @@ class MUEModelUserReg extends JModelLegacy
 			//setup item and bind data
 			$fids = array();
 			$optfs = array();
+			$moptfs = array();
 			$mclists = array();
 			$cmlists = array();
 			$flist = $this->getUserFields($data['userGroupID'],false);
@@ -110,7 +113,8 @@ class MUEModelUserReg extends JModelLegacy
 				} else {
 					$item->$fieldname = $data[$fieldname];
 				}
-				if ($d->uf_type=="mcbox" || $d->uf_type=="mlist" || $d->uf_type=="multi" || $d->uf_type=="dropdown") $optfs[]=$d->uf_sname;
+				if ($d->uf_type=="multi" || $d->uf_type=="dropdown") $optfs[]=$d->uf_sname;
+				if ($d->uf_type=="mcbox" || $d->uf_type=="mlist") $moptfs[]=$d->uf_sname;
 				if ($d->uf_type != 'captcha') $fids[]=$d->uf_id;
 				if ($d->uf_type != 'captcha' || $d->uf_type != 'password') $app->setUserState('mue.userreg.'.$fieldname, $item->$fieldname);
 			}
@@ -160,7 +164,7 @@ class MUEModelUserReg extends JModelLegacy
 			foreach ($cmlists as $cmlist) {
 				include_once 'components/com_mue/lib/campaignmonitor.php';
 				if ($data[$cmlist->uf_sname]) {
-					$cmf=$cmlist->uf_sname;
+					$cmuf=$cmlist->uf_sname;
 					$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
 					$cmdata = array('Name'=>$item->fname.' '.$item->lname, 'EmailAddress'=>$item->email, 'Resubscribe'=>'true');
 					$customfields = array();
@@ -211,12 +215,12 @@ class MUEModelUserReg extends JModelLegacy
 					$cmd=print_r($cmdata,true);
 					if ($cm->getSubscriberDetails($cmlist->uf_default,$item->email)) {
 						$cmresult = $cm->updateSubscriber($cmlist->uf_default,$item->email,$cmdata);
-						if ($cmresult) { $item->$cmf=1; $usernotes .= $date->toSql(true)." EMail Subscription Updated on Campaign Monitor List #".$cmlist->uf_default.' '.$cmd."\r\n"; }
-						else { $item->$cmf=1; $usernotes .= $date->toSql(true)." Could not update EMail subscription on Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
+						if ($cmresult) { $item->$cmuf=1; $usernotes .= $date->toSql(true)." EMail Subscription Updated on Campaign Monitor List #".$cmlist->uf_default.' '.$cmd."\r\n"; }
+						else { $item->$cmuf=0; $usernotes .= $date->toSql(true)." Could not update EMail subscription on Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
 					} else {
 						$cmresult = $cm->addSubscriber($cmlist->uf_default,$cmdata);
-						if ($cmresult) { $item->$cmf=1; $usernotes .= $date->toSql(true)." EMail Subscribed to Campaign Monitor List #".$cmlist->uf_default.' '.$cmd."\r\n"; }
-						else { $item->$cmf=0; $usernotes .= $date->toSql(true)." Could not subscribe EMail to Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
+						if ($cmresult) { $item->$cmuf=1; $usernotes .= $date->toSql(true)." EMail Subscribed to Campaign Monitor List #".$cmlist->uf_default.' '.$cmd."\r\n"; }
+						else { $item->$cmuf=0; $usernotes .= $date->toSql(true)." Could not subscribe EMail to Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
 					}
 						
 				} else {
