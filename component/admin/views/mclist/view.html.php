@@ -2,7 +2,7 @@
 <?php
 defined('_JEXEC') or die;
 
-class MUEViewMCList extends JViewLegacy
+class MUEViewMclist extends JViewLegacy
 {
 	/**
 	 * Display the view

@@ -1,7 +1,7 @@
 <?php
 defined('_JEXEC') or die;
 
-class MUEControllerMCList extends JControllerLegacy
+class MUEControllerMclist extends JControllerLegacy
 {
 	function __construct($config = array())
 	{
@@ -18,7 +18,7 @@ class MUEControllerMCList extends JControllerLegacy
 
 		// Initialise variables.
 		$app	= JFactory::getApplication();
-		$model	= $this->getModel('MCList');
+		$model	= $this->getModel('Mclist');
 		$data	= JRequest::getVar('jform', array(), 'post', 'array');
 		$field	= JRequest::getInt('field');
 
@@ -65,7 +65,7 @@ class MUEControllerMCList extends JControllerLegacy
 
 		// Initialise variables.
 		$app	= JFactory::getApplication();
-		$model	= $this->getModel('MCList');
+		$model	= $this->getModel('Mclist');
 		$field	= JRequest::getInt('field');
 
 		// Check if the user is authorized to do this.
@@ -104,7 +104,7 @@ class MUEControllerMCList extends JControllerLegacy
 
 		// Initialise variables.
 		$app	= JFactory::getApplication();
-		$model	= $this->getModel('MCList');
+		$model	= $this->getModel('Mclist');
 		$field	= JRequest::getInt('field');
 
 		// Check if the user is authorized to do this.
@@ -146,7 +146,7 @@ class MUEControllerMCList extends JControllerLegacy
 
 		// Initialise variables.
 		$app	= JFactory::getApplication();
-		$model	= $this->getModel('MCList');
+		$model	= $this->getModel('Mclist');
 		$field	= JRequest::getInt('field');
 
 		// Check if the user is authorized to do this.

@@ -6,7 +6,7 @@ defined('_JEXEC') or die('Restricted access');
 // import Joomla controllerform library
 jimport('joomla.application.component.controllerform');
 
-class MUEControllerUPlan extends JControllerForm
+class MUEControllerUplan extends JControllerForm
 {
 	protected $text_prefix = "COM_MUE_UPLAN";
 }

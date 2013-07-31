@@ -3,7 +3,7 @@
 jimport( 'joomla.application.component.view');
 
 
-class MUEViewUserReg extends JViewLegacy
+class MUEViewUserreg extends JViewLegacy
 {
 	var $return="";
 	

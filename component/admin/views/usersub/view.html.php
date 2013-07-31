@@ -6,7 +6,7 @@ defined('_JEXEC') or die('Restricted access');
 // import Joomla view library
 jimport('joomla.application.component.view');
 
-class MUEViewUserSub extends JViewLegacy
+class MUEViewUsersub extends JViewLegacy
 {
 	/**
 	 * display method of view

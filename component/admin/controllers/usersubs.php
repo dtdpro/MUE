@@ -6,12 +6,12 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 //DEVNOTE: import CONTROLLER object class
 jimport( 'joomla.application.component.controlleradmin' );
 
-class MUEControllerUserSubs extends JControllerAdmin
+class MUEControllerUsersubs extends JControllerAdmin
 {
 
 	protected $text_prefix = "COM_MUE_USERSUB";
 	
-	public function getModel($name = 'UserSub', $prefix = 'MUEModel') 
+	public function getModel($name = 'Usersub', $prefix = 'MUEModel') 
 	{
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 		return $model;

@@ -14,8 +14,16 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 		<div class="filter-search fltlft pull-left">
 			<label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
 			<input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" title="<?php echo JText::_('COM_MUE_SEARCH_IN_USER'); ?>" />
+			<?php 
+			if ($cfg->subscribe) {
+				echo '<label for="filter_ssstart"> Subscription Since Range: </label>';
+				echo JHTML::_('calendar',$this->state->get('filter.ssstart'),'filter_ssstart','filter_ssstart','%Y-%m-%d','');
+				echo '<label for="filter_ssend"> </label>';
+				echo JHTML::_('calendar',$this->state->get('filter.ssend'),'filter_ssend','filter_ssend','%Y-%m-%d','');
+			}
+			?>
 			<button type="submit"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
-			<button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
+			<button type="button" onclick="document.id('filter_search').value='';<?php if ($cfg->subscribe) { echo 'document.id(\'filter_ssstart\').value=\'0000-00-00\';document.id(\'filter_ssend\').value=\'0000-00-00\';'; } ?>this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
 		</div>
 		<div class="filter-select fltrt pull-right">
 			<select name="filter_ugroup" class="inputbox" onchange="this.form.submit()">
@@ -71,7 +79,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_REGISTERED' , 'u.registerDate', $listDirn, $listOrder); ?>
 				</th>
 				<?php if ($cfg->subscribe) { ?>
-					<th width="150"><?php echo JText::_('COM_MUE_USER_SINCE'); ?></th>
+					<th width="150"><?php echo JHtml::_('grid.sort',  'COM_MUE_USER_SINCE' , 'ug.userg_subsince', $listDirn, $listOrder); ?></th>
 					<th width="150"><?php echo JText::_('COM_MUE_USER_SUBSTATUS'); ?></th>
 				<?php }	?>
 			</tr>
@@ -124,7 +132,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 				</td>
 				<?php if ($cfg->subscribe) { ?>
 				<td class="center">
-					<?php echo $item->member_since; ?>
+					<?php echo $item->userg_subsince; ?>
 				</td>
 				<td>
 					<?php 
@@ -148,7 +156,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 									case "completed": echo "Active"; break;
 									case "dispute": echo "Dispute"; break;
 								}
-								echo ': '.$item->sub->daysLeft.'  Days Left';
+								echo ': '.$item->sub->daysLeft.'  Days Left<br />Ends: '.$item->userg_subexp;
 							} else echo 'Expired: '.abs((int)$item->sub->daysLeft).'  Days Ago';
 						} else {
 							echo 'No Subscription';
@@ -171,13 +179,13 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 	<fieldset class="batch">
 		<legend><?php echo JText::_('COM_USERS_BATCH_OPTIONS');?></legend>
 		<label id="batch-choose-action-lbl" for="batch-choose-action"><?php echo JText::_('COM_USERS_BATCH_GROUP') ?></label>
-		<fieldset id="batch-choose-action" class="combo">
+		<br /><br /><br />
 			<select name="batch[group_id]" class="inputbox" id="batch-group-id">
 				<option value=""><?php echo JText::_('JSELECT') ?></option>
-				<?php echo JHtml::_('select.options', JHtml::_('user.groups', JFactory::getUser()->get('isRoot'))); ?>
+				<?php echo JHtml::_('select.options', JHtml::_('user.groups')); ?>
 			</select>
 			<?php echo JHtml::_('select.radiolist', $options, 'batch[group_action]', '', 'value', 'text', 'add') ?>
-		</fieldset>
+		<br /><br /><br />
 	
 		<button type="submit" onclick="Joomla.submitbutton('user.batch');">
 			<?php echo JText::_('JGLOBAL_BATCH_PROCESS'); ?>

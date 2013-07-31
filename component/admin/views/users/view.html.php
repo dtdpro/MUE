@@ -38,6 +38,7 @@ class MUEViewUsers extends JViewLegacy
 	protected function addToolBar() 
 	{
 		$state	= $this->get('State');
+		$cfg=MUEHelper::getConfig();
 		JToolBarHelper::title(JText::_('COM_MUE_MANAGER_USERS'), 'mue');
 		JToolBarHelper::addNew('user.add', 'JTOOLBAR_NEW');
 		JToolBarHelper::editList('user.edit', 'JTOOLBAR_EDIT');	
@@ -47,7 +48,7 @@ class MUEViewUsers extends JViewLegacy
 		JToolBarHelper::divider();
 		$tbar =& JToolBar::getInstance('toolbar');
 		$tbar->appendButton('Link','export','Export CSV','index.php?option=com_mue&view=users&format=csv" target="_blank');
-		$tbar->appendButton('Link','send','Email List','index.php?option=com_mue&view=users&format=csveml" target="_blank');
+		if ($cfg->subscribe) JToolBarHelper::custom('users.syncsubs', 'refresh.png', 'refresh_f2.png', 'COM_MUE_TOOLBAR_SYNCSUB', false);
 		JToolBarHelper::divider();
 		JToolBarHelper::preferences('com_mue');
 	}

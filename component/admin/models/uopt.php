@@ -14,7 +14,7 @@ class MUEModelUOpt extends JModelAdmin
 		return JFactory::getUser()->authorise('core.edit', 'com_mue.uopt.'.((int) isset($data[$key]) ? $data[$key] : 0)) or parent::allowEdit($data, $key);
 	}
 	
-	public function getTable($type = 'UOpt', $prefix = 'MUETable', $config = array()) 
+	public function getTable($type = 'Uopt', $prefix = 'MUETable', $config = array()) 
 	{
 		return JTable::getInstance($type, $prefix, $config);
 	}

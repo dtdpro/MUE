@@ -6,7 +6,7 @@ defined('_JEXEC') or die('Restricted access');
 // import Joomla modelform library
 jimport('joomla.application.component.modeladmin');
 
-class MUEModelUserSub extends JModelAdmin
+class MUEModelUsersub extends JModelAdmin
 {
 	protected function allowEdit($data = array(), $key = 'usrsub_id')
 	{
@@ -14,7 +14,7 @@ class MUEModelUserSub extends JModelAdmin
 		return JFactory::getUser()->authorise('core.edit', 'com_mue.usersub.'.((int) isset($data[$key]) ? $data[$key] : 0)) or parent::allowEdit($data, $key);
 	}
 	
-	public function getTable($type = 'UserSub', $prefix = 'MUETable', $config = array()) 
+	public function getTable($type = 'Usersub', $prefix = 'MUETable', $config = array()) 
 	{
 		return JTable::getInstance($type, $prefix, $config);
 	}
@@ -79,7 +79,14 @@ class MUEModelUserSub extends JModelAdmin
 					$db->query();
 				}
 			}
+			$qud = $db->getQuery(true);
+			$qud->update('#__mue_usergroup');
+			$qud->set('userg_subexp = "'.$data['usrsub_end'].'"');
+			$qud->where('userg_user = '.$data['usrsub_user']);
+			$db->setQuery($qud);
+			$db->query();
 			if (!$this->updateMCSub(JFactory::getUser($data['usrsub_user']),true)) return false;
+			if (!$this->updateCMSub(JFactory::getUser($data['usrsub_user']),true)) return false;
 		} else {
 			if ($cfg->subgroup > 2) {
 				$query = $db->getQuery(true);
@@ -91,7 +98,8 @@ class MUEModelUserSub extends JModelAdmin
 				$db->setQuery($query);
 				$db->query();
 			}
-			if (!$this->updateMCSub(JFactory::getUser($data['usrsub_user']),false)) return false;;
+			if (!$this->updateMCSub(JFactory::getUser($data['usrsub_user']),false)) return false;
+			if (!$this->updateCMSub(JFactory::getUser($data['usrsub_user']),true)) return false;
 
 		}
 		return parent::save($data);
@@ -157,6 +165,21 @@ class MUEModelUserSub extends JModelAdmin
 		}
 		return $ufields;
 	}
+	function getCMFields() {
+		$db =& JFactory::getDBO();
+		$qd = 'SELECT f.* FROM #__mue_ufields as f ';
+		$qd.= ' WHERE f.published = 1 ';
+		$qd .= ' && f.uf_type = "cmlist"';
+		$qd.= ' ORDER BY f.ordering';
+		$db->setQuery( $qd );
+		$ufields = $db->loadObjectList();
+		foreach ($ufields as &$f) {
+			$registry = new JRegistry();
+			$registry->loadString($f->params);
+			$f->params = $registry->toObject();
+		}
+		return $ufields;
+	}
 	
 	function updateMCSub($user,$sub=false) {
 		if (!$user->id) return false;
@@ -177,6 +200,44 @@ class MUEModelUserSub extends JModelAdmin
 					$mcresult = $mc->updateUser($user->email,$mcdata,false,"html");
 					if ($mcresult) { $usernotes .= $date->toSql(true)." EMail Subscription Updated on MailChimp List #".$f->uf_default.' '.$mcd."\r\n"; }
 					else { $usernotes .= $date->toSql(true)." Could not update EMail subscription on MailChimp List #".$f->uf_default." Error: ".$mc->error."\r\n"; }
+				}
+			}
+		}
+		//Update update date
+		$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
+		$db->setQuery($qud);
+		if (!$db->query()) {
+			$this->setError($db->getErrorMsg());
+			return false;
+		}
+		return true;
+	}
+	
+	function updateCMSub($user,$sub=false) {
+		if (!$user->id) return false;
+		$cfg = MUEHelper::getConfig();
+		$db =& JFactory::getDBO();
+		$date = new JDate('now');
+		$usernotes = '';
+		foreach ($this->getCMFields() as $f) {
+			if ($f->params->msgroup->field) {
+				include_once '../components/com_mue/lib/campaignmonitor.php';
+				
+				$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
+				$cmdata=array();
+				$cmdata = array('Name'=>$user->name, 'EmailAddress'=>$user->email, 'Resubscribe'=>'true');
+				$customfields = array();
+				$newcmf=array(); 
+				$newcmf['Key']=$f->params->msgroup->field; 
+				$newcmf['Value']=$f->params->msgroup->sub; 
+				$customfields[]=$newcmf;
+				$cmdata['CustomFields']=$customfields;
+				
+				$cmd=print_r($cmdata,true);
+				if ($cm->getSubscriberDetails($f->uf_default,$user->email)) {
+					$cmresult = $cm->updateSubscriber($f->uf_default,$user->email,$cmdata);
+					if ($cmresult) {  $usernotes .= $date->toSql(true)." EMail Subscription Updated on Campaign Monitor List #".$f->uf_default.' '.$cmd."\r\n"; }
+					else { $usernotes .= $date->toSql(true)." Could not update EMail subscription on Campaign Monitor List #".$f->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
 				}
 			}
 		}

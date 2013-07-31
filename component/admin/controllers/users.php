@@ -12,16 +12,6 @@ class MUEControllerUsers extends JControllerAdmin
 
 	protected $text_prefix = "COM_MUE_USER";
 	
-	/**
-	* Constructor.
-	*
-	* @param array $config An optional associative array of configuration settings.
-	*
-	* @return UsersControllerUsers
-	*
-	* @since 1.20
-	* @see JController
-	*/
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
@@ -36,13 +26,6 @@ class MUEControllerUsers extends JControllerAdmin
 		return $model;
 	}
 	
-	/**
-	 * Method to change the block status on a record.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.20
-	 */
 	public function changeBlock()
 	{
 		// Check for request forgeries.
@@ -80,6 +63,29 @@ class MUEControllerUsers extends JControllerAdmin
 				}
 			}
 		}
+
+		$this->setRedirect('index.php?option=com_mue&view=users');
+	}
+	
+	public function syncSubs()
+	{
+		// Check for request forgeries.
+		//JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		
+			// Get the model.
+			$model = $this->getModel('Users');
+			
+			// Change the state of the records.
+			if (!$model->syncSubs())
+			{
+				$this->setMessage(JText::_('COM_MUE_USERS_SYNCSUB_FAILED'));
+			}
+			else
+			{
+				$this->setMessage(JText::_('COM_MUE_USERS_SYNCSUB_SUCCESS'));
+			}
+		
 
 		$this->setRedirect('index.php?option=com_mue&view=users');
 	}

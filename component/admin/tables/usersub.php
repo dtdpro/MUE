@@ -7,7 +7,7 @@ defined('_JEXEC') or die('Restricted access');
 // import Joomla table library
 jimport('joomla.database.table');
 
-class MUETableUserSub extends JTable
+class MUETableUsersub extends JTable
 {
 	/**
 	 * Constructor

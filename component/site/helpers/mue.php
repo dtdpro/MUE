@@ -142,7 +142,25 @@ class MUEHelper {
 		$query.= 'ORDER BY daysLeft DESC, s.usrsub_end DESC, s.usrsub_time DESC LIMIT 1';
 		$db->setQuery($query); 
 		$sub = $db->loadObject();
+		
+		//Member Since
+		$query = $db->getQuery(true);
+		$query->select('s.usrsub_start');
+		$query->from('#__mue_usersubs as s');
+		$query->where('s.usrsub_status IN ("completed","verified","accepted")');
+		$query->where('s.usrsub_user="'.$userid.'"');
+		$query->order('s.usrsub_start ASC');
+		$db->setQuery($query,0,1);
+		$member_since = $db->loadResult();
+		
 		if ($sub) {
+			$qud = $db->getQuery(true);
+			$qud->update('#__mue_usergroup');
+			$qud->set('userg_subexp = "'.$sub->usrsub_end.'"');
+			if ($member_since) $qud->set('userg_subsince = "'.$member_since.'"');
+			$qud->where('userg_user = '.$userid);
+			$db->setQuery($qud);
+			$db->query();
 			return $sub;
 		} else {
 			return false;

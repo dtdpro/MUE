@@ -4,7 +4,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modelform');
 
-class MUEModelCMList extends JModelLegacy
+class MUEModelCmlist extends JModelLegacy
 {
 	protected function populateState()
 	{

@@ -5,12 +5,12 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport( 'joomla.application.component.controlleradmin' );
 
-class MUEControllerUPlans extends JControllerAdmin
+class MUEControllerUplans extends JControllerAdmin
 {
 
-	protected $text_prefix = "COM_MUE_UPlan";
+	protected $text_prefix = "COM_MUE_UPLAN";
 	
-	public function getModel($name = 'UPlan', $prefix = 'MUEModel') 
+	public function getModel($name = 'Uplan', $prefix = 'MUEModel') 
 	{
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 		return $model;

@@ -7,7 +7,7 @@ defined('_JEXEC') or die('Restricted access');
 // import Joomla table library
 jimport('joomla.database.table');
 
-class MUETableUPlan extends JTable
+class MUETableUplan extends JTable
 {
 	function __construct(&$db) 
 	{

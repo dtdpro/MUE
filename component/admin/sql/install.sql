@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `#__mue_ufields` (
   `uf_userdir` tinyint(1) NOT NULL DEFAULT '0',
   `params` TEXT NOT NULL,
   PRIMARY KEY (`uf_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8  AUTO_INCREMENT=100;
 
 CREATE TABLE IF NOT EXISTS `#__mue_ufields_opts` (
   `opt_id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -55,6 +55,8 @@ CREATE TABLE IF NOT EXISTS `#__mue_usergroup` (
   `userg_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `userg_notes` text NOT NULL,
   `userg_siteurl` VARCHAR( 255 ) NOT NULL,
+  `userg_subsince` DATE NOT NULL,
+  `userg_subexp` DATE NOT NULL,
   PRIMARY KEY (`userg_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -117,4 +119,26 @@ CREATE TABLE IF NOT EXISTS `#__mue_usersubs_log` (
   PRIMARY KEY (`usl_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
+INSERT INTO `#__mue_ufields` (`uf_id`, `uf_sname`, `ordering`, `uf_name`, `uf_type`, `uf_cms`, `uf_req`, `uf_note`, `uf_match`, `published`, `uf_hidden`, `uf_change`, `uf_reg`, `uf_profile`, `uf_min`, `uf_max`, `uf_default`, `uf_userdir`, `params`) VALUES
+(1, 'fname', 2, 'First Name', 'textbox', 0, 1, '', '', 1, 0, 1, 1, 1, 0, 0, '', 0, ''),
+(2, 'lname', 3, 'Last Name', 'textbox', 0, 1, '', '', 1, 0, 1, 1, 1, 0, 0, '', 0, ''),
+(3, 'email', 5, 'Email Address', 'email', 1, 1, '', '', 1, 0, 0, 1, 1, 0, 0, '', 0, ''),
+(4, 'username', 7, 'Username', 'username', 1, 1, '', '', 1, 0, 0, 1, 1, 6, 0, '', 0, ''),
+(5, 'block', 8, 'Block User', 'yesno', 1, 1, '', '', 1, 1, 0, 0, 0, 0, 0, '', 0, ''),
+(6, 'cemail', 6, 'Confirm Email', 'email', 1, 1, '', 'email', 1, 0, 0, 1, 0, 0, 0, '', 0, ''),
+(7, 'password', 9, 'Password', 'password', 1, 1, '', '', 1, 0, 1, 1, 0, 0, 0, '', 0, ''),
+(8, 'cpassword', 10, 'Confirm Password', 'password', 1, 1, '', 'password', 1, 0, 1, 1, 1, 0, 0, '', 0, '');
+
+INSERT INTO `#__mue_ugroups` (`ug_id`, `ug_name`, `ug_desc`, `ug_welcome_email`, `ug_lostinfo_email`, `access`, `published`, `ordering`) VALUES
+(1, 'Physicians', 'MD, DO', '<p>Dear {fullname},</p>\r\n<p>Welcome to our site. Your user credentials are below.</p>\r\n<p>Site URL: <strong>{site_url}</strong></p>\r\n<p>Username: <strong>{username}</strong><br />\r\n  Password: <strong>{password}</strong></p>\r\n', '<p>Dear {fullname},</p>\r\n<p>Your password has been reset, the information is below</p>\r\n<p>Site URL: <strong>{site_url}</strong></p><p>Username: <strong>{username}</strong><br /> Password: <strong>{password}</strong></p>', 1, 1, 1);
+
+INSERT INTO `#__mue_uguf` (`uguf_field`, `uguf_group`) VALUES
+(1, 1),
+(2, 1),
+(3, 1),
+(4, 1),
+(5, 1),
+(6, 1),
+(7, 1),
+(8, 1);
 

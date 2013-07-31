@@ -7,12 +7,12 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controlleradmin');
 
 
-class MUEControllerUFields extends JControllerAdmin
+class MUEControllerUfields extends JControllerAdmin
 {
 
 	protected $text_prefix = "COM_MUE_UFIELD";
 	
-	public function getModel($name = 'UField', $prefix = 'MUEModel') 
+	public function getModel($name = 'Ufield', $prefix = 'MUEModel') 
 	{
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 		return $model;

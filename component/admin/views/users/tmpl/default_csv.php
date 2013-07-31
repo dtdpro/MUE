@@ -5,7 +5,7 @@ $filename = 'MUE_Users_Report' . '-' . date("Y-m-d").'.csv';
 $contents = "";
 
 $contents .= '"User Id","Username","Name","email","User Group","Join Site","LastVisit","Last Update","Registered"';
-if ($cfg->subscribe) $contents .= ',"Member Since","Subcription Status"';
+if ($cfg->subscribe) $contents .= ',"Subscriber Since","Subcription Status"';
 foreach ($this->fdata as $f) {
 	$contents .= ',"'.$f->uf_name.'"';
 }

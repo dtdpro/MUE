@@ -10,14 +10,6 @@ class MUEControllerUser extends JControllerForm
 {
 	protected $text_prefix = "COM_MUE_USER";
 	
-	/**
-	 * Method to cancel an edit.
-	 *
-	 * @param   string  $key  The name of the primary key of the URL variable.
-	 *
-	 * @return  boolean  True if access level checks pass, false otherwise.
-	 * @since   11.1
-	 */
 	public function cancel($key = null)
 	{
 		JRequest::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -66,16 +58,6 @@ class MUEControllerUser extends JControllerForm
 		return true;
 	}
 
-	/**
-	 * Method to edit an existing record.
-	 *
-	 * @param   string  $key     The name of the primary key of the URL variable.
-	 * @param   string  $urlVar  The name of the URL variable if different from the primary key
-	 *                           (sometimes required to avoid router collisions).
-	 *
-	 * @return  boolean  True if access level check and checkout passes, false otherwise.
-	 * @since   11.1
-	 */
 	public function edit($key = null, $urlVar = null)
 	{
 		// Initialise variables.
@@ -114,15 +96,6 @@ class MUEControllerUser extends JControllerForm
 		return true;
 	}
 	
-	/**
-	 * Method to save a record.
-	 *
-	 * @param   string  $key	The name of the primary key of the URL variable.
-	 * @param   string  $urlVar	The name of the URL variable if different from the primary key (sometimes required to avoid router collisions).
-	 *
-	 * @return  boolean  True if successful, false otherwise.
-	 * @since   11.1
-	 */
 	public function save($key = null, $urlVar = null)
 	{
 		// Check for request forgeries.

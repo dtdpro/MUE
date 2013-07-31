@@ -6,7 +6,7 @@ defined('_JEXEC') or die();
 jimport( 'joomla.application.component.model' );
 jimport('joomla.utilities.date');
 
-class MUEModelUserReg extends JModelLegacy
+class MUEModelUserreg extends JModelLegacy
 {
 
 	function getUserGroups($id=0) {

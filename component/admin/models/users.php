@@ -25,6 +25,7 @@ class MUEModelUsers extends JModelList
 			'registerDate', 'u.registerDate',
 			'lastvisitDate', 'u.lastvisitDate',
 			'userg_update', 'ug.userg_update',
+			'userg_subsince', 'ug.userg_subsince',
 			);
 		}
 		parent::__construct($config);
@@ -45,6 +46,12 @@ class MUEModelUsers extends JModelList
 		
 		$state = $this->getUserStateFromRequest($this->context.'.filter.state', 'filter_state');
 		$this->setState('filter.state', $state);
+
+		$sssd = $this->getUserStateFromRequest($this->context.'.filter.ssstart', 'filter_ssstart', "0000-00-00");
+		$this->setState('filter.ssstart', $sssd);
+		
+		$ssed = $this->getUserStateFromRequest($this->context.'.filter.ssend', 'filter_ssend', "0000-00-00");
+		$this->setState('filter.ssend', $ssed);
 		
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_mue');
@@ -98,13 +105,14 @@ class MUEModelUsers extends JModelList
 		// Create a new query object.
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);
+		$cfg = MUEHelper::getConfig();
 
 		// Select some fields
 		$query->select('u.*');
 		$query->from('#__users as u');
 		
 		// Join over the users.
-		$query->select('ug.userg_update as lastUpdate,ug.userg_notes,ug.userg_siteurl');
+		$query->select('ug.userg_update as lastUpdate,ug.userg_notes,ug.userg_siteurl,ug.userg_subsince,ug.userg_subexp');
 		$query->join('LEFT', '#__mue_usergroup AS ug ON u.id = ug.userg_user');
 		$query->select('g.ug_name');
 		$query->join('LEFT', '#__mue_ugroups AS g ON ug.userg_group = g.ug_id');
@@ -131,6 +139,13 @@ class MUEModelUsers extends JModelList
 		if (!empty($search)) {
 			$search = $db->Quote('%'.$db->escape($search, true).'%');
 			$query->where('(u.username LIKE '.$search.' OR u.name LIKE '.$search.' OR u.email LIKE '.$search.')');
+		}
+		
+		// Set Sub start range
+		if ($cfg->subscribe) {
+			$startdate = $this->getState('filter.ssstart');
+			$enddate = $this->getState('filter.ssend');
+			if ($startdate != "0000-00-00" || !$startdate) $query->where('date(ug.userg_subsince) BETWEEN "'.$startdate.'" AND "'.$enddate.'"');
 		}
 		
 		$orderCol	= $this->state->get('list.ordering');
@@ -168,6 +183,45 @@ class MUEModelUsers extends JModelList
 		return $items;
 	}
 	
+	public function syncSubs() {
+		$db =& JFactory::getDBO();
+		$items = $this->getUsers();
+		$items = $this->getSubStatus($items);
+		foreach ($items as $i) {
+			if ($i->sub) {
+				switch ($i->sub->usrsub_status) {
+					case "completed": 
+					case "verified": 
+					case "accepted":
+						$subend = $i->sub->usrsub_end;
+						break;
+					default:
+						$subend = "0000-00-00";
+						break;
+				}
+			}
+							
+			$qud = $db->getQuery(true);
+			$qud->update('#__mue_usergroup');
+			if ($i->sub) $qud->set('userg_subexp = "'.$subend.'"');
+			else $qud->set('userg_subexp = "0000-00-00"');
+			if ($i->member_since) $qud->set('userg_subsince = "'.$i->member_since.'"');
+			else $qud->set('userg_subsince = "0000-00-00"');
+			$qud->where('userg_user = '.$i->id);
+			$db->setQuery($qud);
+			if (!$db->query()) return false;
+		}
+		return true;
+	}
+	
+	protected function getUsers() {
+		$db =& JFactory::getDBO();
+		$query = $db->getQuery(true);
+		$query->select('id')->from('#__users');
+		$db->setQuery($query);
+		return $db->loadObjectList();
+	}
+	
 	protected function getJoomlaGroups($items) {
 		foreach ($items as &$i) {
 			$db =& JFactory::getDBO();
@@ -193,11 +247,12 @@ class MUEModelUsers extends JModelList
 	}
 	
 	public function getItemsCSV() {
+		$cfg = MUEHelper::getConfig();
 		$query=$this->getListQuery();
 		$db = JFactory::getDBO();
-		$db->setQuery($query);
+		$db->setQuery($query); 
 		$items = $db->loadObjectList();
-		$items=$this->getSubStatus($items);
+		if ($cfg->subscribe) $items=$this->getSubStatus($items);
 		return $items;
 		
 	}

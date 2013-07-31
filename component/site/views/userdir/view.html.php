@@ -3,7 +3,7 @@
 jimport( 'joomla.application.component.view');
 
 
-class MUEViewUserDir extends JViewLegacy
+class MUEViewUserdir extends JViewLegacy
 {
 	public function display($tpl = null)
 	{

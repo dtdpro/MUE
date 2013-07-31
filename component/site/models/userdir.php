@@ -4,7 +4,7 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
 
-class MUEModelUserDir extends JModelLegacy
+class MUEModelUserdir extends JModelLegacy
 {
 	function getSearchFields() {
 		$db =& JFactory::getDBO();

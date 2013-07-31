@@ -7,7 +7,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.modellist');
 
 
-class MUEModelUPlans extends JModelList
+class MUEModelUplans extends JModelList
 {
 	
 	public function __construct($config = array())

@@ -5,7 +5,7 @@ defined('_JEXEC') or die();
 
 jimport( 'joomla.application.component.view' );
 
-class MUEViewMUE extends JViewLegacy
+class MUEViewMue extends JViewLegacy
 {
 	function display($tpl = null)
 	{

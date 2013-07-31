@@ -14,7 +14,7 @@ class MUEModelUGroup extends JModelAdmin
 		return JFactory::getUser()->authorise('core.edit', 'com_mue.ugroup.'.((int) isset($data[$key]) ? $data[$key] : 0)) or parent::allowEdit($data, $key);
 	}
 	
-	public function getTable($type = 'UGroup', $prefix = 'MUETable', $config = array()) 
+	public function getTable($type = 'Ugroup', $prefix = 'MUETable', $config = array()) 
 	{
 		return JTable::getInstance($type, $prefix, $config);
 	}

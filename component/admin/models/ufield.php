@@ -6,7 +6,7 @@ defined('_JEXEC') or die('Restricted access');
 // import Joomla modelform library
 jimport('joomla.application.component.modeladmin');
 
-class MUEModelUField extends JModelAdmin
+class MUEModelUfield extends JModelAdmin
 {
 	protected function allowEdit($data = array(), $key = 'uf_id')
 	{
@@ -14,7 +14,7 @@ class MUEModelUField extends JModelAdmin
 		return JFactory::getUser()->authorise('core.edit', 'com_mue.ufield.'.((int) isset($data[$key]) ? $data[$key] : 0)) or parent::allowEdit($data, $key);
 	}
 	
-	public function getTable($type = 'UField', $prefix = 'MUETable', $config = array()) 
+	public function getTable($type = 'Ufield', $prefix = 'MUETable', $config = array()) 
 	{
 		return JTable::getInstance($type, $prefix, $config);
 	}
