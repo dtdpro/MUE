@@ -66,7 +66,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 				<th width="150">
 					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_JOINSITE' , 'g.userg_siteurl', $listDirn, $listOrder); ?>
 				</th>
-				<th class="nowrap" width="5%">
+				<th class="nowrap" width="60">
 					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_ENABLED', 'u.block', $listDirn, $listOrder); ?>
 				</th>
 				<th width="150">
@@ -79,14 +79,15 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_REGISTERED' , 'u.registerDate', $listDirn, $listOrder); ?>
 				</th>
 				<?php if ($cfg->subscribe) { ?>
-					<th width="150"><?php echo JHtml::_('grid.sort',  'COM_MUE_USER_SINCE' , 'ug.userg_subsince', $listDirn, $listOrder); ?></th>
-					<th width="150"><?php echo JText::_('COM_MUE_USER_SUBSTATUS'); ?></th>
+					<th width="150"><?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_SINCE' , 'ug.userg_subsince', $listDirn, $listOrder); ?></th>
+					<th width="150"><?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_EXPIRES' , 'ug.userg_subexp', $listDirn, $listOrder); ?></th>
+					<th width="150"><?php echo JText::_('COM_MUE_USER_HEADING_SUBSTATUS'); ?></th>
 				<?php }	?>
 			</tr>
 		</thead>
 		<tfoot>
 		<tr>
-			<td colspan="<?php echo ($cfg->subscribe) ? '14' : '12'; ?>"><?php echo $this->pagination->getListFooter(); ?></td>
+			<td colspan="<?php echo ($cfg->subscribe) ? '15' : '12'; ?>"><?php echo $this->pagination->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
 		<tbody>
@@ -134,6 +135,9 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 				<td class="center">
 					<?php echo $item->userg_subsince; ?>
 				</td>
+				<td class="center">
+					<?php echo $item->userg_subexp; ?>
+				</td>
 				<td>
 					<?php 
 						if ($item->sub) {
@@ -156,7 +160,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 									case "completed": echo "Active"; break;
 									case "dispute": echo "Dispute"; break;
 								}
-								echo ': '.$item->sub->daysLeft.'  Days Left<br />Ends: '.$item->userg_subexp;
+								echo ': '.$item->sub->daysLeft.'  Days Left';
 							} else echo 'Expired: '.abs((int)$item->sub->daysLeft).'  Days Ago';
 						} else {
 							echo 'No Subscription';

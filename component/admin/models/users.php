@@ -26,6 +26,7 @@ class MUEModelUsers extends JModelList
 			'lastvisitDate', 'u.lastvisitDate',
 			'userg_update', 'ug.userg_update',
 			'userg_subsince', 'ug.userg_subsince',
+			'userg_subexp','ug.userg_subexp'
 			);
 		}
 		parent::__construct($config);

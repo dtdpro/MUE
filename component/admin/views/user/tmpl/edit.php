@@ -17,14 +17,12 @@ JHtml::_('behavior.formvalidation');
 	}
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_mue&layout=edit&usr_id='.(int) $this->item->usr_id); ?>" method="post" name="adminForm" id="mue-form" class="form-validate">
-	<div class="width-50 fltlft">
+<div class="row-fluid">
+	<div class="width-50 fltlft span6">
 		<fieldset class="adminform">
 			<legend><?php echo JText::_( 'COM_MUE_USER_DETAILS' ); ?></legend>
 			<ul class="adminformlist">
-				<li><label id="jform_usersiteurl-lbl" for="jform_usersiteurl" class="hasTip" title="Join Site::Site user joined from">Joined From</label>
-				<input type="hidden" name="jform[usersiteurl]" id="jform_usersiteurl" value="<?php echo $this->item->usersiteurl; ?>"><?php echo $this->item->usersiteurl; ?>
-				</li>
-				<li><label id="jform_usergroup-lbl" for="jform_usergroup" class="hasTip" title="Group::Users' Group">Group</label>
+				<li><label id="jform_usergroup-lbl" for="jform_usergroup" class="hasTip" title="Group::Users' Group">MUE Group</label>
 				<select id="jform_usergroup" name="jform[usergroup]" class="inputbox" size="1">
 				<?php echo JHtml::_('select.options',$this->usergroups,"value","text",$this->item->usergroup); ?>
 				</select>
@@ -97,17 +95,16 @@ JHtml::_('behavior.formvalidation');
 		</fieldset>
 
 	</div>
-	<div class="width-50 fltlft">
+	<div class="width-50 fltlft span6">
 		<fieldset class="adminform">
 			<legend>Joomla User Group</legend>
-				<fieldset id="user-groups" class="adminform">
-					<legend>Assigned Groups</legend>
+				
 					<?php echo JHtml::_('access.usergroups', 'jform[groups]', $this->groups, true); ?>
-				</fieldset>
+				
 
 		</fieldset>
 	</div>
-	<div class="width-50 fltlft">
+	<div class="width-50 fltlft span6">
 		<fieldset class="adminform">
 			<legend>Other User Info</legend>
 			<?php 
@@ -119,7 +116,7 @@ JHtml::_('behavior.formvalidation');
 			?>
 		</fieldset>
 	</div>
-	<div>
+
 		<input type="hidden" name="task" value="user.edit" />
 		<input type="hidden" name="usr_user" value="<?php echo $this->item->usr_user; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
