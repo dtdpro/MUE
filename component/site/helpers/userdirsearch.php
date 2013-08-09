@@ -3,10 +3,9 @@
 define( '_JEXEC', 1 );
 
 define('JPATH_BASE', dirname(__FILE__) . '/../../..' );
-define( 'DS', DIRECTORY_SEPARATOR );
 
-require_once ( JPATH_BASE .DS.'includes'.DS.'defines.php' );
-require_once ( JPATH_BASE .DS.'includes'.DS.'framework.php' );
+require_once ( JPATH_BASE .'/includes/defines.php' );
+require_once ( JPATH_BASE .'/includes/framework.php' );
 require_once ('mue.php');
 
 $mainframe =& JFactory::getApplication('site');
@@ -36,9 +35,9 @@ if ($user->id && $canview) {
 	$sdata = array();
 	foreach ($data as $d) {
 		if (is_array($d)) {
-			foreach ($d as $do) $sdata[] = 'ud.ud_searchinfo LIKE "%'.trim($do).'%"'; 
+			foreach ($d as $do) $sdata[] = 'ud.ud_searchinfo LIKE "%'.$db->espcae(trim($do)).'%"'; 
 		} else if (trim($d)) {
-			$sdata[] = 'ud.ud_searchinfo LIKE "%'.trim($d).'%"';
+			$sdata[] = 'ud.ud_searchinfo LIKE "%'.$db->espcae(trim($d)).'%"';
 		}
 	} 
 	

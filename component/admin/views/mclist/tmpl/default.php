@@ -72,21 +72,22 @@ JHtml::_('behavior.formvalidation');
 	echo '</ul>';
 	echo '<div class="clr"></div>';
 
-	echo JHtml::_('tabs.panel', "Merge Vars", 'mclist-membership');
 	//Merge Vars
-	echo '<ul class="config-option-list">';
+	echo JHtml::_('tabs.panel', "Merge Vars", 'mclist-membership');
+	echo '<table class="adminlist table table-striped">';
+	echo '<thead><tr><th>MC Var</th><th>MUE Field</th></tr></thead><tbody>';
 	foreach ($this->list->list_mvars as $v) {
 		$tag=$v->tag;
 		if ($v->tag != "FNAME" && $v->tag != "LNAME" && $v->tag != "EMAIL") {
-			echo '<li><label for="jform_'.$v->tag.'" id="jform_'.$v->tag.'-lbl">'.$v->name.'</label>';
-			echo '<select name="jform[mcvars]['.$v->tag.']" id="jform_'.$v->tag.'" class="inputbox">';
+			echo '<tr><td>'.$v->name.'</td>';
+			echo '<td><select name="jform[mcvars]['.$v->tag.']" id="jform_'.$v->tag.'" class="inputbox">';
 			echo '<option value="">None</option>';
 			echo JHtml::_('select.options', $this->ufields, 'value', 'text', $this->list->params->mcvars->$tag, true);
 			echo '</select>';
-			echo '</li>';
+			echo '</td></tr>';
 		}
 	}
-	echo '</ul>';
+	echo '</tbody></table>';
 	echo '<div class="clr"></div>';
 	
 	//Ops

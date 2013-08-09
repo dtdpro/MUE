@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS `#__mue_ufields` (
   `uf_sname` varchar(50) NOT NULL,
   `ordering` smallint(6) NOT NULL COMMENT 'qnum',
   `uf_name` varchar(255) NOT NULL,
-  `uf_type` enum('textar','textbox','multi','cbox','mcbox','yesno','dropdown','message','email','username','phone','password','mlist','birthday','captcha','mailchimp') NOT NULL,
+  `uf_type` enum('textar',  'textbox',  'multi',  'cbox',  'mcbox',  'yesno',  'dropdown',  'message',  'email',  'username',  'phone',  'password',  'mlist',  'birthday',  'captcha',  'mailchimp',  'cmlist') NOT NULL,
   `uf_cms` tinyint(1) NOT NULL,
   `uf_req` tinyint(1) NOT NULL DEFAULT '1',
   `uf_note` text NOT NULL,

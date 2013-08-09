@@ -110,7 +110,7 @@ class MUEModelUfield extends JModelAdmin
 		
 		$q = 'SELECT uguf_group FROM #__mue_uguf WHERE uguf_field = '.$item->uf_id;
 		$this->_db->setQuery($q);
-		$item->fieldgroups=$this->_db->loadResultArray();
+		$item->fieldgroups=$this->_db->loadColumn();
 		
 		return $item;
 	}

@@ -30,7 +30,7 @@ foreach($this->userfields as $f) {
 		echo '<div class="mue-user-edit-label">';
 		if ($f->uf_req) echo "*";
 		//field title
-		if ($f->uf_type != "cbox" && $f->uf_type != "message" && $f->uf_type != "mailchimp") echo $f->uf_name;
+		if ($f->uf_type != "cbox" && $f->uf_type != "message" && $f->uf_type != "mailchimp" && $f->uf_type != "cmlist") echo $f->uf_name;
 		echo '</div>';
 		echo '<div class="mue-user-edit-value">';
 		if ($f->uf_type == "mcbox" || $f->uf_type == "mlist") {
