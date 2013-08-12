@@ -132,7 +132,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 					switch ($item->usrsub_status) {
 						
 						case "notyetstarted": echo "Not Yet Started"; break;
-						case "verified": echo "Assessment"; break;
+						case "verified": echo "Verified"; break;
 						case "canceled": echo "Canceled"; break;
 						case "accepted": echo "Accepted"; break;
 						case "pending": echo "Pending"; break;
