@@ -28,6 +28,10 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 					echo $html[] = JHtml::_('select.options',$this->plist,"value","text",$this->state->get('filter.plan')); 
 				?>
 			</select>
+			<select name="filter_paystatus" class="inputbox" onchange="this.form.submit()">
+				<option value=""><?php echo JText::_('COM_MUE_SELECT_PAYSTATUS');?></option>
+				<?php echo $html[] = JHtml::_('select.options',$this->paystatuses,"value","text",$this->state->get('filter.paystatus')); ?>
+			</select>
 		</div>
 	</fieldset>
 	
@@ -147,6 +151,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 						case "voided": echo "Voided"; break;
 						case "completed": echo "Completed"; break;
 						case "dispute": echo "Dispute"; break;
+						case "error": echo "Error"; break;
 					}
 					
 					?>

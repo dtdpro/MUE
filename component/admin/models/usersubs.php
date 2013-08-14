@@ -96,4 +96,13 @@ class MUEModelUsersubs extends JModelList
 		$this->_db->setQuery($query);
 		return $this->_db->loadObjectList();
 	}
+
+	public function getPayStatuses() {
+		$query = $this->_db->getQuery(true);
+		$query->select('usrsub_status AS value, CONCAT(UCASE(LEFT(usrsub_status,1)),SUBSTRING(usrsub_status,2)) AS text');
+		$query->from('#__mue_usersubs');
+		$query->group('usrsub_status');
+		$this->_db->setQuery($query);
+		return $this->_db->loadObjectList();
+	}
 }

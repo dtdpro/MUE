@@ -17,11 +17,11 @@ class JFormFieldMUEDefault extends JFormField
 		switch ($type) {
 			case "multi":
 			case "dropdown":
-				$html = $this->getMultiChoiceOpts(false);
+				$html = $this->getMultiChoiceOpts($id,false);
 				break;
 			case "mcbox":
 			case "mlist":
-				$html = $this->getMultiChoiceOpts(true);
+				$html = $this->getMultiChoiceOpts($id,true);
 				break;
 			case "cbox":
 			case "yesno":
@@ -148,7 +148,7 @@ class JFormFieldMUEDefault extends JFormField
 		return implode($html);
 	}
 	
-	protected function getMultiChoiceOpts($multi = false)
+	protected function getMultiChoiceOpts($id=0,$multi = false)
 	{
 		// Initialize variables.
 		$html = array();

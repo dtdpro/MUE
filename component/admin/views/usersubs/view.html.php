@@ -11,20 +11,18 @@ class MUEViewUsersubs extends JViewLegacy
 	function display($tpl = null) 
 	{
 		// Get data from the model
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
+		$this->items = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
 		$this->state		= $this->get('State');
-		$plist = $this->get('Plans');
+		$this->plist = $this->get('Plans');
+		$this->paystatuses = $this->get('PayStatuses');
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) 
 		{
 			JError::raiseError(500, implode('<br />', $errors));
 			return false;
 		}
-		// Assign data to the view
-		$this->items = $items;
-		$this->pagination = $pagination;
-		$this->plist = $plist;
+		
 		// Set the toolbar
 		$this->addToolBar();
 
