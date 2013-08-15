@@ -160,7 +160,7 @@ class MUEModelMclist extends JModelLegacy
 		
 		//Fields for Merge Data
 		$muef=array("fname","lname","email");
-		foreach ($list->params->mcvars as $mcv=>$mue) { $muef[]=$mue; }
+		foreach ($list->params->mcvars as $mcv=>$mue) { if ($mue) { $muef[]=$mue; } }
 		$query = $db->getQuery(true);
 		$query->select("*");
 		$query->from('#__mue_ufields');
@@ -253,19 +253,22 @@ class MUEModelMclist extends JModelLegacy
 			$mcdata = array('FNAME'=>$udata->fname[$userid], 'LNAME'=>$udata->lname[$userid],'EMAIL'=>$u->email);
 			if ($list->params->mcvars) {
 				$othervars=$list->params->mcvars;
-				foreach ($othervars as $mcv=>$mue) { $ufield = $udata->$mue;
-					if ($mue == 'username') { $mcdata[$mcv] = $u->username; }
-					else if ($mue == 'user_group') { $mcdata[$mcv] = $u->ug_name; }
-					else if ($mue == 'site_url') { $mcdata[$mcv] = $u->userg_siteurl; }
-					else if ($mue && $udata->$mue) { 
-						if (in_array($mue,$optfs)) $mcdata[$mcv] = $optionsdata[$ufield[$userid]];
-						else if (in_array($mue,$moptfs)) {
-							$mcdata[$mcv] = "";
-							foreach (explode(" ",$ufield[$userid]) as $mfo) {
-								$mcdata[$mcv] .= $optionsdata[$mfo]." ";
+				foreach ($othervars as $mcv=>$mue) { 
+					if ($mue) {
+					$ufield = $udata->$mue;
+						if ($mue == 'username') { $mcdata[$mcv] = $u->username; }
+						else if ($mue == 'user_group') { $mcdata[$mcv] = $u->ug_name; }
+						else if ($mue == 'site_url') { $mcdata[$mcv] = $u->userg_siteurl; }
+						else if ($mue && $udata->$mue) { 
+							if (in_array($mue,$optfs)) $mcdata[$mcv] = $optionsdata[$ufield[$userid]];
+							else if (in_array($mue,$moptfs)) {
+								$mcdata[$mcv] = "";
+								foreach (explode(" ",$ufield[$userid]) as $mfo) {
+									$mcdata[$mcv] .= $optionsdata[$mfo]." ";
+								}
 							}
+							else $mcdata[$mcv] = $ufield[$userid];
 						}
-						else $mcdata[$mcv] = $ufield[$userid];
 					}
 				}
 			}
@@ -276,18 +279,18 @@ class MUEModelMclist extends JModelLegacy
 			$mcbatch[] = $mcdata;
 			if (count($mcbatch) == 3000) {
 				$result = $mc->listBatchSubscribe($mcbatch,$list->uf_default);
-				$resinfo['add_count'] = $res_info['add_count'] + $result->add_count;
-				$resinfo['update_count'] = $res_info['update_count'] + $result->update_count;
-				$resinfo['error_count'] = $res_info['error_count'] + $result->error_count;
+				$resinfo['add_count'] = $resinfo['add_count'] + $result->add_count;
+				$resinfo['update_count'] = $resinfo['update_count'] + $result->update_count;
+				$resinfo['error_count'] = $resinfo['error_count'] + $result->error_count;
 				$resinfo['errors'] = array_merge($resinfo['errors'],$result->errors);
 				$mcbatch = array();
 			}
 		}
 		
 		$result = $mc->listBatchSubscribe($mcbatch,$list->uf_default);
-		$resinfo['add_count'] = $res_info['add_count'] + $result->add_count;
-		$resinfo['update_count'] = $res_info['update_count'] + $result->update_count;
-		$resinfo['error_count'] = $res_info['error_count'] + $result->error_count;
+		$resinfo['add_count'] = $resinfo['add_count'] + $result->add_count;
+		$resinfo['update_count'] = $resinfo['update_count'] + $result->update_count;
+		$resinfo['error_count'] = $resinfo['error_count'] + $result->error_count;
 		$resinfo['errors'] = array_merge($resinfo['errors'],$result->errors);
 		$resinfo['total'] = count($users);
 		return $resinfo;

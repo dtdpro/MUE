@@ -163,7 +163,7 @@ class MUEModelCmlist extends JModelLegacy
 		
 		//Fields for Merge Data
 		$muef=array("fname","lname","email");
-		foreach ($list->params->cmfields as $mcv=>$mue) { $muef[]=$mue; }
+		foreach ($list->params->cmfields as $mcv=>$mue) { if ($mue) { $muef[]=$mue; } }
 		$query = $db->getQuery(true);
 		$query->select("*");
 		$query->from('#__mue_ufields');
@@ -260,40 +260,42 @@ class MUEModelCmlist extends JModelLegacy
 			if ($list->params->cmfields) {
 				$othervars=$list->params->cmfields;
 				foreach ($othervars as $cmf=>$mue) {
-					$ufield = $udata->$mue;
-					if ($list->params->cmfieldtypes->$cmf == "MultiSelectMany") {
-						if (in_array($mue,$moptfs)) {
-							foreach (explode(" ",$ufield[$userid]) as $mfo) {
+					if ($mue) { 
+						$ufield = $udata->$mue;
+						if ($list->params->cmfieldtypes->$cmf == "MultiSelectMany") {
+							if (in_array($mue,$moptfs)) {
+								foreach (explode(" ",$ufield[$userid]) as $mfo) {
+									$newcmf=array();
+									$newcmf['Key']=$cmf;
+									$newcmf['Value'] = $optionsdata[$mfo];
+									$customfields[]=$newcmf;
+								}
+							} else {
 								$newcmf=array();
 								$newcmf['Key']=$cmf;
-								$newcmf['Value'] = $optionsdata[$mfo];
+								$newcmf['Value'] == "";
+								$newcmf['Clear']='true';
 								$customfields[]=$newcmf;
 							}
 						} else {
 							$newcmf=array();
 							$newcmf['Key']=$cmf;
-							$newcmf['Value'] == "";
-							$newcmf['Clear']='true';
+							if ($mue == 'username') { $newcmf['Key']=$cmf; $newcmf['Value'] = $u->username; }
+							else if ($mue == 'user_group') { $newcmf['Key']=$cmf; $newcmf['Value'] = $u->ug_name; }
+							else if ($mue == 'site_url') { $newcmf['Key']=$cmf; $newcmf['Value'] = $u->userg_siteurl; }
+							else if ($mue && $udata->$mue) {
+								if (in_array($mue,$optfs)) $newcmf['Value'] = $optionsdata[$ufield[$userid]];
+								else if (in_array($mue,$moptfs)) {
+									$newcmf['Value'] = "";
+									foreach (explode(" ",$ufield[$userid]) as $mfo) {
+										$newcmf['Value'] .= $optionsdata[$mfo]." ";
+									}
+								}
+								else $newcmf['Value'] = $ufield[$userid];
+							}
+							if (!$mue || $newcmf['Value'] == "") $newcmf['Clear']='true';
 							$customfields[]=$newcmf;
 						}
-					} else {
-						$newcmf=array();
-						$newcmf['Key']=$cmf;
-						if ($mue == 'username') { $newcmf['Key']=$cmf; $newcmf['Value'] = $u->username; }
-						else if ($mue == 'user_group') { $newcmf['Key']=$cmf; $newcmf['Value'] = $u->ug_name; }
-						else if ($mue == 'site_url') { $newcmf['Key']=$cmf; $newcmf['Value'] = $u->userg_siteurl; }
-						else if ($mue && $udata->$mue) {
-							if (in_array($mue,$optfs)) $newcmf['Value'] = $optionsdata[$ufield[$userid]];
-							else if (in_array($mue,$moptfs)) {
-								$newcmf['Value'] = "";
-								foreach (explode(" ",$ufield[$userid]) as $mfo) {
-									$newcmf['Value'] .= $optionsdata[$mfo]." ";
-								}
-							}
-							else $newcmf['Value'] = $ufield[$userid];
-						}
-						if (!$mue || $newcmf['Value'] == "") $newcmf['Clear']='true';
-						$customfields[]=$newcmf;
 					}
 				}
 			}
@@ -308,16 +310,16 @@ class MUEModelCmlist extends JModelLegacy
 			$cmbatch[] = $cmdata;
 			if (count($cmbatch) == 500) {
 				if (!$result = $cm->importSubscribers($list->uf_default,$cmbatch)) {$this->setError($cm->error); return false;}
-				$resinfo['add_count'] = $res_info['add_count'] + $result->TotalNewSubscribers;
-				$resinfo['update_count'] = $res_info['update_count'] + $result->TotalExistingSubscribers;
+				$resinfo['add_count'] = $resinfo['add_count'] + $result->TotalNewSubscribers;
+				$resinfo['update_count'] = $resinfo['update_count'] + $result->TotalExistingSubscribers;
 				$resinfo['errors'] = array_merge($resinfo['errors'],$result->FailureDetails);
 				$mcbatch = array();
 			}
 		}
 		
 		if (!$result = $cm->importSubscribers($list->uf_default,$cmbatch)) {$this->setError($cm->error); return false;}
-		$resinfo['add_count'] = $res_info['add_count'] + $result->TotalNewSubscribers;
-		$resinfo['update_count'] = $res_info['update_count'] + $result->TotalExistingSubscribers;
+		$resinfo['add_count'] = $resinfo['add_count'] + $result->TotalNewSubscribers;
+		$resinfo['update_count'] = $resinfo['update_count'] + $result->TotalExistingSubscribers;
 		$resinfo['errors'] = array_merge($resinfo['errors'],$result->FailureDetails);
 		$resinfo['total'] = count($users);
 		return $resinfo;
