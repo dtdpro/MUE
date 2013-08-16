@@ -313,7 +313,7 @@ class MUEModelCmlist extends JModelLegacy
 				$resinfo['add_count'] = $resinfo['add_count'] + $result->TotalNewSubscribers;
 				$resinfo['update_count'] = $resinfo['update_count'] + $result->TotalExistingSubscribers;
 				$resinfo['errors'] = array_merge($resinfo['errors'],$result->FailureDetails);
-				$mcbatch = array();
+				$cmbatch = array();
 			}
 		}
 		
@@ -430,7 +430,7 @@ class MUEModelCmlist extends JModelLegacy
 		$pdata = $parameter->toObject();
 		
 		foreach ($pdata->cmfieldtypes as $cmf=>$cmft) {
-			if (($cmft == "MultiSelectOne" || $cmft == "MultiSelectMany") && $cmft != $pdata->msgroup->field) {
+			if (($cmft == "MultiSelectOne" || $cmft == "MultiSelectMany") && $cmft != $pdata->msgroup->field && $pdata->cmfields->$cmf) {
 				$mue = $pdata->cmfields->$cmf;
 				
 				$query = $db->getQuery(true);
