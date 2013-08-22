@@ -82,20 +82,20 @@ $ordering	= ($listOrder == 'p.ordering');
 				<td class="center">
 					<?php echo JHtml::_('jgrid.published', $item->published, $i, 'uplans.', true);?>
 				</td>
-				<td class="order">
+				<td class="order"><div class="input-prepend">
 						<?php if ($saveOrder) :?>
 							<?php if ($listDirn == 'asc') : ?>
-								<span><?php echo $this->pagination->orderUpIcon($i, (1), 'uplans.orderup', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
-								<span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, (1), 'uplans.orderdown', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
+								<span class="add-on"><?php echo $this->pagination->orderUpIcon($i, (1), 'uplans.orderup', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
+								<span class="add-on"><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, (1), 'uplans.orderdown', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
 							<?php elseif ($listDirn == 'desc') : ?>
-								<span><?php echo $this->pagination->orderUpIcon($i, (1), 'uplans.orderdown', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
-								<span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, (1), 'uplans.orderup', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
+								<span class="add-on"><?php echo $this->pagination->orderUpIcon($i, (1), 'uplans.orderdown', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
+								<span class="add-on"><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, (1), 'uplans.orderup', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
 							<?php endif; ?>
 						<?php endif; ?>
 						<?php $disabled = $saveOrder ?  '' : 'disabled="disabled"'; ?>
-						<input type="text" name="order[]" size="5" value="<?php echo $item->ordering;?>" <?php echo $disabled ?> class="text-area-order" />
+						<input type="text" name="order[]" size="5" value="<?php echo $item->ordering;?>" <?php echo $disabled ?> class="text-area-order width-20" />
 		
-				</td>
+				</div></td>
 				<td>
 					<?php echo $item->access_level; ?>
 				</td>

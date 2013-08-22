@@ -19,17 +19,18 @@ $params = $this->form->getFieldsets('params');
 	}
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_mue&layout=edit&sub_id='.(int) $this->item->sub_id); ?>" method="post" name="adminForm" id="mue-form" class="form-validate">
-	<div class="width-30 fltlft">
+<div class="row-fluid">
+	<div class="width-30 fltlft span4">
 		<fieldset class="adminform">
 			<legend><?php echo JText::_( 'COM_MUE_UPLAN_DETAILS' ); ?></legend>
-			<ul class="adminformlist">
+			<ul class="adminformlist treeselect">
 <?php foreach($this->form->getFieldset('details') as $field): ?>
 				<li><?php echo $field->label;echo $field->input;?></li>
 <?php endforeach; ?>
 			</ul>
 		</fieldset>
 	</div>
-	<div class="width-70 fltlft">
+	<div class="width-70 fltlft span8">
 		<fieldset class="adminform">
 			<legend><?php echo JText::_( 'COM_MUE_UPLAN_CONTENT' ); ?></legend>
 <?php foreach($this->form->getFieldset('content') as $field): ?>
@@ -38,7 +39,6 @@ $params = $this->form->getFieldsets('params');
 <?php endforeach; ?>
 		</fieldset>
 	</div>
-	<div>
 		<input type="hidden" name="task" value="uplan.edit" />
 		<?php echo JHtml::_('form.token'); ?>
 	</div>

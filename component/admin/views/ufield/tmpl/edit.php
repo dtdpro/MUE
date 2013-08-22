@@ -18,30 +18,37 @@ $params = $this->form->getFieldsets('params');
 	}
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_mue&layout=edit&uf_id='.(int) $this->item->uf_id); ?>" method="post" name="adminForm" id="mue-form" class="form-validate">
-	<div class="width-30 fltlft">
+<div class="row-fluid">
+	<div class="width-30 fltlft span8">
 		<fieldset class="adminform">
 			<legend><?php echo JText::_( 'COM_MUE_UFIELD_DETAILS' ); ?></legend>
-			<ul class="adminformlist">
+			<ul class="adminformlist treeselect">
 <?php foreach($this->form->getFieldset('details') as $field): ?>
 				<li><?php echo $field->label;echo $field->input;?></li>
 <?php endforeach; ?>
-			<li><label id="jform_fieldgroups-lbl" for="jform_fieldgroups" class="hasTip" title="">Field Groups</label>
-			<fieldset id="jform_fieldgroups" class="radio inputbox">
+			</ul>
+		</fieldset>
+	</div>
+	<div class="width-70 fltlft span4">
+		<fieldset id="jform_fieldgroups" class="adminform">
+			<legend>Field Groups</legend>
+			<ul class="checklist treeselect">
 			<?php 
 			foreach ($this->gtypes as $ct) {
 				if (!empty($this->item->fieldgroups)) $checked = in_array($ct->ug_id,$this->item->fieldgroups) ? ' checked="checked"' : '';
 				else $checked = '';
 				?>
-				<input type="checkbox" name="jform[fieldgroups][]" value="<?php echo (int) $ct->ug_id;?>" id="jform_fieldgroup<?php echo (int) $ct->ug_id;?>"<?php echo $checked;?>/>
-				<label for="jform_fieldgroup<?php echo $ct->ug_id; ?>">
-				<?php echo ' '.$ct->ug_name; ?></label><br /><br />
+				<li class="pull-left row-fluid"><input type="checkbox" name="jform[fieldgroups][]" value="<?php echo (int) $ct->ug_id;?>" id="jform_fieldgroup<?php echo (int) $ct->ug_id;?>"<?php echo $checked;?> class="pull-left muegroup"/>
+				<label for="jform_fieldgroup<?php echo $ct->ug_id; ?>" class="pull-left">
+				<?php echo ' '.$ct->ug_name; ?></label></li>
 				<?php 
 			}
-			?></fieldset></li>
+			?>
 			</ul>
-		</fieldset>
-	</div>
-	<div class="width-70 fltlft">
+			<div class="clr clearfix"></div>
+			<button type="button" class="jform-assignments-butto" onclick="$$('.muegroup').each(function(el) { el.checked = false; });">Clear Selection</button>
+			<button type="button" class="jform-assignments-button" onclick="$$('.muegroup').each(function(el) { el.checked = true; });">Select All</button>
+			</fieldset>
 		<fieldset class="adminform">
 			<legend><?php echo JText::_( 'COM_MUE_UFIELD_CONTENT' ); ?></legend>
 <?php foreach($this->form->getFieldset('content') as $field): ?>
@@ -50,7 +57,7 @@ $params = $this->form->getFieldsets('params');
 <?php endforeach; ?>
 		</fieldset>
 	</div>
-	<div>
+
 		<input type="hidden" name="task" value="ufield.edit" />
 		<?php echo JHtml::_('form.token'); ?>
 	</div>

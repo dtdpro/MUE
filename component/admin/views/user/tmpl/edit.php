@@ -21,7 +21,7 @@ JHtml::_('behavior.formvalidation');
 	<div class="width-50 fltlft span6">
 		<fieldset class="adminform">
 			<legend><?php echo JText::_( 'COM_MUE_USER_DETAILS' ); ?></legend>
-			<ul class="adminformlist">
+			<ul class="adminformlist treeselect">
 				<li><label id="jform_usergroup-lbl" for="jform_usergroup" class="hasTip" title="Group::Users' Group">MUE Group</label>
 				<select id="jform_usergroup" name="jform[usergroup]" class="inputbox" size="1">
 				<?php echo JHtml::_('select.options',$this->usergroups,"value","text",$this->item->usergroup); ?>
