@@ -45,7 +45,7 @@ foreach($this->userfields as $f) {
 	
 	//checkbox
 	if ($f->uf_type=="cbox" || $f->uf_type=="mailchimp" || $f->uf_type=="cmlist") {
-		if (!empty($f->value)) $checked = ($f->value == '1') ? ' checked="checked"' : '';
+		if (!empty($f->value) && $f->uf_type == "cbox") $checked = ($f->value == '1') ? ' checked="checked"' : '';
 		else $checked = '';
 		echo '<input type="checkbox" name="jform['.$sname.']" id="jform_'.$sname.'" class="uf_radio"';
 		if ($f->uf_req && $f->uf_type=="cbox") { echo ' data-rule-required="true" data-msg-required="This Field is required"'; }
