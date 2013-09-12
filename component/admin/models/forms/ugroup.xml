@@ -67,7 +67,7 @@
 			label="COM_MUE_UGROUP_FIELD_WELCOMEEML_LABEL"
 			description="COM_MUE_UGROUP_FIELD_WELCOMEEML_DESC"
 			class="inputbox"
-			filter="safehtml"
+			filter="raw"
 			buttons="false"
 		/>
 		<field
@@ -76,7 +76,7 @@
 			label="COM_MUE_UGROUP_FIELD_LOSTEML_LABEL"
 			description="COM_MUE_UGROUP_FIELD_LOSTEML_DESC"
 			class="inputbox"
-			filter="safehtml"
+			filter="raw"
 			buttons="false"
 		/>
 
