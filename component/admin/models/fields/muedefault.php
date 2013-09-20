@@ -99,7 +99,7 @@ class JFormFieldMUEDefault extends JFormField
 		$db  =& JFactory::getDBO();
 		$cfg=MUEHelper::getConfig();
 		if (!$cfg->mckey) return $this->getTextField();
-		$mc = new MailChimp($cfg->mckey);
+		$mc = new MailChimpHelper($cfg->mckey);
 		
 		
 		// Initialize variables.

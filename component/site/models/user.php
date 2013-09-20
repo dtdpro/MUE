@@ -220,7 +220,7 @@ class MUEModelUser extends JModelLegacy
 				include_once 'components/com_mue/lib/mailchimp.php';
 				if ($data[$mclist->uf_sname]) {
 					$mcf=$mclist->uf_sname;
-					$mc = new MailChimp($cfg->mckey,$mclist->uf_default);
+					$mc = new MailChimpHelper($cfg->mckey,$mclist->uf_default);
 					$mcdata = array('FNAME'=>$item->fname, 'LNAME'=>$item->lname, 'OPTIN_IP'=>$_SERVER['REMOTE_ADDR'], 'OPTIN_TIME'=>$date->toSql(true));
 					if ($mclist->params->mcvars) {
 						$othervars=$mclist->params->mcvars;
@@ -238,25 +238,28 @@ class MUEModelUser extends JModelLegacy
 						} 
 					}
 					if ($mclist->params->mcrgroup) {
-						if (!$substatus) $mcdata['GROUPINGS']=array(array("name"=>$mclist->params->mcrgroup,"groups"=>$mclist->params->mcreggroup));
-						else $mcdata['GROUPINGS']=array(array("name"=>$mclist->params->mcrgroup,"groups"=>$mclist->params->mcsubgroup));
+						if (!$substatus) $mcdata[$mclist->params->mcrgroup]=$mclist->params->mcreggroup;
+						else $mcdata[$mclist->params->mcrgroup]=$mclist->params->mcsubgroup;
+					}
+					if ($mclist->params->mcigroup) {
+						$mcdata['groupings']=array(array("name"=>$mclist->params->mcigroup,"groups"=>array($mclist->params->mcigroups)));
 					}
 					$mcd=print_r($mcdata,true);
 					if ($mc->subStatus($item->email)) {
-						$mcresult = $mc->updateUser($item->email,$mcdata,false,"html");
+						$mcresult = $mc->updateUser(array("email"=>$item->email),$mcdata,false,"html");
 						if ($mcresult) { $item->$mcf=1; $usernotes .= $date->toSql(true)." EMail Subscription Updated on MailChimp List #".$mclist->uf_default.' '.$mcd."\r\n"; }
 						else { $item->$mcf=1; $usernotes .= $date->toSql(true)." Could not update EMail subscription on MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
 					}
 					else {
-						$mcresult = $mc->subscribeUser($item->email,$mcdata,false,"html");
+						$mcresult = $mc->subscribeUser(array("email"=>$item->email),$mcdata,false,"html");
 						if ($mcresult) { $item->$mcf=1; $usernotes .= $date->toSql(true)." EMail Subscribed to MailChimp List #".$mclist->uf_default.' '.$mcd."\r\n"; }
 						else { $item->$mcf=0; $usernotes .= $date->toSql(true)." Could not subscribe EMail to MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
 					}
 					
 				} else {
 					$mcf=$mclist->uf_sname;
-					$mc = new MailChimp($cfg->mckey,$mclist->uf_default);
-					$mcresult = $mc->unsubscribeUser($item->email);
+					$mc = new MailChimpHelper($cfg->mckey,$mclist->uf_default);
+					$mcresult = $mc->unsubscribeUser(array("email"=>$item->email));
 					if ($mcresult) { $item->$mcf=0; $usernotes .= $date->toSql(true)." EMail Unsubscribed from MailChimp List #".$mclist->uf_default."\r\n"; }
 					else { $item->$mcf=0; $usernotes .= $date->toSql(true)." Could not unsubscribe EMail from MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
 				}

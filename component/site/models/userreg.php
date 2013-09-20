@@ -233,7 +233,7 @@ class MUEModelUserreg extends JModelLegacy
 				if ($data[$mclist->uf_sname])  {
 					$mcf=$mclist->uf_sname;
 					include_once 'components/com_mue/lib/mailchimp.php';
-					$mc = new MailChimp($cfg->mckey,$mclist->uf_default);
+					$mc = new MailChimpHelper($cfg->mckey,$mclist->uf_default);
 					$mcdata = array('FNAME'=>$item->fname, 'LNAME'=>$item->lname, 'OPTIN_IP'=>$_SERVER['REMOTE_ADDR'], 'OPTIN_TIME'=>$date->toSql(true));
 					if ($mclist->params->mcvars) {
 						$othervars=$mclist->params->mcvars;
@@ -253,9 +253,12 @@ class MUEModelUserreg extends JModelLegacy
 						}
 					}
 					if ($mclist->params->mcrgroup) {
-						$mcdata['GROUPINGS']=array(array("name"=>$mclist->params->mcrgroup,"groups"=>$mclist->params->mcreggroup));
+						$mcdata[$mclist->params->mcrgroup]=$mclist->params->mcreggroup;
 					}
-					$mcresult = $mc->subscribeUser($item->email,$mcdata,false,"html");
+					if ($mclist->params->mcigroup) {
+						$mcdata['groupings']=array(array("name"=>$mclist->params->mcigroup,"groups"=>array($mclist->params->mcigroups)));
+					}
+					$mcresult = $mc->subscribeUser(array("email"=>$item->email),$mcdata,false,"html");
 					if ($mcresult) { $item->$mcf=1; $usernotes .= $date->toSql(true)." Subscribed to MailChimp List #".$mclist->uf_default."\r\n"; }
 					else { $item->$mcf=0; $usernotes .= $date->toSql(true)." Could not subscribe to MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
 				} else {

@@ -35,95 +35,6 @@ class MUEModelMclist extends JModelLegacy
 		return $fields;
 	}
 
-	function syncField($field) {
-		require_once(JPATH_ROOT.'/administrator/components/com_mue/helpers/mue.php');
-		require_once(JPATH_ROOT.'/components/com_mue/lib/mailchimp.php');
-		
-		if (!$field) { $this->setError("Filed ID Not Provided"); return false; }
-		
-		$db = JFactory::getDBO();
-		$query = $db->getQuery(true);
-		$query->select("*");
-		$query->from('#__mue_ufields');
-		$query->where('uf_id = '.$field);
-		$db->setQuery($query);
-		$list = $db->loadObject();
-		
-		$cfg=MUEHelper::getConfig();
-		if (!$cfg->mckey) { $this->setError("MailChimp not Configured"); return false; }
-		$mc = new MailChimp($cfg->mckey);
-		
-		$mclist=$mc->getLists($list->uf_default);
-		$list->list_info=$mclist[0];
-		$totalmembers = $list->list_info->stats->member_count;
-		
-		$listmembers = array();
-		$start=0;
-		while (count($listmembers) < $totalmembers) {
-			$lm = array();
-			if (!$lm=$mc->getListMembers($list->uf_default,500,$start)) {
-				$this->setError($mc->getError());
-				return false;
-			}
-			$listmembers = array_merge($lm,$listmembers);
-			$start = $start+1;
-		} 
-		
-		$userids = array();
-		foreach ($listmembers as $l) {
-			$q=$db->getQuery(true);
-			$q->select('id');
-			$q->from('#__users');
-			$q->where('email="'.$l->email.'"');
-			$db->setQuery($q);
-			$res=$db->loadResult();
-			if ($res) $userids[]=$res;
-		}
-		
-		$query = $db->getQuery(true);
-		$query->select("id");
-		$query->from('#__users');
-		$query->where('id NOT IN ('.implode(",",$userids).')');
-		$db->setQuery($query);
-		$notinlist = $db->loadColumn();
-		
-		$query	= $db->getQuery(true);
-		$query->delete();
-		$query->from('#__mue_users');
-		$query->where('usr_field = '.$field);
-		$db->setQuery((string)$query);
-		$db->query();
-		
-		foreach ($userids as $u) {
-			$q=$db->getQuery(true);
-			$q->insert('#__mue_users');
-			$q->columns('usr_data,usr_field,usr_user');
-			$q->values("1,$field,$u");
-			$db->setQuery($q);
-			if (!$db->query()) {
-				$this->setError($db->getErrorMsg());
-				return false;
-			}
-		}
-		
-		foreach ($notinlist as $u) {
-			$q=$db->getQuery(true);
-			$q->insert('#__mue_users');
-			$q->columns('usr_data,usr_field,usr_user');
-			$q->values("0,$field,$u");
-			$db->setQuery($q);
-			if (!$db->query()) {
-				$this->setError($db->getErrorMsg());
-				return false;
-			}
-		}
-		
-		$resinfo['members']=count($listmembers);
-		$resinfo['users']=count($userids);
-		
-		return $resinfo; 
-	}
-	
 	function syncList($field) {
 		require_once(JPATH_ROOT.'/administrator/components/com_mue/helpers/mue.php');
 		require_once(JPATH_ROOT.'/components/com_mue/lib/mailchimp.php');
@@ -147,7 +58,7 @@ class MUEModelMclist extends JModelLegacy
 		
 		$cfg=MUEHelper::getConfig();
 		if (!$cfg->mckey) { $this->setError("MailChimp not Configured"); return false; }
-		$mc = new MailChimp($cfg->mckey);
+		$mc = new MailChimpHelper($cfg->mckey);
 		
 		//Users in list
 		$query = $db->getQuery(true);
@@ -250,7 +161,8 @@ class MUEModelMclist extends JModelLegacy
 		$resinfo['errors']=array();
 		foreach ($users as $u) {
 			$userid=$u->id; 
-			$mcdata = array('FNAME'=>$udata->fname[$userid], 'LNAME'=>$udata->lname[$userid],'EMAIL'=>$u->email);
+			$mcitem=array('email'=>array("email"=>$u->email));
+			$mcdata = array('FNAME'=>$udata->fname[$userid], 'LNAME'=>$udata->lname[$userid]);
 			if ($list->params->mcvars) {
 				$othervars=$list->params->mcvars;
 				foreach ($othervars as $mcv=>$mue) { 
@@ -273,10 +185,15 @@ class MUEModelMclist extends JModelLegacy
 				}
 			}
 			if ($list->params->mcrgroup && $cfg->subscribe) {
-				if (!$u->substatus) $mcdata['GROUPINGS']=array(array("name"=>$list->params->mcrgroup,"groups"=>$list->params->mcreggroup));
-				else $mcdata['GROUPINGS']=array(array("name"=>$list->params->mcrgroup,"groups"=>$list->params->mcsubgroup));
+				if (!$u->substatus) $mcdata[$list->params->mcrgroup]=$list->params->mcreggroup;
+				else $mcdata[$list->params->mcrgroup]=$list->params->mcsubgroup;
 			}
-			$mcbatch[] = $mcdata;
+			if ($list->params->mcigroup) {
+				$mcdata['groupings']=array(array("name"=>$list->params->mcigroup,"groups"=>array($list->params->mcigroups)));
+			}
+			$mcitem['merge_vars']=$mcdata;
+			$mcitem['email_type']='html';
+			$mcbatch[] = $mcitem;
 			if (count($mcbatch) == 3000) {
 				$result = $mc->listBatchSubscribe($mcbatch,$list->uf_default);
 				$resinfo['add_count'] = $resinfo['add_count'] + $result->add_count;
@@ -286,6 +203,7 @@ class MUEModelMclist extends JModelLegacy
 				$mcbatch = array();
 			}
 		}
+		
 		
 		$result = $mc->listBatchSubscribe($mcbatch,$list->uf_default);
 		$resinfo['add_count'] = $resinfo['add_count'] + $result->add_count;
@@ -316,7 +234,7 @@ class MUEModelMclist extends JModelLegacy
 		
 		$cfg=MUEHelper::getConfig();
 		if (!$cfg->mckey) return false;
-		$mc = new MailChimp($cfg->mckey);
+		$mc = new MailChimpHelper($cfg->mckey);
 		
 		$action=array("subscribe"=>true,"unsubscribe"=>true,"profile"=>true,"cleaned"=>true,"upemail"=>true,"campaign"=>true);
 		$sources=array("user"=>true,"admin"=>true,"api"=>false);
@@ -347,13 +265,25 @@ class MUEModelMclist extends JModelLegacy
 		
 		$cfg=MUEHelper::getConfig();
 		if (!$cfg->mckey) return false;
-		$mc = new MailChimp($cfg->mckey);
+		$mc = new MailChimpHelper($cfg->mckey);
 		$mclist=$mc->getLists($list->uf_default);
 		
-		$list->list_info=$mclist[0];
+		$list->list_info=$mclist;
 		$list->list_igroups = $mc->getListInterestGroupings($list->uf_default);
 		$list->list_mvars = $mc->getListMergeVars($list->uf_default);
+		$list->list_msvars = array();
 		$list->list_webhooks = $mc->getListWebhooks($list->uf_default);
+		
+		$n=0;
+		foreach ($list->list_mvars as $v) {
+			if ($v['field_type'] == 'dropdown' || $v['field_type'] == 'radio') {
+				$list->list_msvars[$n] = (object)$v;
+				foreach ($v['choices'] as $o) {
+					$list->list_msvars[$n]->options[] = JHtml::_('select.option', $o,$o);
+				}
+			}
+			$n++;
+		}
 		
 		if (property_exists($list, 'params'))
 		{

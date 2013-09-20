@@ -80,12 +80,12 @@ class MUEModelSubscribe extends JModelLegacy
 			if ($f->params->mcrgroup) {
 				include_once 'components/com_mue/lib/mailchimp.php';
 				
-				$mc = new MailChimp($cfg->mckey,$f->uf_default);
+				$mc = new MailChimpHelper($cfg->mckey,$f->uf_default);
 				$mcdata=array();
-				$mcdata['GROUPINGS']=array(array("name"=>$f->params->mcrgroup,"groups"=>$f->params->mcsubgroup));
+				$mcdata[$f->params->mcrgroup]=$f->params->mcsubgroup;
 				$mcd=print_r($mcdata,true);
 				if ($mc->subStatus($user->email)) {
-					$mcresult = $mc->updateUser($user->email,$mcdata,false,"html");
+					$mcresult = $mc->updateUser(array("email"=>$user->email),$mcdata,false,"html");
 					if ($mcresult) { $usernotes .= $date->toSql(true)." EMail Subscription Updated on MailChimp List #".$f->uf_default.' '.$mcd."\r\n"; }
 					else { $usernotes .= $date->toSql(true)." Could not update EMail subscription on MailChimp List #".$f->uf_default." Error: ".$mc->error."\r\n"; }
 				}

@@ -58,45 +58,6 @@ class MUEControllerMclist extends JControllerLegacy
 		return true;
 	}
 
-	function syncField()
-	{
-		// Check for request forgeries.
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		// Initialise variables.
-		$app	= JFactory::getApplication();
-		$model	= $this->getModel('Mclist');
-		$field	= JRequest::getInt('field');
-
-		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.admin', $field))
-		{
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
-			return;
-		}
-
-		// Attempt to save the configuration.
-		$return = $model->syncField($field);
-
-		// Check the return value.
-		if ($return === false)
-		{
-			// Save failed, go back to the screen and display a notice.
-			$message = JText::sprintf('COM_MUE_MCLIST_SYNC_FAILED', $model->getError());
-			$this->setRedirect('index.php?option=com_mue&view=mclist&field='.$field.'&tmpl=component', $message, 'error');
-			return false;
-		}
-
-		
-		$message = JText::_('COM_MUE_MCLIST_SYNC_SUCCESS');
-		if ($return['users']) $message .= '<br>Users Processed: '.$return['users'];
-		if ($return['members']) $message .= '<br>List Memebrs: '.$return['members'];
-		$this->setRedirect('index.php?option=com_mue&view=mclist&field='.$field.'&tmpl=component&refresh=1', $message);
-				
-
-		return true;
-	}
-
 	function syncList()
 	{
 		// Check for request forgeries.
