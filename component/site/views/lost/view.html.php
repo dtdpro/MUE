@@ -10,12 +10,6 @@ class MUEViewLost extends JViewLegacy
 	protected $user;
 	protected $redirurl;
 
-	/**
-	 * Method to display the view.
-	 *
-	 * @param	string	The template file to include
-	 * @since	1.20
-	 */
 	public function display($tpl = null) {
 		// Get the view data.
 		$this->user		= JFactory::getUser();

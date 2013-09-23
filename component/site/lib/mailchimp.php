@@ -90,6 +90,19 @@ class MailChimpHelper {
 		}
 	}
 	
+	function updateMergeVar($list="",$tag,$options) {
+		if (!$list) $list = $this->listid;
+		$mcl = new Mailchimp_Lists($this->mc);
+		$result=$mcl->mergeVarUpdate($list,$tag,$options);
+		if (!$result['error']) {
+			return true;
+		}
+		else {
+			$this->error = $result;
+			return false;
+		}
+	}	
+	
 	function listBatchSubscribe($batch,$list="") {
 		if (!$list) $list = $this->listid;
 		$mcl = new Mailchimp_Lists($this->mc);

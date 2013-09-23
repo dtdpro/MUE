@@ -189,7 +189,7 @@ class MUEModelMclist extends JModelLegacy
 				else $mcdata[$list->params->mcrgroup]=$list->params->mcsubgroup;
 			}
 			if ($list->params->mcigroup) {
-				$mcdata['groupings']=array(array("name"=>$list->params->mcigroup,"groups"=>array($list->params->mcigroups)));
+				$mcdata['groupings']=array(array("name"=>$list->params->mcigroup,"groups"=>$list->params->mcigroups));
 			}
 			$mcitem['merge_vars']=$mcdata;
 			$mcitem['email_type']='html';
@@ -297,9 +297,54 @@ class MUEModelMclist extends JModelLegacy
 
 	public function save($data,$field)
 	{
+		require_once(JPATH_ROOT.'/components/com_mue/lib/mailchimp.php');
+		$cfg=MUEHelper::getConfig();
+		if (!$cfg->mckey) return false;
+		$mc = new MailChimpHelper($cfg->mckey);
+		
 		$parameter = new JRegistry;
 		$parameter->loadArray($data);
 		$params = (string)$parameter;
+		$pdata = $parameter->toObject();
+		
+		$db = JFactory::getDBO();
+		$query = $db->getQuery(true);
+		$query->select("*");
+		$query->from('#__mue_ufields');
+		$query->where('uf_id = '.$field);
+		$db->setQuery($query);
+		$list = $db->loadObject();
+		
+		foreach ($pdata->mcfieldtypes as $mcf=>$mcft) {
+			if (($mcft == "radio" || $mcft == "dropdown") && $mcft != $pdata->mcrgroup->field && $pdata->mcvars->$mcf) {
+				$mue = $pdata->mcvars->$mcf;
+		
+				$query = $db->getQuery(true);
+				$query->select("uf_id");
+				$query->from('#__mue_ufields');
+				$query->where('uf_sname = "'.$mue.'"');
+				$db->setQuery($query);
+				if (!$muefid = $db->loadResult()){
+					$this->setError($db->getQuery());
+					return false;
+				}
+		
+				$q2 = $db->getQuery(true);
+				$q2->select('opt_text');
+				$q2->from('#__mue_ufields_opts');
+				$q2->where('opt_field = '.$muefid);
+				$db->setQuery($q2);
+				if (!$opts = $db->loadColumn()) {
+					$this->setError($db->getQuery());
+					return false;
+				}
+				$data=array('choices'=>$opts);
+				if (!$mc->updateMergeVar($list->uf_default,$mcf,$data)) {
+					$this->setError('MC API Error: '.$mc->error);
+					return false;
+				}
+			}
+		}
 		
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);

@@ -21,7 +21,7 @@ class MUEModelLost extends JModelLegacy
 		if ($db->getErrorNum()) { $this->setError($db->getErrorMsg(), 500); return false; }
 		
 		// Check for a user.
-		if (empty($userid)) { $this->setError('Invalid Email Address'); return false; }
+		if (empty($userid)) { $this->setError('Account for email address '.$email.' not found'); return false; }
 		
 		// Get the user object.
 		$user = JUser::getInstance($userid);
@@ -30,7 +30,7 @@ class MUEModelLost extends JModelLegacy
 		if ($user->block) { $this->setError('User Account Blocked'); return false; }
 		
 		// Make sure the user isn't a Super Admin.
-		if ($user->authorise('core.admin')) { $this->setError('Not for Admins'); return false; }
+		if ($user->authorise('core.admin')) { $this->setError('Admins cannot use this feature'); return false; }
 		
 		$newpass=$this->gen_uuid(8);
 		
@@ -59,11 +59,7 @@ class MUEModelLost extends JModelLegacy
 		//Send Welcome Email
 		$mail = &JFactory::getMailer();
 		$mail->IsHTML(true);
-		$mail->addRecipient($emailtoaddress,$emailtoname);
-		$mail->setSender($emailfromaddress,$emailfromname);
-		$mail->setSubject($emailsubject);
-		$mail->setBody( $emailmsg );
-		$sent = $mail->Send();
+		$sent = $mail->sendMail ($emailfromaddress, $emailfromname, $emailtoaddress, $emailsubject, $emailmsg, true);
 		
 		return true;
 		

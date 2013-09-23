@@ -256,7 +256,7 @@ class MUEModelUserreg extends JModelLegacy
 						$mcdata[$mclist->params->mcrgroup]=$mclist->params->mcreggroup;
 					}
 					if ($mclist->params->mcigroup) {
-						$mcdata['groupings']=array(array("name"=>$mclist->params->mcigroup,"groups"=>array($mclist->params->mcigroups)));
+						$mcdata['groupings']=array(array("name"=>$mclist->params->mcigroup,"groups"=>$mclist->params->mcigroups));
 					}
 					$mcresult = $mc->subscribeUser(array("email"=>$item->email),$mcdata,false,"html");
 					if ($mcresult) { $item->$mcf=1; $usernotes .= $date->toSql(true)." Subscribed to MailChimp List #".$mclist->uf_default."\r\n"; }

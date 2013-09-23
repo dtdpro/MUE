@@ -242,7 +242,7 @@ class MUEModelUser extends JModelLegacy
 						else $mcdata[$mclist->params->mcrgroup]=$mclist->params->mcsubgroup;
 					}
 					if ($mclist->params->mcigroup) {
-						$mcdata['groupings']=array(array("name"=>$mclist->params->mcigroup,"groups"=>array($mclist->params->mcigroups)));
+						$mcdata['groupings']=array(array("name"=>$mclist->params->mcigroup,"groups"=>$mclist->params->mcigroups));
 					}
 					$mcd=print_r($mcdata,true);
 					if ($mc->subStatus($item->email)) {

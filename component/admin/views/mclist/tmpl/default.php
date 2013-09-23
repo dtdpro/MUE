@@ -85,13 +85,18 @@ JHtml::_('behavior.formvalidation');
 
 	//Interest Group Group
 	echo '<li><label for="jform_mcigroups" id="jform_mcigroups-lbl">Groups</label>';
-	echo '<select name="jform[mcigroups]" id="jform_mcigroups" class="inputbox">';
-	echo '<option value="">None</option>';
-	foreach ($this->list->list_igroups as $g) {
-		echo '<option value="" disabled>'.$g['name'].'</option>';
-		echo JHtml::_('select.options', (object)$g['groups'], 'name', 'name', $this->list->params->mcigroups, true);
+	if ($this->list->params->mcigroup) {
+		foreach ($this->list->list_igroups as $g) {
+			if ($g['name'] == $this->list->params->mcigroup) $igroup = $g;
+		}
+		echo '<select name="jform[mcigroups][]" id="jform_mcigroups" class="inputbox"';
+		if ($igroup['form_field'] == "checkboxes") echo ' multiple="multiple" size="'.count($igroup['groups']).'"';
+		echo '>';
+		echo JHtml::_('select.options', (object)$igroup['groups'], 'name', 'name', $this->list->params->mcigroups, true);
+		echo '</select>';
+	} else {
+		echo 'Set <strong>Interest Group</strong> first';
 	}
-	echo '</select>';
 	echo '</li></ul>';
 	echo '<div class="clr"></div>';
 
@@ -104,11 +109,15 @@ JHtml::_('behavior.formvalidation');
 		$tag=$v['tag'];
 		if ($v['tag'] != "FNAME" && $v['tag'] != "LNAME" && $v['tag'] != "EMAIL") {
 			echo '<tr><td>'.$v['name'].'</td>';
-			echo '<td>'.$v['field_type'].'</td>';
-			echo '<td><select name="jform[mcvars]['.$v['tag'].']" id="jform_'.$v['tag'].'" class="inputbox">';
-			echo '<option value="">None</option>';
-			echo JHtml::_('select.options', $this->ufields, 'value', 'text', $this->list->params->mcvars->$tag, true);
-			echo '</select>';
+			echo '<td>'.$v['field_type'].'<input type="hidden" name="jform[mcfieldtypes]['.$v['tag'].']" value="'.$v['field_type'].'"></td><td>';
+			if ($v['tag'] != $this->list->params->mcrgroup) {
+				echo '<select name="jform[mcvars]['.$v['tag'].']" id="jform_'.$v['tag'].'" class="inputbox">';
+				echo '<option value="">None</option>';
+				echo JHtml::_('select.options', $this->ufields, 'value', 'text', $this->list->params->mcvars->$tag, true);
+				echo '</select>';
+			} else {
+				echo 'Used for Membership Grouping';
+			}
 			echo '</td></tr>';
 		}
 	}
@@ -122,22 +131,22 @@ JHtml::_('behavior.formvalidation');
 	
 	//Webhooks
 	echo JHtml::_('tabs.panel', "Webhooks", 'mclist-membership');
+	$webhook_url = str_replace("administrator/","",JURI::base()).'components/com_mue/helpers/mchook.php';
+	$haswebhook=false;
 	if ($this->list->list_webhooks) {
 		echo '<p>';
 		foreach ($this->list->list_webhooks as $h) {
-			foreach ($h->actions as $act=>$on) { if ($on) $acts[] = $act; }
-			foreach ($h->sources as $src=>$on) { if ($on) $sources[] = $src; }
-			echo '<strong>'.$h->url.'</strong><br />Actions: '.implode(", ",$acts).'<br />Sources: '.implode(", ",$sources).'<br /><br />';
-			
-		}
+			foreach ($h['actions'] as $act=>$on) { if ($on) $acts[] = $act; }
+			foreach ($h['sources'] as $src=>$on) { if ($on) $sources[] = $src; }
+			echo '<strong>'.$h['url'].'</strong><br />Actions: '.implode(", ",$acts).'<br />Sources: '.implode(", ",$sources).'<br /><br />';
 
-		
+			if ($webhook_url == $h['url']) $haswebhook=true;
+		}
 		echo '</p>';
-	} else {
-		echo '<p><button type="button" onclick="Joomla.submitform(\'mclist.addWebhook\', this.form);">Add Default Web Hook</button> This will set up the default web hook for MUE.</p>';
-		echo '<p><strong>Use Webhook URL: </strong>'.str_replace("administrator/","",JURI::base()).'components/com_mue/helpers/mchook.php</p>';
-	}
-	
+	} 
+	if (!$haswebhook) echo '<p><button type="button" onclick="Joomla.submitform(\'mclist.addWebhook\', this.form);">Add Default Web Hook</button> This will set up the default web hook for MUE.</p>';
+	echo '<p><strong>Webhook URL: </strong>'.$webhook_url.'</p>';
+		
 	echo '<div class="clr"></div>';
 	
 	echo JHtml::_('tabs.end');
