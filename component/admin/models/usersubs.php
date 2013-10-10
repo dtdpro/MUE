@@ -24,7 +24,7 @@ class MUEModelUsersubs extends JModelList
 		// Load the filter state.
 		$cId = $this->getUserStateFromRequest($this->context.'.filter.plan', 'filter_plan', '');
 		$this->setState('filter.plan', $cId);
-		$sd = $this->getUserStateFromRequest($this->context.'.filter.start', 'filter_start', date("Y-m-d",strtotime("-1 months")));
+		$sd = $this->getUserStateFromRequest($this->context.'.filter.start', 'filter_start', date("Y-m-d",strtotime("-1 years")));
 		$this->setState('filter.start', $sd);
 		$ed = $this->getUserStateFromRequest($this->context.'.filter.end', 'filter_end', date("Y-m-d"));
 		$this->setState('filter.end', $ed);
@@ -76,12 +76,10 @@ class MUEModelUsersubs extends JModelList
 			$search = $db->Quote('%'.$db->escape($search, true).'%');
 			$query->where('(u.username LIKE '.$search.' OR u.name LIKE '.$search.' OR u.email LIKE '.$search.')');
 		}
-				
+		
 		$orderCol	= $this->state->get('list.ordering');
 		$orderDirn	= $this->state->get('list.direction');
-		
-		
-		
+				
 		$query->order($db->escape($orderCol.' '.$orderDirn));
 				
 		return $query;
