@@ -29,6 +29,7 @@ $params = $this->form->getFieldsets('params');
 			</ul>
 		</fieldset>
 	</div>
+	<?php if ($this->item->usrsub_id) { ?>
 	<div class="width-100 fltlft">
 		<fieldset class="adminform">
 			<legend><?php echo JText::_( 'COM_MUE_USERSUB_HISTORY' ); ?></legend>
@@ -42,6 +43,7 @@ foreach($this->history as $h) {
 			
 		</fieldset>
 	</div>
+	<?php } ?>
 	<div>
 		<input type="hidden" name="task" value="usersub.edit" />
 		<?php echo JHtml::_('form.token'); ?>
