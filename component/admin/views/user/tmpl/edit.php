@@ -16,7 +16,7 @@ JHtml::_('behavior.formvalidation');
 		}
 	}
 </script>
-<form action="<?php echo JRoute::_('index.php?option=com_mue&layout=edit&usr_id='.(int) $this->item->usr_id); ?>" method="post" name="adminForm" id="mue-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_mue&layout=edit&usr_id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="mue-form" class="form-validate">
 <div class="row-fluid">
 	<div class="width-50 fltlft span6">
 		<fieldset class="adminform">

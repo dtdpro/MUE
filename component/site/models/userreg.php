@@ -80,7 +80,7 @@ class MUEModelUserreg extends JModelLegacy
 		$date = new JDate('now');
 		$usernotes = $date->toSql(true)." Registered"."\r\n";
 		// Include the content plugins for the on save events.
-		JPluginHelper::importPlugin('content');
+		JPluginHelper::importPlugin('user');
 		
 		// Allow an exception to be thrown.
 		try

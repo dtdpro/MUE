@@ -98,8 +98,7 @@ class MUEModelUser extends JModelLegacy
 		$cfg = MUEHelper::getConfig();
 		$substatus=MUEHelper::getActiveSub();
 		
-		// Include the content plugins for the on save events.
-		JPluginHelper::importPlugin('content');
+		JPluginHelper::importPlugin('user');
 		
 		// Allow an exception to be thrown.
 		try

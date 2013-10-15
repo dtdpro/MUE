@@ -48,7 +48,7 @@ class MUEModelUser extends JModelAdmin
 		$pk = (!empty($pk)) ? $pk : JRequest::getInt('id',0);;
 		
 		//set item variable
-		$qu='SELECT username,block,email FROM #__users WHERE id = '.$pk;
+		$qu='SELECT id,username,block,email FROM #__users WHERE id = '.$pk;
 		$this->_db->setQuery($qu);
 		$item = $this->_db->loadObject();
 		
@@ -76,10 +76,12 @@ class MUEModelUser extends JModelAdmin
 		$qg = 'SELECT * FROM #__mue_usergroup WHERE userg_user = '.$item->usr_user;
 		$this->_db->setQuery($qg);
 		$uginfo = $this->_db->loadObject();
-		$item->usergroup=$uginfo->userg_group;
-		$item->lastupdate=$uginfo->userg_update;
-		$item->usernotes=$uginfo->userg_notes;
-		$item->usersiteurl=$uginfo->userg_siteurl;
+		if ($uginfo) {
+			$item->usergroup=$uginfo->userg_group;
+			$item->lastupdate=$uginfo->userg_update;
+			$item->usernotes=$uginfo->userg_notes;
+			$item->usersiteurl=$uginfo->userg_siteurl;
+		}
 		
 		return $item;
 	}
@@ -93,8 +95,8 @@ class MUEModelUser extends JModelAdmin
 		$usernotes=$data['usernotes'];
 		$db		= $this->getDbo();
 		
-		// Include the content plugins for the on save events.
-		JPluginHelper::importPlugin('content');
+		
+		JPluginHelper::importPlugin('user');
 		
 		// Allow an exception to be thrown.
 		try
