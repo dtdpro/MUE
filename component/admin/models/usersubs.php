@@ -24,6 +24,8 @@ class MUEModelUsersubs extends JModelList
 		// Load the filter state.
 		$cId = $this->getUserStateFromRequest($this->context.'.filter.plan', 'filter_plan', '');
 		$this->setState('filter.plan', $cId);
+		$ps = $this->getUserStateFromRequest($this->context.'.filter.paystatus', 'filter_paystatus', '');
+		$this->setState('filter.paystatus', $ps);
 		$sd = $this->getUserStateFromRequest($this->context.'.filter.start', 'filter_start', date("Y-m-d",strtotime("-1 years")));
 		$this->setState('filter.start', $sd);
 		$ed = $this->getUserStateFromRequest($this->context.'.filter.end', 'filter_end', date("Y-m-d"));
@@ -64,7 +66,13 @@ class MUEModelUsersubs extends JModelList
 		$enddate = $this->getState('filter.end');
 		$query->where('date(s.usrsub_time) BETWEEN "'.$startdate.'" AND "'.$enddate.'"');
 		
-		// Filter by course.
+		// Filter by plan.
+		$ps = $this->getState('filter.paystatus');
+		if ($ps) {
+			$query->where('s.usrsub_status = "'.$ps.'"');
+		}
+		
+		// Filter by pay status.
 		$cId = $this->getState('filter.plan');
 		if (is_numeric($cId)) {
 			$query->where('s.usrsub_sub = '.(int) $cId);

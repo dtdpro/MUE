@@ -58,7 +58,7 @@ class MailChimpHelper {
 		}
 		$result = $mcl->getList($filters,0,100);
 		
-		if (!$result['error']) return (object) $result['data'];
+		if (!$result['error']) return $result['data'];
 		else {
 			$this->error = $result;
 			return false;

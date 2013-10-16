@@ -268,8 +268,9 @@ class MUEModelMclist extends JModelLegacy
 		$mc = new MailChimpHelper($cfg->mckey);
 		$mclist=$mc->getLists($list->uf_default);
 		
-		$list->list_info=$mclist;
-		$list->list_igroups = $mc->getListInterestGroupings($list->uf_default);
+		$list->list_info=$mclist[0];
+		if ($list->list_info['stats']['grouping_count'] > 0)	$list->list_igroups = $mc->getListInterestGroupings($list->uf_default);
+		else $list->list_igroups = false;
 		$list->list_mvars = $mc->getListMergeVars($list->uf_default);
 		$list->list_msvars = array();
 		$list->list_webhooks = $mc->getListWebhooks($list->uf_default);

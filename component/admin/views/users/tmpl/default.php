@@ -54,7 +54,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 				<th width="150">
 					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_USERSNAME' , 'u.name', $listDirn, $listOrder); ?>
 				</th>
-				<th width="150">
+				<th width="200">
 					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_EMAIL' , 'u.email', $listDirn, $listOrder); ?>
 				</th>
 				<th width="150">
@@ -104,41 +104,41 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 						<a href="<?php echo JRoute::_('index.php?option=com_mue&task=user.edit&id='.(int) $item->id); ?>">
 						<?php echo $item->username; ?></a>
 				</td>
-				<td class="center">
+				<td class="center small">
 					<?php echo $item->name; ?>
 				</td>
-				<td class="center">
+				<td class="center small">
 					<?php echo $item->email; ?>
 				</td>
-				<td class="center">
+				<td class="center small">
 					<?php echo $item->ug_name; ?>
 				</td>
-				<td class="center">
+				<td class="center small">
 					<?php echo implode('<br />',$item->jgroups); ?>
 				</td>
-				<td class="center">
+				<td class="center small">
 					<?php echo $item->userg_siteurl; ?>
 				</td>
-				<td class="center">
+				<td class="center small">
 				<?php echo JHtml::_('grid.boolean', $i, !$item->block, 'users.unblock', 'users.block'); ?>
 				</td>
-				<td class="center">
+				<td class="center small">
 					<?php echo $item->lastvisitDate; ?>
 				</td>
-				<td class="center">
+				<td class="center small">
 					<?php echo $item->lastUpdate; ?>
 				</td>
-				<td class="center">
+				<td class="center small">
 					<?php echo $item->registerDate; ?>
 				</td>
 				<?php if ($cfg->subscribe) { ?>
-				<td class="center">
+				<td class="center small">
 					<?php echo $item->userg_subsince; ?>
 				</td>
-				<td class="center">
+				<td class="center small">
 					<?php echo $item->userg_subexp; ?>
 				</td>
-				<td>
+				<td class="center small">
 					<?php 
 						if ($item->sub) {
 							if ((int)$item->sub->daysLeft > 0) {

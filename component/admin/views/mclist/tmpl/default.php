@@ -28,13 +28,21 @@ JHtml::_('behavior.formvalidation');
 				<?php echo JText::_('JCANCEL');?></button>
 		</div>
 		<div class="configuration" >
-			<?php echo 'MailChimp List Configuration - '.$this->list->list_info->name; ?>
+			<?php echo 'MailChimp List Configuration - '.$this->list->list_info['name']; ?>
 		</div>
 	</fieldset>
 
 	<?php
-	echo JHtml::_('tabs.start', 'mclist_'.$this->list->uf_id.'_configuration', array('useCookie'=>1));
-	echo JHtml::_('tabs.panel', "Grouping", 'mclist-membership');
+	
+	if (version_compare(JVERSION, '3.0.0', '>=')) {
+		echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'mclist-membership'));
+		echo JHtml::_('bootstrap.addTab', 'myTab', 'mclist-membership', "Grouping");
+	} else {
+		echo JHtml::_('tabs.start', 'mclist_'.$this->list->uf_id.'_configuration', array('useCookie'=>1));
+		echo JHtml::_('tabs.panel', "Grouping", 'mclist-membership');
+	}
+	
+
 	//Membership Grouping
 	echo '<h3>Subscripition Grouping</h3>';
 	echo '<ul class="config-option-list">';
@@ -71,37 +79,46 @@ JHtml::_('behavior.formvalidation');
 	
 	echo '</ul>';
 	echo '<div class="clr"></div>';
-	echo '<h3>Interest Grouping</h3>';
-	
+	if ($this->list->list_igroups) {
+		echo '<h3>Interest Grouping</h3>';
+		echo '<ul class="config-option-list">';
 
-	echo '<ul class="config-option-list">';
-	//Interest Group
-	echo '<li><label for="jform_mcigroup" id="jform_mcigroup-lbl">Interest Group</label>';
-	echo '<select name="jform[mcigroup]" id="jform_mcigroup" class="inputbox">';
-	echo '<option value="">None</option>';
-	echo JHtml::_('select.options', $this->list->list_igroups, 'name', 'name', $this->list->params->mcigroup, true);
-	echo '</select>';
-	echo '</li>';
-
-	//Interest Group Group
-	echo '<li><label for="jform_mcigroups" id="jform_mcigroups-lbl">Groups</label>';
-	if ($this->list->params->mcigroup) {
-		foreach ($this->list->list_igroups as $g) {
-			if ($g['name'] == $this->list->params->mcigroup) $igroup = $g;
-		}
-		echo '<select name="jform[mcigroups][]" id="jform_mcigroups" class="inputbox"';
-		if ($igroup['form_field'] == "checkboxes") echo ' multiple="multiple" size="'.count($igroup['groups']).'"';
-		echo '>';
-		echo JHtml::_('select.options', (object)$igroup['groups'], 'name', 'name', $this->list->params->mcigroups, true);
+		//Interest Group
+		echo '<li><label for="jform_mcigroup" id="jform_mcigroup-lbl">Interest Group</label>';
+		echo '<select name="jform[mcigroup]" id="jform_mcigroup" class="inputbox">';
+		echo '<option value="">None</option>';
+		echo JHtml::_('select.options', $this->list->list_igroups, 'name', 'name', $this->list->params->mcigroup, true);
 		echo '</select>';
+		echo '</li>';
+	
+		//Interest Group Group
+		echo '<li><label for="jform_mcigroups" id="jform_mcigroups-lbl">Groups</label>';
+		if ($this->list->params->mcigroup) {
+			foreach ($this->list->list_igroups as $g) {
+				if ($g['name'] == $this->list->params->mcigroup) $igroup = $g;
+			}
+			echo '<select name="jform[mcigroups][]" id="jform_mcigroups" class="inputbox"';
+			if ($igroup['form_field'] == "checkboxes") echo ' multiple="multiple" size="'.count($igroup['groups']).'"';
+			echo '>';
+			echo JHtml::_('select.options', (object)$igroup['groups'], 'name', 'name', $this->list->params->mcigroups, true);
+			echo '</select>';
+		} else {
+			echo 'Set <strong>Interest Group</strong> first';
+		}
+		echo '</li></ul>';
+		echo '<div class="clr"></div>';
 	} else {
-		echo 'Set <strong>Interest Group</strong> first';
+		echo '<input type="hidden" name="jform[mcigroup]" value="">';
+		echo '<input type="hidden" name="jform[mcigroups][]" value="">';
 	}
-	echo '</li></ul>';
-	echo '<div class="clr"></div>';
-
 	//Merge Vars
-	echo JHtml::_('tabs.panel', "Merge Vars", 'mclist-membership');
+	
+	if (version_compare(JVERSION, '3.0.0', '>=')) {
+		echo JHtml::_('bootstrap.endTab');
+		echo JHtml::_('bootstrap.addTab', 'myTab', 'mclist-mergevars', "Merge Vars");
+	} else {
+		echo JHtml::_('tabs.panel', "Merge Vars", 'mclist-mergevars');
+	}
 	
 	echo '<table class="adminlist table table-striped">';
 	echo '<thead><tr><th>MC Var</th><th>Type</th><th>MUE Field</th></tr></thead><tbody>';
@@ -125,12 +142,24 @@ JHtml::_('behavior.formvalidation');
 	echo '<div class="clr"></div>';
 	
 	//Ops
-	echo JHtml::_('tabs.panel', "Operations", 'mclist-membership');
+	if (version_compare(JVERSION, '3.0.0', '>=')) {
+		echo JHtml::_('bootstrap.endTab');
+		echo JHtml::_('bootstrap.addTab', 'myTab', 'mclist-ops', "Operations");
+	
+	} else {
+		echo JHtml::_('tabs.panel', "Operations", 'mclist-ops');
+	}
 	echo '<p><button type="button" onclick="Joomla.submitform(\'mclist.syncList\', this.form);">Sync MC List</button> This Process is very DB Intensive, use with care. You should run Sync MUE Field First.</p>';
 	echo '<div class="clr"></div>';
 	
 	//Webhooks
-	echo JHtml::_('tabs.panel', "Webhooks", 'mclist-membership');
+	if (version_compare(JVERSION, '3.0.0', '>=')) {
+		echo JHtml::_('bootstrap.endTab');
+		echo JHtml::_('bootstrap.addTab', 'myTab', 'mclist-webhooks', "Webhooks");
+	
+	} else {
+		echo JHtml::_('tabs.panel', "Webhooks", 'mclist-webhooks');
+	}
 	$webhook_url = str_replace("administrator/","",JURI::base()).'components/com_mue/helpers/mchook.php';
 	$haswebhook=false;
 	if ($this->list->list_webhooks) {
@@ -149,7 +178,13 @@ JHtml::_('behavior.formvalidation');
 		
 	echo '<div class="clr"></div>';
 	
-	echo JHtml::_('tabs.end');
+	if (version_compare(JVERSION, '3.0.0', '>=')) {
+		echo JHtml::_('bootstrap.endTab');
+		echo JHtml::_('bootstrap.endTabSet');
+	} else {
+		echo JHtml::_('tabs.end');
+	}
+	
 	?>
 	<div>
 		<input type="hidden" name="field" value="<?php echo $this->list->uf_id;?>" />
