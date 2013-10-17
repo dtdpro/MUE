@@ -79,8 +79,10 @@ class MUEModelSubscribe extends JModelLegacy
 		foreach ($this->getMCFields() as $f) {
 			if ($f->params->mcrgroup) {
 				include_once 'components/com_mue/lib/mailchimp.php';
-				
-				$mc = new MailChimpHelper($cfg->mckey,$f->uf_default);
+
+				if (strstr($f->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$f->uf_default,2);	}
+				else { $mc_key = $cfg->mckey; $mc_list = $f->uf_default; }
+				$mc = new MailChimpHelper($mc_key,$mc_list);
 				$mcdata=array();
 				$mcdata[$f->params->mcrgroup]=$f->params->mcsubgroup;
 				$mcd=print_r($mcdata,true);

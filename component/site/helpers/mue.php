@@ -66,7 +66,10 @@ class MUEHelper {
 					else $user->$fn = ($u->usr_data == "1") ? "Yes" : "No";
 				} else if ($u->uf_type == 'mailchimp') {
 					include_once JPATH_BASE.'/components/com_mue/lib/mailchimp.php';
-					$mc = new MailChimpHelper($cfg->mckey,$u->uf_default);
+
+					if (strstr($u->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$u->uf_default,2);	}
+					else { $mc_key = $cfg->mckey; $mc_list = $u->uf_default; }
+					$mc = new MailChimpHelper($mc_key,$mc_list);
 					$mcresult = $mc->subStatus($user->email);
 					if ($mcresult) $onlist=true;
 					else $onlist=false;

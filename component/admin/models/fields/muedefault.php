@@ -99,7 +99,7 @@ class JFormFieldMUEDefault extends JFormField
 		$db  =& JFactory::getDBO();
 		$cfg=MUEHelper::getConfig();
 		if (!$cfg->mckey) return $this->getTextField();
-		$mc = new MailChimpHelper($cfg->mckey);
+		$keys = explode(",",$cfg->mckey);
 		
 		
 		// Initialize variables.
@@ -115,9 +115,17 @@ class JFormFieldMUEDefault extends JFormField
 		$attr .= $this->element['onchange'] ? ' onchange="'.(string) $this->element['onchange'].'"' : '';
 	
 	
-		$lists = $mc->getLists();
-		$html[] = JHtml::_('select.genericlist',$lists,$this->name,$attr, "id","name",$this->value);
-	
+		$lists = array();
+		foreach ($keys as $k) {
+			$mc = new MailChimpHelper($k);
+			$keyinfo = $mc->getAccountInfo();
+			$keylists = $mc->getLists();
+			$lists[] = JHtml::_('select.option', "",$keyinfo['username'],"value","text",true);
+			foreach ($keylists as $l) {
+				$lists[] = JHtml::_('select.option', $k."_".$l['id'],$l['name']);
+			}
+		}
+		$html[] = JHtml::_('select.genericlist',$lists,$this->name,$attr, "value","text",$this->value);
 	
 		return implode($html);
 	}

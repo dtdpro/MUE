@@ -231,9 +231,11 @@ class MUEModelUserreg extends JModelLegacy
 			//MailChimp List
 			foreach ($mclists as $mclist) {
 				if ($data[$mclist->uf_sname])  {
+					if (strstr($mclist->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$mclist->uf_default,2);	} 
+					else { $mc_key = $cfg->mckey; $mc_list = $mclist->uf_default; }
 					$mcf=$mclist->uf_sname;
 					include_once 'components/com_mue/lib/mailchimp.php';
-					$mc = new MailChimpHelper($cfg->mckey,$mclist->uf_default);
+					$mc = new MailChimpHelper($mc_key,$mc_list);
 					$mcdata = array('FNAME'=>$item->fname, 'LNAME'=>$item->lname, 'OPTIN_IP'=>$_SERVER['REMOTE_ADDR'], 'OPTIN_TIME'=>$date->toSql(true));
 					if ($mclist->params->mcvars) {
 						$othervars=$mclist->params->mcvars;

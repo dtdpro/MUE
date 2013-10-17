@@ -58,7 +58,9 @@ class MUEModelMclist extends JModelLegacy
 		
 		$cfg=MUEHelper::getConfig();
 		if (!$cfg->mckey) { $this->setError("MailChimp not Configured"); return false; }
-		$mc = new MailChimpHelper($cfg->mckey);
+		if (strstr($list->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$list->uf_default,2);	}
+		else { $mc_key = $cfg->mckey; $mc_list = $list->uf_default; }
+		$mc = new MailChimpHelper($mc_key);
 		
 		//Users in list
 		$query = $db->getQuery(true);
@@ -195,7 +197,7 @@ class MUEModelMclist extends JModelLegacy
 			$mcitem['email_type']='html';
 			$mcbatch[] = $mcitem;
 			if (count($mcbatch) == 3000) {
-				$result = $mc->listBatchSubscribe($mcbatch,$list->uf_default);
+				$result = $mc->listBatchSubscribe($mcbatch,$mc_list);
 				$resinfo['add_count'] = $resinfo['add_count'] + $result->add_count;
 				$resinfo['update_count'] = $resinfo['update_count'] + $result->update_count;
 				$resinfo['error_count'] = $resinfo['error_count'] + $result->error_count;
@@ -205,7 +207,7 @@ class MUEModelMclist extends JModelLegacy
 		}
 		
 		
-		$result = $mc->listBatchSubscribe($mcbatch,$list->uf_default);
+		$result = $mc->listBatchSubscribe($mcbatch,$mc_list);
 		$resinfo['add_count'] = $resinfo['add_count'] + $result->add_count;
 		$resinfo['update_count'] = $resinfo['update_count'] + $result->update_count;
 		$resinfo['error_count'] = $resinfo['error_count'] + $result->error_count;
@@ -234,12 +236,14 @@ class MUEModelMclist extends JModelLegacy
 		
 		$cfg=MUEHelper::getConfig();
 		if (!$cfg->mckey) return false;
-		$mc = new MailChimpHelper($cfg->mckey);
+		if (strstr($list->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$list->uf_default,2);	}
+		else { $mc_key = $cfg->mckey; $mc_list = $list->uf_default; }
+		$mc = new MailChimpHelper($mc_key);
 		
 		$action=array("subscribe"=>true,"unsubscribe"=>true,"profile"=>true,"cleaned"=>true,"upemail"=>true,"campaign"=>true);
 		$sources=array("user"=>true,"admin"=>true,"api"=>false);
 		$url=str_replace("administrator/","",JURI::base()).'components/com_mue/helpers/mchook.php';
-		if (!$res = $mc->addListWebhook($list->uf_default,$url,$actions,$sources)) {
+		if (!$res = $mc->addListWebhook($mc_list,$url,$actions,$sources)) {
 			$this->setError($mc->error);
 			return false;
 		}	
@@ -265,15 +269,17 @@ class MUEModelMclist extends JModelLegacy
 		
 		$cfg=MUEHelper::getConfig();
 		if (!$cfg->mckey) return false;
-		$mc = new MailChimpHelper($cfg->mckey);
-		$mclist=$mc->getLists($list->uf_default);
+		if (strstr($list->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$list->uf_default,2);	}
+		else { $mc_key = $cfg->mckey; $mc_list = $list->uf_default; }
+		$mc = new MailChimpHelper($mc_key);
+		$mclist=$mc->getLists($mc_list);
 		
 		$list->list_info=$mclist[0];
-		if ($list->list_info['stats']['grouping_count'] > 0)	$list->list_igroups = $mc->getListInterestGroupings($list->uf_default);
+		if ($list->list_info['stats']['grouping_count'] > 0)	$list->list_igroups = $mc->getListInterestGroupings($mc_list);
 		else $list->list_igroups = false;
-		$list->list_mvars = $mc->getListMergeVars($list->uf_default);
+		$list->list_mvars = $mc->getListMergeVars($mc_list);
 		$list->list_msvars = array();
-		$list->list_webhooks = $mc->getListWebhooks($list->uf_default);
+		$list->list_webhooks = $mc->getListWebhooks($mc_list);
 		
 		$n=0;
 		foreach ($list->list_mvars as $v) {
@@ -301,7 +307,9 @@ class MUEModelMclist extends JModelLegacy
 		require_once(JPATH_ROOT.'/components/com_mue/lib/mailchimp.php');
 		$cfg=MUEHelper::getConfig();
 		if (!$cfg->mckey) return false;
-		$mc = new MailChimpHelper($cfg->mckey);
+		if (strstr($list->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$list->uf_default,2);	}
+		else { $mc_key = $cfg->mckey; $mc_list = $list->uf_default; }
+		$mc = new MailChimpHelper($mc_key);
 		
 		$parameter = new JRegistry;
 		$parameter->loadArray($data);
@@ -340,7 +348,7 @@ class MUEModelMclist extends JModelLegacy
 					return false;
 				}
 				$data=array('choices'=>$opts);
-				if (!$mc->updateMergeVar($list->uf_default,$mcf,$data)) {
+				if (!$mc->updateMergeVar($mc_list,$mcf,$data)) {
 					$this->setError('MC API Error: '.$mc->error);
 					return false;
 				}

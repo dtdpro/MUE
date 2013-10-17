@@ -136,6 +136,16 @@ class MailChimpHelper {
 		}
 	}
 	
+	function getAccountInfo() {
+		$mch = new Mailchimp_Helper($this->mc);
+		$result = $mch->accountDetails(array("modules", "orders", "rewards-credits", "rewards-inspections", "rewards-referrals", "rewards-applied", "integrations"));
+		if (!$result['error']) return $result;
+		else {
+			$this->error = $result;
+			return false;
+		}
+	}
+	
 	public function getError() { return $this->error; }
 	
 }
