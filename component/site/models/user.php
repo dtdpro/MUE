@@ -262,9 +262,11 @@ class MUEModelUser extends JModelLegacy
 					else { $mc_key = $cfg->mckey; $mc_list = $mclist->uf_default; }
 					$mcf=$mclist->uf_sname;
 					$mc = new MailChimpHelper($mc_key,$mc_list);
-					$mcresult = $mc->unsubscribeUser(array("email"=>$item->email));
-					if ($mcresult) { $item->$mcf=0; $usernotes .= $date->toSql(true)." EMail Unsubscribed from MailChimp List #".$mclist->uf_default."\r\n"; }
-					else { $item->$mcf=0; $usernotes .= $date->toSql(true)." Could not unsubscribe EMail from MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
+					if ($mc->subStatus($item->email)) {
+						$mcresult = $mc->unsubscribeUser(array("email"=>$item->email));
+						if ($mcresult) { $item->$mcf=0; $usernotes .= $date->toSql(true)." EMail Unsubscribed from MailChimp List #".$mclist->uf_default."\r\n"; }
+						else { $item->$mcf=0; $usernotes .= $date->toSql(true)." Could not unsubscribe EMail from MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
+					}
 				}
 			}
 			

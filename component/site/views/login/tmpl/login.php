@@ -1,4 +1,4 @@
-<div id="system">
+<div id="system" class="uk-article">
 <?php
 
 defined('_JEXEC') or die;
@@ -66,7 +66,7 @@ echo '</div>';
 echo '<div class="mue-login-login-row">';
 echo '<div class="mue-login-login-label"></div>';
 echo '<div class="mue-login-login-submit">';
-echo '<input type="submit" value="Login" class="button" border="0" name="submit">';
+echo '<input type="submit" value="Login" class="button uk-button" border="0" name="submit">';
 echo '</div>';
 echo '</div>';
 

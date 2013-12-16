@@ -1,7 +1,7 @@
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
 $cfg = MUEHelper::getConfig();
-if ($this->retry) echo '<div id="system">';
+if ($this->retry) echo '<div id="system" class="uk-article">';
 ?>
 
 <script type="text/javascript">
@@ -240,7 +240,7 @@ echo '<div class="mue-user-reg-row">';
 echo '<div class="mue-user-reg-label">';
 echo '</div>';
 echo '<div class="mue-user-reg-submit">';
-echo '<input name="saveprofile" id="savereg" value="Submit Registration" type="submit" class="button">';
+echo '<input name="saveprofile" id="savereg" value="Submit Registration" type="submit" class="button uk-button">';
 echo '</div></div>';
 echo '<input type="hidden" name="option" value="com_mue">';
 echo '<input type="hidden" name="view" value="userreg">';

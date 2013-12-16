@@ -1,4 +1,4 @@
-<div id="system">
+<div id="system" class="uk-article">
 <?php
 
 defined('_JEXEC') or die;
@@ -47,7 +47,7 @@ echo '</div>';
 echo '<div class="mue-lost-lost-row">';
 echo '<div class="mue-lost-lost-label"></div>';
 echo '<div class="mue-lost-lost-submit">';
-echo '<input type="submit" value="Send Information" class="button" border="0" name="submit">';
+echo '<input type="submit" value="Send Information" class="button uk-button" border="0" name="submit">';
 echo '</div>';
 echo '</div>';
 

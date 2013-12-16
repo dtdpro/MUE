@@ -29,7 +29,7 @@ JHtml::_('behavior.keepalive');
 		<?php endif; ?>
 	
 		<div>
-			<button value="<?php echo JText::_('JLOGOUT'); ?>" name="Submit" type="submit" class="button"><?php echo JText::_('JLOGOUT'); ?></button>
+			<button value="<?php echo JText::_('JLOGOUT'); ?>" name="Submit" type="submit" class="button uk-button"><?php echo JText::_('JLOGOUT'); ?></button>
 		</div>
 		<ul class="blank">
 			<li>
@@ -83,7 +83,7 @@ JHtml::_('behavior.keepalive');
 		<?php endif; ?>
 		
 		<div>
-			<button value="<?php echo JText::_('JLOGIN') ?>" name="Submit" type="submit" class="button"><?php echo JText::_('JLOGIN') ?></button>
+			<button value="<?php echo JText::_('JLOGIN') ?>" name="Submit" type="submit" class="button uk-button"><?php echo JText::_('JLOGIN') ?></button>
 		</div>
 		
 		<ul class="blank">

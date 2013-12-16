@@ -1,4 +1,4 @@
-<div id="system">
+<div id="system" class="uk-article">
 <?php // no direct access
 // Based upon: https://developers.google.com/maps/articles/phpsqlsearch_v3
 defined('_JEXEC') or die('Restricted access');
@@ -234,7 +234,7 @@ foreach($this->sfields as $f) {
 echo '<div class="mue-user-dir-row">';
 echo '<div class="mue-user-dir-label"></div>';
 echo '<div class="mue-user-dir-submit">';
-echo '<input type="submit" value="Search Directory" class="button">';
+echo '<input type="submit" value="Search Directory" class="button uk-button">';
 echo '<input type="hidden" name="lat" id="lat">';
 echo '<input type="hidden" name="lng" id="lng">';
 //echo '<input type="hidden" name="layout" value="groupuser">';

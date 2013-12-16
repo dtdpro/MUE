@@ -1,4 +1,4 @@
-<div id="system">
+<div id="system" class="uk-article">
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -32,7 +32,7 @@ echo '<div class="mue-user-edit-row">';
 echo '<div class="mue-user-edit-label">';
 echo '</div>';
 echo '<div class="mue-user-edit-submit">';
-echo '<input name="saveprofile" id="saveprofile" value="Save User Group" type="submit" class="button">';
+echo '<input name="saveprofile" id="saveprofile" value="Save User Group" type="submit" class="button uk-button">';
 echo '</div></div>';
 echo '<input type="hidden" name="option" value="com_mue">';
 echo '<input type="hidden" name="view" value="user">';

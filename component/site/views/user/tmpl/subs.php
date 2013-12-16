@@ -1,4 +1,4 @@
-<div id="system">
+<div id="system" class="uk-article">
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
 $config = MUEHelper::getConfig();
@@ -11,15 +11,15 @@ $sub=MUEHelper::getActiveSub();
 $numsubs=count(MUEHelper::getUserSubs());
 if ($numsubs) {
 if (!$sub) {
-	echo '<p>Subscription Expired <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button">Renew Subscription</a></p>';
+	echo '<p>Subscription Expired <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button uk-button">Renew Subscription</a></p>';
 } else {
 	echo $config->profile_sub_content;
 	if ((!$sub->sub_recurring || $sub->usrsub_rpstatus != "ActiveProfile") && $sub->daysLeft <= 10) {
-		echo '<p>Subscription Expires in '.$sub->daysLeft. ' day(s) <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button">Renew Subscription</a></p>';
+		echo '<p>Subscription Expires in '.$sub->daysLeft. ' day(s) <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button uk-button">Renew Subscription</a></p>';
 	}
 }
 } else {
-	echo '<p>Subscription Required <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button">Add Subscription</a></p>';
+	echo '<p>Subscription Required <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button uk-button">Add Subscription</a></p>';
 }
 
 if ($this->usersubs) {
@@ -62,7 +62,7 @@ if ($this->usersubs) {
 			}
 		} else {
 			switch ($sub->usrsub_rpstatus) {
-				case "ActiveProfile": echo 'Recurring <a href="'.JRoute::_('index.php?option=com_mue&view=user&layout=cancelsub&sub='.$sub->usrsub_id).'" class="button">Cancel</a'; break;
+				case "ActiveProfile": echo 'Recurring <a href="'.JRoute::_('index.php?option=com_mue&view=user&layout=cancelsub&sub='.$sub->usrsub_id).'" class="button uk-button">Cancel</a'; break;
 				case "Cancelled": echo "Cancelled"; break;
 			}
 		}

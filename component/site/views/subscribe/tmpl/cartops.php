@@ -23,7 +23,7 @@ if ($config->paypal) {
 if ($config->paybycheck) {
 	echo '<td align="center" valign="middle" width="'.$colwid.'">';
 	echo '<form action="" method="post" name="checkform" id="checkform">';
-	echo '<input type="submit" name="submit" value="Pay By Check" class="button" />';
+	echo '<input type="submit" name="submit" value="Pay By Check" class="button uk-button" />';
 	echo '<input type="hidden" name="layout" value="paybycheck" />';
 	echo '<input type="hidden" name="plan" value="'.$this->pinfo->sub_id.'" />';
 	echo $formtoken;

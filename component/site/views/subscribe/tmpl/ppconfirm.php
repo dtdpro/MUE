@@ -1,4 +1,4 @@
-<div id="system">
+<div id="system" class="uk-article">
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
 $config = MUEHelper::getConfig();
@@ -19,7 +19,7 @@ echo '<h2 class="componentheading">Complete Subscription</h2>';
 			
 			
 			<br /><br />
-			<input type="submit" value="<?php  echo $btntext; ?>" class="button"  /><br /><br /></p>
+			<input type="submit" value="<?php  echo $btntext; ?>" class="button uk-button"  /><br /><br /></p>
 		</form>
 
 </div>

@@ -1,4 +1,4 @@
-<div id="system">
+<div id="system" class="uk-article">
 <?php
 echo 'Information sent';
 ?>

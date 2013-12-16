@@ -1,4 +1,4 @@
-<div id="system">
+<div id="system" class="uk-article">
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
 $config = MUEHelper::getConfig();
@@ -31,7 +31,7 @@ if ($this->userrecs) {
 		}
 		echo '</td><td> ';
 		if ($course->sess_pstatus == "pass" && $course->course_hascert) {
-			echo '<a href="'.JURI::base( true ).'/components/com_mcme/gencert.php?certid='.$course->ci_id.'" target="_blank" class="button">Download</a>';
+			echo '<a href="'.JURI::base( true ).'/components/com_mcme/gencert.php?certid='.$course->ci_id.'" target="_blank" class="button uk-button">Download</a>';
 		}
 		echo '</td></tr>';
 	}

@@ -1,12 +1,12 @@
-<div id="system">
+<div id="system" class="uk-article">
 <?php 
 $config = MUEHelper::getConfig();
 $user=JFactory::getUser();
 echo '<h2 class="componentheading">Subscription by Check</h2>';
 echo '<p>';
-if (!$this->print) echo '<a href="'.JRoute::_('index.php?option=com_mue&view=user&layout=subs').'" class="button">View All Subscription(s)</a>';
-if (!$this->print) echo ' <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe&layout=check&plan='.$this->pinfo->sub_id.'&tmpl=component&print=1').'" target="_blank" class="button">Print</a>';
-else echo '<a href="javascript:print()" class="button">Print</a>';
+if (!$this->print) echo '<a href="'.JRoute::_('index.php?option=com_mue&view=user&layout=subs').'" class="button uk-button">View All Subscription(s)</a>';
+if (!$this->print) echo ' <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe&layout=check&plan='.$this->pinfo->sub_id.'&tmpl=component&print=1').'" target="_blank" class="button uk-button">Print</a>';
+else echo '<a href="javascript:print()" class="button uk-button">Print</a>';
 echo '</p>';
 
 echo '<p>';

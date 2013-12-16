@@ -1,4 +1,4 @@
-<div id="system">
+<div id="system" class="uk-article">
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
 $cecfg = MUEHelper::getConfig();
@@ -44,7 +44,7 @@ echo '</div>';
 //echo '<div class="mue-user-reg-submit">';
 //echo '</div>';
 //echo '<div class="mue-user-reg-submit">';
-//echo '<input type="submit" value="Begin Registration" class="button" border="0" name="submit">';
+//echo '<input type="submit" value="Begin Registration" class="button uk-button" border="0" name="submit">';
 //echo '</div>';
 echo '<div style="clear:both;"></div>';
 echo '<div id="mue-user-regform"></div>';
