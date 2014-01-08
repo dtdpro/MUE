@@ -18,10 +18,10 @@ echo '<div class="mue-user-edit-value">';
 $first=true;
 foreach ($this->groups as $o) {
 	$checked = ($o->ug_id == $this->currentgroup) ? ' checked="checked"' : '';
-	echo '<input type="radio" name="newgroup" value="'.$o->ug_id.'" id="jform_'.$sname.$o->ug_id.'" class="uf_radio"';
+	echo '<div class="radio"><input type="radio" name="newgroup" value="'.$o->ug_id.'" id="jform_'.$sname.$o->ug_id.'" class="uf_radio input-sm"';
 	echo $checked.'/>'."\n";
 	echo '<label for="jform_'.$sname.$o->ug_id.'">';
-	echo ' '.$o->ug_name.'</label><br />'."\n";
+	echo ' '.$o->ug_name.'</label></div>'."\n";
 	
 }
 echo '</div>';

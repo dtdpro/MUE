@@ -56,7 +56,7 @@ class MUEHelper {
 							$ansarr=explode(" ",$u->usr_data);
 							$q = 'SELECT opt_text FROM #__mue_ufields_opts WHERE opt_id IN('.implode(",",$ansarr).')';
 							$db->setQuery($q);
-							$user->$fn = implode(", ",$db->loadResultArray());
+							$user->$fn = implode(", ",$db->loadColumn());
 						} else {
 							$user->$fn = "";
 						}

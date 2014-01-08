@@ -144,12 +144,12 @@ if ($this->sfields) echo '<div class="mue-user-dir-row"><div class="mue-user-dir
 echo '<div class="mue-user-dir-row">';
 echo '<div class="mue-user-dir-label">Location</div>';
 echo '<div class="mue-user-dir-value">';
-echo '<input placeholder="Address, City, State, and/or ZIP Code" type="text" id="addressInput" class="uf_field" data-rule-required="true" data-msg-required="This Field is required">';
+echo '<input placeholder="Address, City, State, and/or ZIP Code" type="text" id="addressInput" class="form-control uf_field input-sm" data-rule-required="true" data-msg-required="This Field is required">';
 echo '</div><div class="mue-user-dir-error"></div></div>';
 echo '<div class="mue-user-dir-row">';
 echo '<div class="mue-user-dir-label">Distance</div>';
 echo '<div class="mue-user-dir-value">';
-echo '<select id="radius" name="radius" class="uf_field">';
+echo '<select id="radius" name="radius" class="form-control uf_field input-sm">';
 echo '<option value="25" selected>25 miles</option>';
 echo '<option value="100">100 miles</option>';
 echo '<option value="200">200 miles</option>';
@@ -158,7 +158,7 @@ echo '</div></div>';
 echo '<div class="mue-user-dir-row">';
 echo '<div class="mue-user-dir-label"># of Results</div>';
 echo '<div class="mue-user-dir-value">';
-echo '<select id="limit" name="limit" class="uf_field">';
+echo '<select id="limit" name="limit" class="form-control uf_field input-sm">';
 echo '<option value="10">10</option>';
 echo '<option value="20" selected>20</option>';
 echo '<option value="50">50</option>';
@@ -184,16 +184,16 @@ foreach($this->sfields as $f) {
 	if ($f->uf_type=="mcbox") {
 		$first = true;
 		foreach ($f->options as $o) {
-			echo '<input type="checkbox" name="jform['.$sname.'][]" value="'.$o->text.'" class="uf_radio" id="jform_'.$sname.$o->value.'" />'."\n";
+			echo '<div class="checkbox"><input type="checkbox" name="jform['.$sname.'][]" value="'.$o->text.'" class="uf_radio" id="jform_'.$sname.$o->value.'" />'."\n";
 			echo '<label for="jform_'.$sname.$o->value.'">';
-			echo ' '.$o->text.'</label><br />'."\n";
+			echo ' '.$o->text.'</label></div>'."\n";
 				
 		}
 	}
 
 	//dropdown, radio
 	if ($f->uf_type=="dropdown" || $f->uf_type=="multi") {
-		echo '<select id="jform_'.$sname.'" name="jform['.$sname.']" class="uf_field uf_select" size="1">';
+		echo '<select id="jform_'.$sname.'" name="jform['.$sname.']" class="form-control uf_field uf_select" size="1">';
 		echo '<option value="" selected>- Any '.$f->uf_name.' -</option>';
 		foreach ($f->options as $o) {
 			echo '<option value="'.$o->text.'">';
@@ -204,7 +204,7 @@ foreach($this->sfields as $f) {
 
 	//multilist
 	if ($f->uf_type=="mlist") {
-		echo '<select id="jform_'.$sname.'" name="jform['.$sname.'][]" class="uf_field uf_mselect" size="4" multiple="multiple">';
+		echo '<select id="jform_'.$sname.'" name="jform['.$sname.'][]" class="form-control uf_field uf_mselect input-sm" size="4" multiple="multiple">';
 		foreach ($f->options as $o) {
 			echo '<option value="'.$o->value.'">';
 			echo ' '.$o->text.'</option>';
@@ -215,12 +215,12 @@ foreach($this->sfields as $f) {
 
 	//text field, phone #
 	if ($f->uf_type=="textbox" || $f->uf_type=="phone") {
-		echo '<input name="jform['.$sname.']" id="jform_'.$sname.'" class="uf_field" type="text">';
+		echo '<input name="jform['.$sname.']" id="jform_'.$sname.'" class="form-control uf_field input-sm input-sm" type="text">';
 	}
 
 	//text area
 	if ($f->uf_type=="textar") {
-		echo '<textarea name="jform['.$sname.']" id="jform_'.$sname.'" cols="70" rows="4" class="uf_field"';
+		echo '<textarea name="jform['.$sname.']" id="jform_'.$sname.'" cols="70" rows="4" class="uf_field input-sm"';
 		echo '>'.$f->value.'</textarea>';
 	}
 
