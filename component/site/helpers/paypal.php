@@ -58,7 +58,7 @@ class PayPalAPI {
 			foreach($resArray as $key => $value) {
 				$ralogtxt .= "$key: $value\r\n";
 			}
-			$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$sub.',"'.$db->getEscaped($ralogtxt).'")';
+			$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$sub.',"'.$db->escape($ralogtxt).'")';
 			$db->setQuery($ql);
 			$db->query();
 		}
@@ -107,7 +107,7 @@ class PayPalAPI {
 			foreach($resArray as $key => $value) {
 				$ralogtxt .= "$key: $value\r\n";
 			}
-			$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$usid.',"'.$db->getEscaped($ralogtxt).'")';
+			$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$usid.',"'.$db->escape($ralogtxt).'")';
 			$db->setQuery($ql);
 			$db->query();
 		}
@@ -133,7 +133,7 @@ class PayPalAPI {
 					foreach($resArray as $key => $value) {
 						$ralogtxt .= "$key: $value\r\n";
 					}
-					$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$usid.',"'.$db->getEscaped($ralogtxt).'")';
+					$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$usid.',"'.$db->escape($ralogtxt).'")';
 					$db->setQuery($ql);
 					$db->query();
 				}
@@ -179,7 +179,7 @@ class PayPalAPI {
 			foreach($resArray as $key => $value) {
 				$ralogtxt .= "$key: $value\r\n";
 			}
-			$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$usid.',"'.$db->getEscaped($ralogtxt).'")';
+			$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$usid.',"'.$db->escape($ralogtxt).'")';
 			$db->setQuery($ql);
 			$db->query();
 		}
@@ -273,7 +273,7 @@ class PayPalAPI {
 			foreach($resArray as $key => $value) {
 				$ralogtxt .= "$key: $value\r\n";
 			}
-			$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.(int)$purchaseid.',"'.$db->getEscaped($ralogtxt).'")';
+			$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.(int)$purchaseid.',"'.$db->escape($ralogtxt).'")';
 			$db->setQuery($ql);
 			$db->query();
 		} 
@@ -435,7 +435,7 @@ class PayPalAPI {
 						}
 					}
 					if ($req) {
-						$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$pid.',"'.$db->getEscaped($ralogtxt).'")';
+						$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$pid.',"'.$db->escape($ralogtxt).'")';
 						$db->setQuery($ql);
 						$db->query();
 					}
@@ -449,7 +449,7 @@ class PayPalAPI {
 		}
 		
 		if ($req) {
-			$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$pid.',"'.$db->getEscaped($ralogtxt).'")';
+			$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$pid.',"'.$db->escape($ralogtxt).'")';
 			$db->setQuery($ql);
 			$db->query();
 		}
