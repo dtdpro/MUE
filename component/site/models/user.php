@@ -23,14 +23,80 @@ class MUEModelUser extends JModelLegacy
 	function saveGroup($groupid) {
 		$db =& JFactory::getDBO();
 		$user=JFactory::getUser();
+		$cfg = MUEHelper::getConfig();
 		$date = new JDate('now');
-		$usernotes = "User Group Changed\r\n";
-		$qud = 'UPDATE #__mue_usergroup SET userg_group = '.$groupid.', userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
+		$usernotes = $date->toSql(true)." User Group Changed\r\n";
+		$qud = 'UPDATE #__mue_usergroup SET userg_group = '.$groupid.', userg_update = "'.$date->toSql(true).'" WHERE userg_user = '.$user->id;
 		$db->setQuery($qud);
 		if (!$db->query()) {
 			$this->setError($db->getErrorMsg());
 			return false;
 		}
+		
+		$ginfo=MUEHelper::getGroupInfo($groupid);
+		
+		//MC Update
+		$mclists = $this->getUserFields($groupid,false,false,false,"mailchimp");
+		foreach ($mclists as $mclist) {
+			include_once 'components/com_mue/lib/mailchimp.php';
+			if (strstr($mclist->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$mclist->uf_default,2);	}
+			else { $mc_key = $cfg->mckey; $mc_list = $mclist->uf_default; }
+			$mcf=$mclist->uf_sname;
+			$mc = new MailChimpHelper($mc_key,$mc_list);
+			$mcdata = array();
+			if ($mclist->params->mcvars) {
+				$othervars=$mclist->params->mcvars;
+				foreach ($othervars as $mcv=>$mue) {
+					if ($mue == "user_group") {
+						$mcdata[$mcv] = $ginfo->ug_name;
+					}
+				}
+				$mcd=print_r($mcdata,true);
+				if ($mc->subStatus($user->email)) {
+					$mcresult = $mc->updateUser(array("email"=>$user->email),$mcdata,false,"html");
+					if ($mcresult) { $usernotes .= $date->toSql(true)." User Group Updated on MailChimp List #".$mclist->uf_default.' '.$mcd."\r\n"; }
+					else { $usernotes .= $date->toSql(true)." Could not update User Group on MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
+				}
+			}
+		}
+		
+		//CM Update
+		$cmlists = $this->getUserFields($groupid,false,false,false,"cmlist");
+		foreach ($cmlists as $cmlist) {
+			include_once 'components/com_mue/lib/campaignmonitor.php';
+			$cmuf=$cmlist->uf_sname;
+			$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
+			$cmdata = array('Name'=>$user->name, 'EmailAddress'=>$user->email, 'Resubscribe'=>'true');
+			$customfields = array();
+			if ($cmlist->params->cmfields) {
+				$othervars=$cmlist->params->cmfields;
+				foreach ($othervars as $cmf=>$mue) {
+					if ($mue == "user_group") {
+						$newcmf=array();
+						$newcmf['Key']=$cmf;
+						$newcmf['Value'] = $ginfo->ug_name;
+						$customfields[]=$newcmf;
+					}
+				}
+				$cmdata['CustomFields']=$customfields;
+				$cmd=print_r($cmdata,true);
+				if ($cm->getSubscriberDetails($cmlist->uf_default,$user->email)) {
+					$cmresult = $cm->updateSubscriber($cmlist->uf_default,$user->email,$cmdata);
+					if ($cmresult) { $usernotes .= $date->toSql(true)." EMail Subscription Updated on Campaign Monitor List #".$cmlist->uf_default.' '.$cmd."\r\n"; }
+					else { $usernotes .= $date->toSql(true)." Could not update EMail subscription on Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
+				} 
+			}
+		}
+		
+		//Update usernotes
+		$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
+		$db->setQuery($qud);
+		if (!$db->query()) {
+			$this->setError($db->getErrorMsg());
+			return false;
+		}
+		
+		
 		return true;
 	}
 	
@@ -50,13 +116,14 @@ class MUEModelUser extends JModelLegacy
 		return $db->loadObjectList();
 	}
 	
-	function getUserFields($group,$showhidden=false,$all=false,$changable=false) {
+	function getUserFields($group,$showhidden=false,$all=false,$changable=false,$type="") {
 		$db =& JFactory::getDBO();
 		$qd = 'SELECT f.* FROM #__mue_uguf as g';
 		$qd.= ' RIGHT JOIN #__mue_ufields as f ON g.uguf_field = f.uf_id';
 		$qd.= ' WHERE f.published = 1 && g.uguf_group='.$group;
 		if (!$showhidden) $qd.=" && f.uf_hidden = 0";
 		if ($changable) $qd.=" && f.uf_change = 1";
+		if ($type) $qd .= ' && f.uf_type = "'.$type.'"';
 		$qd .= ' && f.uf_type != "captcha"';
 		$qd.= ' ORDER BY f.ordering';
 		$db->setQuery( $qd ); 

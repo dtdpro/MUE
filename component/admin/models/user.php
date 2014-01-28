@@ -90,10 +90,11 @@ class MUEModelUser extends JModelAdmin
 	{
 		// Initialise variables;
 		$dispatcher = JDispatcher::getInstance();
-		$isNew = true;
 		$userId=(int)$data['usr_user'];
+		$isNew = $userId ? false : true;
 		$usernotes=$data['usernotes'];
 		$db		= $this->getDbo();
+		$date = new JDate('now');
 		
 		
 		JPluginHelper::importPlugin('user');
@@ -139,7 +140,7 @@ class MUEModelUser extends JModelAdmin
 			unset($item->username);
 			
 			
-			//Save ContinuEd Userinfo
+			//Save MUE Userinfo
 			$query	= $db->getQuery(true);
 			$query->delete();
 			$query->from('#__mue_users');
@@ -181,20 +182,31 @@ class MUEModelUser extends JModelAdmin
 		$this->setState($this->getName() . '.new', $isNew);
 		
 		//Update Users Group
-		$query	= $db->getQuery(true);
-		$query->delete();
-		$query->from('#__mue_usergroup');
-		$query->where('userg_user = '.$user->id);
-		$db->setQuery((string)$query);
-		$db->query();
-		
-		if (!empty($data['usergroup'])) {
-			$qc = 'INSERT INTO #__mue_usergroup (userg_user,userg_group,userg_notes,userg_siteurl,userg_update) VALUES ('.$user->id.','.(int)$data['usergroup'].',"'.$usernotes.'","'.$data['usersiteurl'].'","'.$data['lastupdate'].'")';
-			$db->setQuery($qc);
+		if ($isNew) {
+			$query	= $db->getQuery(true);
+			$query->delete();
+			$query->from('#__mue_usergroup');
+			$query->where('userg_user = '.$user->id);
+			$db->setQuery((string)$query);
+			$db->query();
+
+			$usernotes = $date->toSql(true)." User Added by Admin\r\n";
+			if (!empty($data['usergroup'])) {
+				$qc = 'INSERT INTO #__mue_usergroup (userg_user,userg_group,userg_notes,userg_siteurl,userg_update) VALUES ('.$user->id.','.(int)$data['usergroup'].',"'.$usernotes.'","'.$data['usersiteurl'].'","'.$data['lastupdate'].'")';
+				$db->setQuery($qc);
+				if (!$db->query()) {
+					$this->setError($db->getErrorMsg());
+					return false;
+				} 
+			}
+		} else {
+			$usernotes = $date->toSql(true)." User Updated\r\n";
+			$qud = 'UPDATE #__mue_usergroup SET userg_group = '.(int)$data['usergroup'].', userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
+			$db->setQuery($qud);
 			if (!$db->query()) {
 				$this->setError($db->getErrorMsg());
 				return false;
-			} 
+			}
 		}
 		
 		// Update Joomla User Groups
@@ -240,7 +252,7 @@ class MUEModelUser extends JModelAdmin
 	
 	public function getFields($all = true) {
 		$q  = 'SELECT * FROM #__mue_ufields WHERE published > 0';
-		$q .= ' && uf_type != "message"';
+		$q .= ' && uf_type NOT IN ("message","mailchimp","cmlist","captcha")';
 		$q .= ' ORDER BY ordering';
 		$this->_db->setQuery($q);
 		$fields=$this->_db->loadObjectList();
