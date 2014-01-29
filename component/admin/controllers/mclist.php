@@ -90,10 +90,10 @@ class MUEControllerMclist extends JControllerLegacy
 		
 		$message = JText::_('COM_MUE_MCLIST_SYNC_SUCCESS');
 		if ($return['total']) $message .= '<br>Users Processed: '.$return['total'];
-		if ($return['add_count']) $message .= '<br>added: '.$return['add_count'];
+		if ($return['add_count']) $message .= '<br>Added: '.$return['add_count'];
 		if ($return['update_count']) $message .= '<br>Updated: '.$return['update_count'];
-		if ($return['error_count']) $message .= '<br>Errors: '.$return['error_counr'];
-		if (count($return['errors'])) $message .= '<br>Errors: <pre>'.print_r($return,true).'</pre>';
+		if ($return['error_count']) $message .= '<br>Not on List/Errored: '.$return['error_count'];
+		//if (count($return['errors'])) $message .= '<br>Errors: <pre>'.print_r($return,true).'</pre>';
 		
 		$this->setRedirect('index.php?option=com_mue&view=mclist&field='.$field.'&tmpl=component&refresh=1', $message);
 				

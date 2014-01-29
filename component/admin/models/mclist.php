@@ -39,7 +39,7 @@ class MUEModelMclist extends JModelLegacy
 		require_once(JPATH_ROOT.'/administrator/components/com_mue/helpers/mue.php');
 		require_once(JPATH_ROOT.'/components/com_mue/lib/mailchimp.php');
 		
-		if (!$field) { $this->setError("Filed ID Not Provided"); return false; }
+		if (!$field) { $this->setError("Field ID Not Provided"); return false; }
 		
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);
@@ -213,6 +213,28 @@ class MUEModelMclist extends JModelLegacy
 		$resinfo['error_count'] = $resinfo['error_count'] + $result->error_count;
 		$resinfo['errors'] = array_merge($resinfo['errors'],$result->errors);
 		$resinfo['total'] = count($users);
+		
+		$emlsrm = array();
+		foreach ($resinfo['errors'] as $e) {
+			$emlsrm[] = $e['email']['email'];
+		}
+		if (count($emlsrm)) {
+			$query = $db->getQuery(true);
+			$query->select("id");
+			$query->from('#__users');
+			$query->where('email IN ("'.implode('","',$emlsrm).'")');
+			$db->setQuery($query);
+			$rmids = $db->loadColumn();
+			
+			$query = $db->getQuery(true);
+			$query->update('#__mue_users');
+			$query->set('usr_data = "0"');
+			$query->where('usr_field = '.$field);
+			$query->where('usr_user IN ('.implode(",",$rmids).')');
+			$db->setQuery($query);
+			$db->query();
+		}		
+		
 		return $resinfo;
 				
 		

@@ -135,13 +135,6 @@ class MUEControllerUser extends JControllerForm
 		// Populate the row id from the session.
 		$data[$key] = $recordId;
 
-		// The save2copy task needs to be handled slightly differently.
-		if ($task == 'save2copy') {
-			// Reset the ID and then treat the request as for Apply.
-			$data[$key]	= 0;
-			$task		= 'apply';
-		}
-
 		// Access check.
 		if (!$this->allowSave($data, $key)) {
 			$this->setError(JText::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED'));
@@ -174,7 +167,7 @@ class MUEControllerUser extends JControllerForm
 			$app->setUserState($context.'.data', $data);
 
 			// Redirect back to the edit screen.
-			$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_item.$this->getRedirectToItemAppend($recordId, $key), false));
+			$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_item.$this->getRedirectToItemAppend($recordId, "id"), false));
 
 			return false;
 		}
@@ -187,7 +180,7 @@ class MUEControllerUser extends JControllerForm
 			// Redirect back to the edit screen.
 			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
 			$this->setMessage($this->getError(), 'error');
-			$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_item.$this->getRedirectToItemAppend($recordId, $key), false));
+			$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_item.$this->getRedirectToItemAppend($recordId, "id"), false));
 
 			return false;
 		}
@@ -205,7 +198,7 @@ class MUEControllerUser extends JControllerForm
 				
 
 				// Redirect back to the edit screen.
-				$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_item.$this->getRedirectToItemAppend($recordId, $key), false));
+				$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_item.$this->getRedirectToItemAppend($recordId, "id"), false));
 				break;
 
 			case 'save2new':
@@ -214,7 +207,7 @@ class MUEControllerUser extends JControllerForm
 				$app->setUserState($context.'.data', null);
 
 				// Redirect back to the edit screen.
-				$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_item.$this->getRedirectToItemAppend(null, $key), false));
+				$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_item.$this->getRedirectToItemAppend(null, "id"), false));
 				break;
 
 			default:

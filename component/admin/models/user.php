@@ -95,7 +95,7 @@ class MUEModelUser extends JModelAdmin
 		$usernotes=$data['usernotes'];
 		$db		= $this->getDbo();
 		$date = new JDate('now');
-		
+		$cfg = MUEHelper::getConfig();
 		
 		JPluginHelper::importPlugin('user');
 		
@@ -112,9 +112,11 @@ class MUEModelUser extends JModelAdmin
 			//Update Joomla User Info
 			if ($userId != 0) {
 				$user=JFactory::getUser($userId);
+				$oldemail = $user->email;
 			} else {
 				$user = new JUser;
 				$udata['groups'][]=2;
+				$oldemail = false;
 			}
 			$udata['name']=$item->fname." ".$item->lname;
 			$udata['email']=$item->email;
@@ -139,32 +141,6 @@ class MUEModelUser extends JModelAdmin
 			unset($item->block);
 			unset($item->username);
 			
-			
-			//Save MUE Userinfo
-			$query	= $db->getQuery(true);
-			$query->delete();
-			$query->from('#__mue_users');
-			$query->where('usr_user = '.$user->id);
-			$db->setQuery((string)$query);
-			$db->query();
-			
-			$flist = $this->getFields(false);
-			foreach ($flist as $fl) {
-				$fieldname = $fl->uf_sname;
-				if (!$fl->uf_cms) {
-					if ($fl->uf_type=="mcbox") $item->$fieldname = implode(" ",$item->$fieldname);
-					//if ($fl->uf_type=='cbox') $item->$fieldname = ($item->$fieldname=='on') ? "1" : "0";
-					$qf = 'INSERT INTO #__mue_users (usr_user,usr_field,usr_data) VALUES ("'.$user->id.'","'.$fl->uf_id.'","'.$item->$fieldname.'")';
-					$db->setQuery($qf);
-					if (!$db->query()) {
-						$this->setError($db->getErrorMsg());
-						return false;
-					}
-				}
-			}
-			
-			
-			
 		}
 		catch (Exception $e)
 		{
@@ -172,16 +148,15 @@ class MUEModelUser extends JModelAdmin
 			
 			return false;
 		}
-		
-		
-		
-		if (isset($user->id))
-		{
-			$this->setState($this->getName() . '.id', $user->id);
-		}
-		$this->setState($this->getName() . '.new', $isNew);
+				
+		$this->setState($this->getName() . '.id', $user->id);
 		
 		//Update Users Group
+		$ginfo=$this->getGroupInfo((int)$data['usergroup']);
+		$item->site_url = $data['usersiteurl'];
+		$item->user_group = $ginfo->ug_name;
+		$item->username = $user->username;
+		
 		if ($isNew) {
 			$query	= $db->getQuery(true);
 			$query->delete();
@@ -192,7 +167,7 @@ class MUEModelUser extends JModelAdmin
 
 			$usernotes = $date->toSql(true)." User Added by Admin\r\n";
 			if (!empty($data['usergroup'])) {
-				$qc = 'INSERT INTO #__mue_usergroup (userg_user,userg_group,userg_notes,userg_siteurl,userg_update) VALUES ('.$user->id.','.(int)$data['usergroup'].',"'.$usernotes.'","'.$data['usersiteurl'].'","'.$data['lastupdate'].'")';
+				$qc = 'INSERT INTO #__mue_usergroup (userg_user,userg_group,userg_notes,userg_siteurl,userg_update) VALUES ('.$user->id.','.(int)$data['usergroup'].',"'.$usernotes.'","'.$item->site_url.'","'.$date->toSql(true).'")';
 				$db->setQuery($qc);
 				if (!$db->query()) {
 					$this->setError($db->getErrorMsg());
@@ -200,8 +175,142 @@ class MUEModelUser extends JModelAdmin
 				} 
 			}
 		} else {
-			$usernotes = $date->toSql(true)." User Updated\r\n";
+			$usernotes = $date->toSql(true)." User Updated by Admin\r\n";
 			$qud = 'UPDATE #__mue_usergroup SET userg_group = '.(int)$data['usergroup'].', userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
+			$db->setQuery($qud);
+			if (!$db->query()) {
+				$this->setError($db->getErrorMsg());
+				return false;
+			}
+		}
+		
+		//Save MUE User Data	
+		$flist = $this->getFields(false);
+		$optfs = array();
+		$moptfs = array();
+		foreach ($flist as $fl) {
+			$fieldname = $fl->uf_sname;
+			if (!$fl->uf_cms) {
+				if ($fl->uf_type=="mcbox" || $fl->uf_type=="mlist") $item->$fieldname = implode(" ",$item->$fieldname);
+				
+				if ($fl->uf_type=="multi" || $fl->uf_type=="dropdown") $optfs[]=$fl->uf_sname;
+				if ($fl->uf_type=="mcbox" || $fl->uf_type=="mlist") $moptfs[]=$fl->uf_sname;
+				
+				if ($isNew) $qf = 'INSERT INTO #__mue_users (usr_user,usr_field,usr_data) VALUES ("'.$user->id.'","'.$fl->uf_id.'","'.$item->$fieldname.'")';
+				else $qf = 'UPDATE #__mue_users SET usr_data = "'.$item->$fieldname.'" WHERE usr_user = "'.$user->id.'" && usr_field = "'.$fl->uf_id.'"';
+				
+				$db->setQuery($qf);
+				if (!$db->query()) {
+					$this->setError($db->getErrorMsg());
+					return false;
+				}
+			}
+		}
+		
+		$odsql = "SELECT * FROM #__mue_ufields_opts";
+		$db->setQuery($odsql);
+		$optionsdata = array();
+		$optres = $db->loadObjectList();
+		foreach ($optres as $o) {
+			$optionsdata[$o->opt_id]=$o->opt_text;
+		}
+		
+		//Update Mailing lists if not a new user, Admin cannot subscribe user, only update usr information
+		if (!$isNew) {
+			$usernotes = "";
+			
+			// Update MailChimp Lists
+			$mclists = $this->getFields(false,"mailchimp");
+			require_once(JPATH_ROOT.'/components/com_mue/lib/mailchimp.php');
+			foreach ($mclists as $mclist) {
+				if (strstr($mclist->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$mclist->uf_default,2);	}
+				else { $mc_key = $cfg->mckey; $mc_list = $mclist->uf_default; }
+				$mcf=$mclist->uf_sname;
+				$mc = new MailChimpHelper($mc_key,$mc_list);
+				$mcdata = array('FNAME'=>$item->fname, 'LNAME'=>$item->lname, 'OPTIN_IP'=>$_SERVER['REMOTE_ADDR']);
+				if ($oldemail != $user->email) { $mcdata['new-email']=$user->email; }
+				if ($mclist->params->mcvars) {
+					$othervars=$mclist->params->mcvars;
+					foreach ($othervars as $mcv=>$mue) {
+						if ($mue) {
+							if (in_array($mue,$optfs)) $mcdata[$mcv] = $optionsdata[$item->$mue];
+							else if (in_array($mue,$moptfs)) {
+								$mcdata[$mcv] = "";
+								foreach (explode(" ",$item->$mue) as $mfo) {
+									$mcdata[$mcv] .= $optionsdata[$mfo]." ";
+								}
+							}
+							else $mcdata[$mcv] = $item->$mue;
+						}
+					}
+				}
+				if ($mclist->params->mcigroup) {
+					$mcdata['groupings']=array(array("name"=>$mclist->params->mcigroup,"groups"=>$mclist->params->mcigroups));
+				}
+				$mcd=print_r($mcdata,true);
+				if ($mc->subStatus($oldemail)) {
+					$mcresult = $mc->updateUser(array("email"=>$oldemail),$mcdata,false,"html");
+					if ($mcresult) { $item->$mcf=1; $usernotes .= $date->toSql(true)." EMail Subscription Updated by Admin on MailChimp List #".$mclist->uf_default.' '.$mcd."\r\n"; }
+					else { $item->$mcf=1; $usernotes .= $date->toSql(true)." Could not update EMail subscription by Admin on MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
+				}
+			}
+			
+			//Campaign Monitor Integration
+			$cmlists = $this->getFields(false,"cmlist");
+			require_once(JPATH_ROOT.'/components/com_mue/lib/campaignmonitor.php');
+			foreach ($cmlists as $cmlist) {
+				$cmuf=$cmlist->uf_sname;
+				$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
+				$cmdata = array('Name'=>$item->fname.' '.$item->lname, 'EmailAddress'=>$user->email, 'Resubscribe'=>'true');
+				$customfields = array();
+				if ($cmlist->params->cmfields) {
+					$othervars=$cmlist->params->cmfields;
+					foreach ($othervars as $cmf=>$mue) {
+						if ($cmlist->params->cmfieldtypes->$cmf == "MultiSelectMany") {
+							if (in_array($mue,$moptfs)) {
+								foreach (explode(" ",$item->$mue) as $mfo) {
+									$newcmf=array();
+									$newcmf['Key']=$cmf;
+									$newcmf['Value'] = $optionsdata[$mfo];
+									$customfields[]=$newcmf;
+								}
+							} else {
+								$newcmf=array();
+								$newcmf['Key']=$cmf;
+								$newcmf['Value'] == "";
+								$newcmf['Clear']='true';
+								$customfields[]=$newcmf;
+							}
+						} else {
+							if ($mue) {
+								$newcmf=array();
+								$newcmf['Key']=$cmf;
+								if (in_array($mue,$optfs)) $newcmf['Value'] = $optionsdata[$item->$mue];
+								else if (in_array($mue,$moptfs)) {
+									$newcmf['Value'] = "";
+									foreach (explode(" ",$item->$mue) as $mfo) {
+										$newcmf['Value'] .= $optionsdata[$mfo]." ";
+									}
+								}
+								else $newcmf['Value'] = $item->$mue;
+								}
+								if (!$mue || $newcmf['Value'] == "") $newcmf['Clear']='true';
+								$customfields[]=$newcmf;
+							}
+						}
+					}
+					$cmdata['CustomFields']=$customfields;
+					$cmd=print_r($cmdata,true);
+					if ($cm->getSubscriberDetails($cmlist->uf_default,$oldemail)) {
+						$cmresult = $cm->updateSubscriber($cmlist->uf_default,$oldemail,$cmdata);
+						if ($cmresult) { $item->$cmuf=1; $usernotes .= $date->toSql(true)." EMail Subscription Updated by Admin on Campaign Monitor List #".$cmlist->uf_default.' '.$cmd."\r\n"; }
+						else { $item->$cmuf=1; $usernotes .= $date->toSql(true)." Could not update EMail subscription by Admin on Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
+					}
+
+			}
+			
+			//Update usernotes
+			$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
 			$db->setQuery($qud);
 			if (!$db->query()) {
 				$this->setError($db->getErrorMsg());
@@ -250,14 +359,31 @@ class MUEModelUser extends JModelAdmin
 		return $this->_db->loadObjectList();
 	}
 	
-	public function getFields($all = true) {
+	function getGroupInfo($groupid) {
+		if (!$groupid) {
+			return false;
+		}
+		$db =& JFactory::getDBO();
+		$query = 'SELECT * FROM #__mue_ugroups ';
+		$query.= 'WHERE ug_id="'.$groupid.'"';
+		$db->setQuery($query);
+		$usergroup = $db->loadObject();
+		return $usergroup;
+	}
+	
+	public function getFields($all = true, $type = "") {
 		$q  = 'SELECT * FROM #__mue_ufields WHERE published > 0';
-		$q .= ' && uf_type NOT IN ("message","mailchimp","cmlist","captcha")';
+		if ($type) $q .= ' && uf_type = "'.$type.'"';
+		else $q .= ' && uf_type NOT IN ("message","mailchimp","cmlist","captcha")';
 		$q .= ' ORDER BY ordering';
 		$this->_db->setQuery($q);
 		$fields=$this->_db->loadObjectList();
-		if ($all) {
-			foreach ($fields as &$f) {
+		
+		foreach ($fields as &$f) {
+			$registry = new JRegistry();
+			$registry->loadString($f->params);
+			$f->params = $registry->toObject();
+			if ($all) {
 				switch ($f->uf_type) {
 					case 'multi':
 					case 'dropdown':
