@@ -196,8 +196,16 @@ class MUEModelUser extends JModelAdmin
 				if ($fl->uf_type=="multi" || $fl->uf_type=="dropdown") $optfs[]=$fl->uf_sname;
 				if ($fl->uf_type=="mcbox" || $fl->uf_type=="mlist") $moptfs[]=$fl->uf_sname;
 				
-				if ($isNew) $qf = 'INSERT INTO #__mue_users (usr_user,usr_field,usr_data) VALUES ("'.$user->id.'","'.$fl->uf_id.'","'.$item->$fieldname.'")';
-				else $qf = 'UPDATE #__mue_users SET usr_data = "'.$item->$fieldname.'" WHERE usr_user = "'.$user->id.'" && usr_field = "'.$fl->uf_id.'"';
+				if (!$isNew) {
+					$qd=$db->getQuery(true);
+					$qd->delete();
+					$qd->from("#__mus_users");
+					$qd->where("usr_user = ".$user->id);
+					$qd->where('usr_field = '.$fl->uf_id);
+					$db->setQuery($qd);
+					$db->query();
+				}
+				$qf = 'INSERT INTO #__mue_users (usr_user,usr_field,usr_data) VALUES ("'.$user->id.'","'.$fl->uf_id.'","'.$item->$fieldname.'")';
 				
 				$db->setQuery($qf);
 				if (!$db->query()) {
