@@ -13,6 +13,7 @@ $user = &JFactory::getUser();
 
 $data = JRequest::getVar('jform', array(), 'post', 'array'); 
 $email = strtolower($db->escape($data['email']));
+if (!$email) $email = $db->escape(strtolower(JRequest::getVar("newemail")));
 $qn = 'SELECT username FROM #__users WHERE email="'.$email.'"';
 $db->setQuery($qn); $hasuser = $db->loadResult();
 if ($hasuser) {

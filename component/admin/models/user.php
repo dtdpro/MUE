@@ -69,7 +69,9 @@ class MUEModelUser extends JModelAdmin
 		foreach ($data as $d) {
 			$fieldname = $d->uf_sname;
 			if ($item->$fieldname == '') $item->$fieldname = $d->usr_data;
-			if ($d->uf_type=="mcbox") $item->$fieldname = explode(" ",$item->$fieldname);
+			if ($d->uf_type=="mcbox" || $d->uf_type=="mlist") {
+				$item->$fieldname = explode(" ",$item->$fieldname);
+			}
 		}
 				
 		//get users group
@@ -199,7 +201,7 @@ class MUEModelUser extends JModelAdmin
 				if (!$isNew) {
 					$qd=$db->getQuery(true);
 					$qd->delete();
-					$qd->from("#__mus_users");
+					$qd->from("#__mue_users");
 					$qd->where("usr_user = ".$user->id);
 					$qd->where('usr_field = '.$fl->uf_id);
 					$db->setQuery($qd);

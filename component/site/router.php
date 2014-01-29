@@ -10,6 +10,8 @@ function MUEBuildRoute(&$query)
 	static $userreg;
 	static $profile;
 	static $cerecords;
+	static $chgemail;
+	static $chggroup;
 	static $subs;
 	static $proedit;
 	static $login;
@@ -57,6 +59,12 @@ function MUEBuildRoute(&$query)
 			}
 			if (empty($cerecords) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'user') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'cerecords')) {
 				$cerecords = $items[$i]->id;
+			}
+			if (empty($chgemail) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'user') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'chgemail')) {
+				$chgemail = $items[$i]->id;
+			}
+			if (empty($chggroup) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'user') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'chggroup')) {
+				$chggroup = $items[$i]->id;
 			}
 			
 			// Check to see if we have found the lost info menu item.
@@ -145,6 +153,24 @@ function MUEBuildRoute(&$query)
 		
 					case 'cerecords':
 						if ($query['Itemid'] = $cerecords) {
+							unset ($query['view']);
+							unset ($query['layout']);
+						} else {
+							$query['Itemid'] = $default;
+						}
+						break;
+		
+					case 'chgemail':
+						if ($query['Itemid'] = $chgemail) {
+							unset ($query['view']);
+							unset ($query['layout']);
+						} else {
+							$query['Itemid'] = $default;
+						}
+						break;
+		
+					case 'chggroup':
+						if ($query['Itemid'] = $chggroup) {
 							unset ($query['view']);
 							unset ($query['layout']);
 						} else {

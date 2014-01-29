@@ -26,8 +26,14 @@ class MUEViewUser extends JViewLegacy
 			case "chggroup": 
 				$this->changeGroup();
 				break;
+			case "chgemail": 
+				$this->changeEmail();
+				break;
 			case "savegroup": 
 				$this->saveGroup();
+				break;
+			case "saveemail": 
+				$this->saveEmail();
 				break;
 			case "saveuser": 
 				$this->saveUser();
@@ -37,6 +43,29 @@ class MUEViewUser extends JViewLegacy
 				break;
 		}
 		parent::display($tpl);
+	}
+	
+	protected function saveEmail() {
+		JRequest::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$model =& $this->getModel();
+		$newemail = JRequest::getVar('newemail');
+		$user =& JFactory::getUser();
+		$userid = $user->id;
+		if ($userid != 0) {
+			if (!$model->saveEmail($newemail)) {
+				$app=Jfactory::getApplication();
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'),'Could not change Email Address');
+			} else {
+				$app=Jfactory::getApplication();
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'),"Email Address Changed");
+			}
+		}
+	
+	}
+	
+	protected function changeEmail() {
+		$model =& $this->getModel();
+		$print = JRequest::getVar('print');
 	}
 	
 	protected function saveGroup() {

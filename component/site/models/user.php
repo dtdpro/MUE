@@ -20,6 +20,80 @@ class MUEModelUser extends JModelLegacy
 		return $ugroups;
 	}
 	
+	function saveEmail($newemail) {
+		$db =& JFactory::getDBO();
+		$user=JFactory::getUser();
+		$cfg = MUEHelper::getConfig();
+		$date = new JDate('now');
+		$oldemail = $user->email;
+		
+		//Update Joomla User Info
+		$udata['email']=$newemail;
+		$udata['block']=$user->block;
+		if (!$user->bind($udata)) {
+			$this->setError($user->getError());
+			return false;
+		};
+		if (!$user->save(true)) {
+			$this->setError($user->getError());
+			return false;
+		}
+		
+		
+		$usernotes = $date->toSql(true)." User Email Changed from ".$oldemail." to ".$user->email."\r\n";
+		$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'" WHERE userg_user = '.$user->id;
+		$db->setQuery($qud);
+		if (!$db->query()) {
+			$this->setError($db->getErrorMsg());
+			return false;
+		}
+
+		//MC Update
+		$mclists = $this->getUserFields(1,false,false,false,"mailchimp");
+		foreach ($mclists as $mclist) {
+			include_once 'components/com_mue/lib/mailchimp.php';
+			if (strstr($mclist->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$mclist->uf_default,2);	}
+			else { $mc_key = $cfg->mckey; $mc_list = $mclist->uf_default; }
+			$mcf=$mclist->uf_sname;
+			$mc = new MailChimpHelper($mc_key,$mc_list);
+			$mcdata = array();
+			$mcdata['new-email']=$user->email;
+			$mcd=print_r($mcdata,true);
+			if ($mc->subStatus($oldemail)) {
+				$mcresult = $mc->updateUser(array("email"=>$oldemail),$mcdata,false,"html");
+				if ($mcresult) { $usernotes .= $date->toSql(true)." Email Address Updated on MailChimp List #".$mclist->uf_default.' '.$mcd."\r\n"; }
+				else { $usernotes .= $date->toSql(true)." Could not update Email Address on MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
+			}
+		}
+	
+		//CM Update
+		$cmlists = $this->getUserFields(1,false,false,false,"cmlist");
+		foreach ($cmlists as $cmlist) {
+			include_once 'components/com_mue/lib/campaignmonitor.php';
+			$cmuf=$cmlist->uf_sname;
+			$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
+			$cmdata = array('Name'=>$user->name, 'EmailAddress'=>$user->email, 'Resubscribe'=>'true');
+			$cmd=print_r($cmdata,true);
+			if ($cm->getSubscriberDetails($cmlist->uf_default,$oldemail)) {
+				$cmresult = $cm->updateSubscriber($cmlist->uf_default,$oldemail,$cmdata);
+				if ($cmresult) { $usernotes .= $date->toSql(true)." EMail Address Updated on Campaign Monitor List #".$cmlist->uf_default.' '.$cmd."\r\n"; }
+				else { $usernotes .= $date->toSql(true)." Could not update EMail Address on Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
+			}
+			
+		}
+	
+		//Update usernotes
+		$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
+		$db->setQuery($qud);
+		if (!$db->query()) {
+			$this->setError($db->getErrorMsg());
+			return false;
+		}
+	
+	
+		return true;
+	}
+	
 	function saveGroup($groupid) {
 		$db =& JFactory::getDBO();
 		$user=JFactory::getUser();
@@ -82,8 +156,8 @@ class MUEModelUser extends JModelLegacy
 				$cmd=print_r($cmdata,true);
 				if ($cm->getSubscriberDetails($cmlist->uf_default,$user->email)) {
 					$cmresult = $cm->updateSubscriber($cmlist->uf_default,$user->email,$cmdata);
-					if ($cmresult) { $usernotes .= $date->toSql(true)." EMail Subscription Updated on Campaign Monitor List #".$cmlist->uf_default.' '.$cmd."\r\n"; }
-					else { $usernotes .= $date->toSql(true)." Could not update EMail subscription on Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
+					if ($cmresult) { $usernotes .= $date->toSql(true)." User Group Updated on Campaign Monitor List #".$cmlist->uf_default.' '.$cmd."\r\n"; }
+					else { $usernotes .= $date->toSql(true)." Could not update User Group on Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
 				} 
 			}
 		}
