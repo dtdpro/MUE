@@ -108,7 +108,7 @@ JHtml::_('behavior.formvalidation');
 		<fieldset class="adminform">
 			<legend>Other User Info</legend>
 			<?php 
-				echo '<label for="jform_lastupdate">Last Updated:</label> '.JHTML::_('calendar',$this->item->lastupdate,'jform[lastupdate]','jform_lastupdate','%Y-%m-%d','').'<br /><br />';
+				echo '<label for="jform_lastupdate">Last Updated:</label> '.$this->item->lastupdate.'<br /><br />';//JHTML::_('calendar',$this->item->lastupdate,'jform[lastupdate]','jform_lastupdate','%Y-%m-%d','').'<br /><br />';
 				echo '<label for="jform_usersiteurl">Join URL:</label> <input name="jform[usersiteurl]" id="jform_usersiteurl" value="'.$this->item->usersiteurl.'" type="text" class="inputbox" size="30"><br /><br />';
 				echo '<label for="jform_usernotes">User Notes:</label> <br /><textarea name="jform[usernotes]" id="jform_usernotes" class="inputbox" style="width:100%;height:400px;font-size:10px;">'.$this->item->usernotes.'</textarea>';
 				

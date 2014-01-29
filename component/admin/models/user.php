@@ -317,7 +317,7 @@ class MUEModelUser extends JModelAdmin
 						else { $item->$cmuf=1; $usernotes .= $date->toSql(true)." Could not update EMail subscription by Admin on Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
 					}
 
-			}
+			} 
 			
 			//Update usernotes
 			$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
@@ -325,6 +325,18 @@ class MUEModelUser extends JModelAdmin
 			if (!$db->query()) {
 				$this->setError($db->getErrorMsg());
 				return false;
+			}
+		} else {
+			//Populate list fields as not on for new users
+			$lists = array_merge($this->getFields(false,"cmlist"),$this->getFields(false,"mailchimp"));
+			foreach ($lists as $l) {
+				$qf = 'INSERT INTO #__mue_users (usr_user,usr_field,usr_data) VALUES ("'.$user->id.'","'.$l->uf_id.'","0")';
+				
+				$db->setQuery($qf);
+				if (!$db->query()) {
+					$this->setError($db->getErrorMsg());
+					return false;
+				}
 			}
 		}
 		
