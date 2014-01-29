@@ -149,7 +149,7 @@ JHtml::_('behavior.formvalidation');
 	} else {
 		echo JHtml::_('tabs.panel', "Operations", 'mclist-ops');
 	}
-	echo '<p><button type="button" onclick="Joomla.submitform(\'mclist.syncList\', this.form);">Sync MC List</button> This Process is very DB Intensive, use with care. You should run Sync MUE Field First.</p>';
+	echo '<p><button type="button" onclick="Joomla.submitform(\'mclist.syncList\', this.form);">Sync MC List</button> This Process is very DB and API Intensive, use with care.</p>';
 	echo '<div class="clr"></div>';
 	
 	//Webhooks
