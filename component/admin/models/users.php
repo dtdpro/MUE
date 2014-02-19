@@ -12,23 +12,43 @@ class MUEModelUsers extends JModelList
 	
 	public function __construct($config = array())
 	{
-		if (empty($config['filter_fields']))
-		{
-			$config['filter_fields'] = array(
-			'id', 'a.id',
-			'name', 'u.name',
-			'username', 'u.username',
-			'email', 'u.email',
-			'block', 'u.block',
-			'ug_name', 'g.ug_name',
-			'userg_siteurl', 'ug.userg_siteurl',
-			'registerDate', 'u.registerDate',
-			'lastvisitDate', 'u.lastvisitDate',
-			'userg_update', 'ug.userg_update',
-			'userg_subsince', 'ug.userg_subsince',
-			'userg_subexp','ug.userg_subexp'
+		$cfg = MUEHelper::getConfig();
+		
+		if ($cfg->subscribe) {
+			if (empty($config['filter_fields'])) {
+					$config['filter_fields'] = array(
+							'id', 'a.id',
+							'name', 'u.name',
+							'username', 'u.username',
+							'email', 'u.email',
+							'block', 'u.block',
+							'ug_name', 'g.ug_name',
+							'userg_siteurl', 'ug.userg_siteurl',
+							'registerDate', 'u.registerDate',
+							'lastvisitDate', 'u.lastvisitDate',
+							'userg_update', 'ug.userg_update',
+							'userg_subsince', 'ug.userg_subsince',
+							'userg_subexp','ug.userg_subexp'
 			);
+			}
+		} else {
+			if (empty($config['filter_fields'])) {
+					$config['filter_fields'] = array(
+							'id', 'a.id',
+							'name', 'u.name',
+							'username', 'u.username',
+							'email', 'u.email',
+							'block', 'u.block',
+							'ug_name', 'g.ug_name',
+							'userg_siteurl', 'ug.userg_siteurl',
+							'registerDate', 'u.registerDate',
+							'lastvisitDate', 'u.lastvisitDate',
+							'userg_update', 'ug.userg_update'
+			);
+			}
+			
 		}
+		
 		parent::__construct($config);
 	}
 	
@@ -36,7 +56,7 @@ class MUEModelUsers extends JModelList
 	{
 		// Initialise variables.
 		$app = JFactory::getApplication('administrator');
-
+		$cfg = MUEHelper::getConfig();
 		
 		// Load the filter state.
 		$groupId = $this->getUserStateFromRequest($this->context.'.filter.ugroup', 'filter_ugroup');
@@ -48,11 +68,13 @@ class MUEModelUsers extends JModelList
 		$state = $this->getUserStateFromRequest($this->context.'.filter.state', 'filter_state');
 		$this->setState('filter.state', $state);
 
-		$sssd = $this->getUserStateFromRequest($this->context.'.filter.ssstart', 'filter_ssstart', "0000-00-00");
-		$this->setState('filter.ssstart', $sssd);
-		
-		$ssed = $this->getUserStateFromRequest($this->context.'.filter.ssend', 'filter_ssend', "0000-00-00");
-		$this->setState('filter.ssend', $ssed);
+		if ($cfg->subscribe) {
+			$sssd = $this->getUserStateFromRequest($this->context.'.filter.ssstart', 'filter_ssstart', "0000-00-00");
+			$this->setState('filter.ssstart', $sssd);
+			
+			$ssed = $this->getUserStateFromRequest($this->context.'.filter.ssend', 'filter_ssend', "0000-00-00");
+			$this->setState('filter.ssend', $ssed);
+		}
 		
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_mue');

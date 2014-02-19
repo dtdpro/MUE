@@ -23,7 +23,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 			}
 			?>
 			<button type="submit"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
-			<button type="button" onclick="document.id('filter_search').value='';<?php if ($cfg->subscribe) { echo 'document.id(\'filter_ssstart\').value=\'0000-00-00\';document.id(\'filter_ssend\').value=\'0000-00-00\';'; } ?>this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
+			<button type="button" onclick="document.id('filter_search').value=''; <?php if ($cfg->subscribe) { echo 'document.id(\'filter_ssstart\').value=\'0000-00-00\';document.id(\'filter_ssend\').value=\'0000-00-00\';'; } ?>this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
 		</div>
 		<div class="filter-select fltrt pull-right">
 			<select name="filter_ugroup" class="inputbox" onchange="this.form.submit()">
