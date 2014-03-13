@@ -20,8 +20,8 @@ $cecfg = MUEHelper::getConfig();
 		});
 		infoWindow = new google.maps.InfoWindow();
 		jQuery("#userdirform").validate({
-			errorClass:"uf_error",
-			validClass:"uf_valid",
+			errorClass:"uf_error uk-form-danger",
+			validClass:"uf_valid uk-form-success",
 			errorPlacement: function(error, element) {
 		    	error.appendTo( element.parent("div").next("div") );
 		    },
@@ -130,7 +130,7 @@ $cecfg = MUEHelper::getConfig();
 
 
 <?php 
-echo '<h2 class="componentheading">'.$cecfg->userdir_title.'</h2>';
+echo '<h2 class="componentheading uk-article-title">'.$cecfg->userdir_title.'</h2>';
 echo '<div id="mue-user-dir-map">';
 echo '<div id="nearbylist" style="width: 30%; height: 400px;float:left;overflow:scroll;"><div class="nearbymember">Enter in address below to search</div></div>';
 echo '<div id="map" style="width: 68%; height: 400px;float:right;"></div>';

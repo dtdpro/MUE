@@ -3,11 +3,11 @@
 defined('_JEXEC') or die('Restricted access');
 
 ?>
-<h2 class="componentheading">User Profile Edit</h2>
+<h2 class="componentheading uk-article-title">User Profile Edit</h2>
 <script type="text/javascript">
 	jQuery(document).ready(function() {
 		jQuery("#regform").validate({
-			errorClass:"uf_error",
+			errorClass:"uf_error uk-form-danger",
 			errorPlacement: function(error, element) {
 		    	error.appendTo( element.parent("div").parent("div").next("div") );
 		    }

@@ -7,8 +7,8 @@ if ($this->retry) echo '<div id="system" class="uk-article">';
 <script type="text/javascript">
 	jQuery(document).ready(function() {
 		jQuery("#regform").validate({
-			errorClass:"uf_error",
-			validClass:"uf_valid",
+			errorClass:"uf_error uk-form-danger",
+			validClass:"uf_valid uk-form-success",
 			errorPlacement: function(error, element) {
 		    	error.appendTo( element.parent("div").parent("div").next("div") );
 		    }

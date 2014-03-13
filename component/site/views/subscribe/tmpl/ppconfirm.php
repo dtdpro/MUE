@@ -5,7 +5,7 @@ $config = MUEHelper::getConfig();
 
 $session=JFactory::getSession();
 $user =& JFactory::getUser();
-echo '<h2 class="componentheading">Complete Subscription</h2>';
+echo '<h2 class="componentheading uk-article-title">Complete Subscription</h2>';
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_mue&view=subscribe&layout=ppverify&purchaseid='.$this->usid.'&plan='.$this->pinfo->sub_id); ?>" method="POST">
 			<p style="padding-left:10px;">Your payment has been verified, please press <b>Complete Subscription</b> to finalize your payment and charge your account for the following plan:<br /><br />

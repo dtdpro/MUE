@@ -3,7 +3,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 ?>
-<h2 class="componentheading">User Profile Edit</h2>
+<h2 class="componentheading uk-article-title">User Profile Edit</h2>
 
 <?php 
 echo '<div id="mue-user-edit">';

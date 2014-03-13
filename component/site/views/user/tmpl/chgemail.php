@@ -18,7 +18,7 @@ $user=JFactory::getUser();
 
 
 </script>
-<h2 class="componentheading">Change Email Address</h2>
+<h2 class="componentheading uk-article-title">Change Email Address</h2>
 
 <?php 
 echo '<div id="mue-user-edit">';

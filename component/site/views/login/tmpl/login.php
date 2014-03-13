@@ -3,19 +3,19 @@
 
 defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
-echo '<h2 class="componentheading">User Login</h2>';
+echo '<h2 class="componentheading uk-article-title">User Login</h2>';
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function() {
 		jQuery("#loginform").validate({
-			errorClass:"uf_error",
+			errorClass:"uf_error uk-form-danger",
 			errorPlacement: function(error, element) {
 		    	error.appendTo( element.parent("div").next("div") );
 		    }
 	    });	
 	    <?php if ($cecfg->show_loginreg) { ?>
 	    jQuery("#regform").validate({
-			errorClass:"uf_error",
+			errorClass:"uf_error uk-form-danger",
 			errorPlacement: function(error, element) {
 		    	error.appendTo( element.parent("div").next("div") );
 		    }

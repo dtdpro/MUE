@@ -17,7 +17,7 @@ $cecfg = MUEHelper::getConfig();
 	    );
 	}
 </script>
-<h2 class="componentheading">User Registration</h2>
+<h2 class="componentheading uk-article-title">User Registration</h2>
 <?php 
 echo $cecfg->REG_PAGE_CONTENT;
 echo '<div id="mue-user-reg">';

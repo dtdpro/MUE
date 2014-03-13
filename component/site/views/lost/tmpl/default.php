@@ -3,13 +3,13 @@
 
 defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
-echo '<h2 class="componentheading">Lost username/password</h2>';
+echo '<h2 class="componentheading uk-article-title">Lost username/password</h2>';
 
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function() {
 		jQuery("#loginform").validate({
-			errorClass:"uf_error",
+			errorClass:"uf_error uk-form-danger",
 			errorPlacement: function(error, element) {
 		    	error.appendTo( element.parent("div").next("div") );
 		    }

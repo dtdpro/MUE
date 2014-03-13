@@ -28,7 +28,7 @@ $first=true;
 	}
 </script>
 <?php 
-echo '<h2 class="componentheading">Subscription</h2>';
+echo '<h2 class="componentheading uk-article-title">Subscription</h2>';
 
 if (!$user->id) {
 	echo '<p align="center"><span style="color:#800000;font-weight:bolder;">'.$config->LOGIN_MSG.'</span></p>';

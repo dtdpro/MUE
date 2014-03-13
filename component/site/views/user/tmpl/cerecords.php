@@ -3,7 +3,7 @@
 defined('_JEXEC') or die('Restricted access');
 $config = MUEHelper::getConfig();
 	?>
-<h2 class="componentheading"><?php echo "User CE Records"; ?></h2>
+<h2 class="componentheading uk-article-title"><?php echo "User CE Records"; ?></h2>
 <?php 
 
 $sub=MUEHelper::getActiveSub();
