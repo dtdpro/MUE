@@ -68,14 +68,6 @@ class MUEModelUsers extends JModelList
 		$state = $this->getUserStateFromRequest($this->context.'.filter.state', 'filter_state');
 		$this->setState('filter.state', $state);
 
-		if ($cfg->subscribe) {
-			$sssd = $this->getUserStateFromRequest($this->context.'.filter.ssstart', 'filter_ssstart', "0000-00-00");
-			$this->setState('filter.ssstart', $sssd);
-			
-			$ssed = $this->getUserStateFromRequest($this->context.'.filter.ssend', 'filter_ssend', "0000-00-00");
-			$this->setState('filter.ssend', $ssed);
-		}
-		
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_mue');
 		$this->setState('params', $params);
@@ -162,13 +154,6 @@ class MUEModelUsers extends JModelList
 		if (!empty($search)) {
 			$search = $db->Quote('%'.$db->escape($search, true).'%');
 			$query->where('(u.username LIKE '.$search.' OR u.name LIKE '.$search.' OR u.email LIKE '.$search.')');
-		}
-		
-		// Set Sub start range
-		if ($cfg->subscribe) {
-			$startdate = $this->getState('filter.ssstart');
-			$enddate = $this->getState('filter.ssend');
-			if ($startdate != "0000-00-00" || !$startdate) $query->where('date(ug.userg_subsince) BETWEEN "'.$startdate.'" AND "'.$enddate.'"');
 		}
 		
 		$orderCol	= $this->state->get('list.ordering');
