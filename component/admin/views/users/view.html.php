@@ -47,7 +47,7 @@ class MUEViewUsers extends JViewLegacy
 		JToolBarHelper::custom('users.unblock', 'unblock.png', 'unblock_f2.png', 'COM_MUE_TOOLBAR_UNBLOCK', true);
 		JToolBarHelper::divider();
 		$tbar =& JToolBar::getInstance('toolbar');
-		$tbar->appendButton('Link','export','Export CSV','index.php?option=com_mue&view=users&format=csv" target="_blank');
+		$tbar->appendButton('Link','export','Export CSV','index.php?option=com_mue&view=users&format=csv');
 		if ($cfg->subscribe) JToolBarHelper::custom('users.syncsubs', 'refresh.png', 'refresh_f2.png', 'COM_MUE_TOOLBAR_SYNCSUB', false);
 		JToolBarHelper::divider();
 		JToolBarHelper::preferences('com_mue');
