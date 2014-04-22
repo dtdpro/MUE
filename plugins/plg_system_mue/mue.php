@@ -69,7 +69,7 @@ class plgSystemMUE extends JPlugin
 
 	public function onGetIcons($context) {
 		if ('mod_quickicon' == $context && $this->params->get('quickicon', true)) {
-			return array(array('link' => JRoute::_('index.php?option=com_mue'), 'image' => '../../../../media/com_mue/images/mue-48x48.png', 'text' => "MUE User Extension", 'access' => array('core.manage', 'com_mue')	));
+			return array(array('link' => JRoute::_('index.php?option=com_mue'), 'text' => "MUE User Extension", 'access' => array('core.manage', 'com_mue')	));
 		}
 		return array();
 	}
