@@ -85,7 +85,7 @@ class MUEModelMclist extends JModelLegacy
 		$query = $db->getQuery(true);
 		$query->select('u.*');
 		$query->from('#__users as u');
-		$query->select('ug.userg_update as lastUpdate,ug.userg_notes,ug.userg_siteurl');
+		$query->select('ug.userg_update as lastUpdate,ug.userg_notes,ug.userg_siteurl,ug.userg_subsince,ug.userg_subexp');
 		$query->join('LEFT', '#__mue_usergroup AS ug ON u.id = ug.userg_user');
 		$query->select('g.ug_name');
 		$query->join('LEFT', '#__mue_ugroups AS g ON ug.userg_group = g.ug_id');
@@ -189,6 +189,8 @@ class MUEModelMclist extends JModelLegacy
 			if ($list->params->mcrgroup && $cfg->subscribe) {
 				if (!$u->substatus) $mcdata[$list->params->mcrgroup]=$list->params->mcreggroup;
 				else $mcdata[$list->params->mcrgroup]=$list->params->mcsubgroup;
+				if ($list->params->mcsubsince) $mcdata[$list->params->mcsubsince] = $u->userg_subsince;
+				if ($list->params->mcsubexp) $mcdata[$list->params->mcsubexp] = $u->userg_subexp;
 			}
 			if ($list->params->mcigroup) {
 				$mcdata['groupings']=array(array("name"=>$list->params->mcigroup,"groups"=>$list->params->mcigroups));
@@ -301,6 +303,7 @@ class MUEModelMclist extends JModelLegacy
 		else $list->list_igroups = false;
 		$list->list_mvars = $mc->getListMergeVars($mc_list);
 		$list->list_msvars = array();
+		$list->list_datevars = array();
 		$list->list_webhooks = $mc->getListWebhooks($mc_list);
 		
 		$n=0;
@@ -310,6 +313,9 @@ class MUEModelMclist extends JModelLegacy
 				foreach ($v['choices'] as $o) {
 					$list->list_msvars[$n]->options[] = JHtml::_('select.option', $o,$o);
 				}
+			}
+			if ($v['field_type'] == 'date') {
+				$list->list_datevars[$n] = (object)$v;
 			}
 			$n++;
 		}

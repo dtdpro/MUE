@@ -187,6 +187,9 @@ class MUEModelUsersub extends JModelAdmin
 		$db =& JFactory::getDBO();
 		$date = new JDate('now');
 		$usernotes = '';
+		$ugq = "SELECT * FROM #__mue_usergroup WHERE userg_user = ".$user->id;
+		$db->setQuery($ugq);
+		$ug = $db->loadObject();
 		foreach ($this->getMCFields() as $f) {
 			if ($f->params->mcrgroup) {
 				include_once '../components/com_mue/lib/mailchimp.php';
@@ -198,6 +201,9 @@ class MUEModelUsersub extends JModelAdmin
 				
 				if (!$sub) $mcdata[$f->params->mcrgroup]=$f->params->mcreggroup;
 				else $mcdata[$f->params->mcrgroup]=$f->params->mcsubgroup;
+
+				if ($f->params->mcsubsince) $mcdata[$f->params->mcsubsince] = $ug->userg_subsince;
+				if ($f->params->mcsubexp) $mcdata[$f->params->mcsubexp] = $ug->userg_subexp;
 				
 				$mcd=print_r($mcdata,true);
 				if ($mc->subStatus($user->email)) {

@@ -234,6 +234,7 @@ class MUEModelUser extends JModelLegacy
 		$db		= $this->getDbo();
 		$ugroup = $data['userGroupID'];
 		$ginfo=MUEHelper::getGroupInfo($ugroup);
+		$uginfo = $this->getUserGroupInfo($user->id);
 		$date = new JDate('now');
 		$usernotes = $date->toSql(true)." User Profile Updated"."\r\n";
 		$cfg = MUEHelper::getConfig();
@@ -382,6 +383,8 @@ class MUEModelUser extends JModelLegacy
 					if ($mclist->params->mcrgroup) {
 						if (!$substatus) $mcdata[$mclist->params->mcrgroup]=$mclist->params->mcreggroup;
 						else $mcdata[$mclist->params->mcrgroup]=$mclist->params->mcsubgroup;
+						if ($mclist->params->mcsubsince) $mcdata[$mclist->params->mcsubsince] = $uginfo->userg_subsince;
+						if ($mclist->params->mcsubexp) $mcdata[$mclist->params->mcsubexp] = $uginfo->userg_subexp;
 					}
 					if ($mclist->params->mcigroup) {
 						$mcdata['groupings']=array(array("name"=>$mclist->params->mcigroup,"groups"=>$mclist->params->mcigroups));
@@ -397,6 +400,7 @@ class MUEModelUser extends JModelLegacy
 						if ($mcresult) { $item->$mcf=1; $usernotes .= $date->toSql(true)." EMail Subscribed to MailChimp List #".$mclist->uf_default.' '.$mcd."\r\n"; }
 						else { $item->$mcf=0; $usernotes .= $date->toSql(true)." Could not subscribe EMail to MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
 					}
+					
 					
 				} else {
 					if (strstr($mclist->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$mclist->uf_default,2);	} 
@@ -553,6 +557,14 @@ class MUEModelUser extends JModelLegacy
 	
 		if ($contents) return $contents;
 		else return FALSE;
+	}
+	
+	public function getUserGroupInfo($user) {
+		$db		= $this->getDbo();
+		$query = 'SELECT * FROM #__mue_usergroup as ug ';
+		$query.= 'WHERE ug.userg_user="'.$user.'"';
+		$db->setQuery($query);
+		return $db->loadObject();
 	}
 
 	

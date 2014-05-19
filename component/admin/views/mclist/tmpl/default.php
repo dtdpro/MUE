@@ -77,6 +77,22 @@ JHtml::_('behavior.formvalidation');
 	echo '</select>';
 	echo '</li>';
 	
+	//Sub Since
+	echo '<li><label for="jform_mcsubsince" id="jform_mcsubsince-lbl">Subscription Since</label>';
+	echo '<select name="jform[mcsubsince]" id="jform_mcsubsince" class="inputbox">';
+	echo '<option value="">None</option>';
+	echo JHtml::_('select.options', $this->list->list_datevars, 'tag', 'name', $this->list->params->mcsubsince, true);
+	echo '</select>';
+	echo '</li>';
+	
+	//Sub Expires
+	echo '<li><label for="jform_mcsubexp" id="jform_mcsubexp-lbl">Subscription Expires</label>';
+	echo '<select name="jform[mcsubexp]" id="jform_mcsubexp" class="inputbox">';
+	echo '<option value="">None</option>';
+	echo JHtml::_('select.options', $this->list->list_datevars, 'tag', 'name', $this->list->params->mcsubexp, true);
+	echo '</select>';
+	echo '</li>';
+
 	echo '</ul>';
 	echo '<div class="clr"></div>';
 	if ($this->list->list_igroups) {
