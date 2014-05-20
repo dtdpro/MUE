@@ -19,10 +19,10 @@ class MailChimpHelper {
 		return true;
 	}
 	
-	function subscribeUser($email,$info=NULL,$send_welcome,$email_type="html",$list="") {
+	function subscribeUser($email,$info=NULL,$double_optin=false,$email_type="html",$list="") {
 		if (!$list) $list = $this->listid;
 		$mcl = new Mailchimp_Lists($this->mc);
-		$result = $mcl->subscribe($list,$email,$info,$email_type,false,true,false,false);
+		$result = $mcl->subscribe($list,$email,$info,$email_type,$double_optin,true,false,false);
 		if ($result['error']) { $this->error=$result['error']; return false; }
 		return true;
 		

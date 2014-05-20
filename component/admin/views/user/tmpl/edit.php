@@ -86,7 +86,6 @@ JHtml::_('behavior.formvalidation');
 						echo '>No</option>';
 						
 						echo '</select>';
-						
 					}
 				
 					echo '</li>';
@@ -94,6 +93,7 @@ JHtml::_('behavior.formvalidation');
 			</ul>
 		</fieldset>
 
+			<p>Note: If mailing lists are changed to yes, a list based confirmation WILL be sent to the user, change will not be reflected until user confirms</p>
 	</div>
 	<div class="width-50 fltlft span6">
 		<fieldset class="adminform">
