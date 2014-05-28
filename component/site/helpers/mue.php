@@ -160,6 +160,7 @@ class MUEHelper {
 			$qud = $db->getQuery(true);
 			$qud->update('#__mue_usergroup');
 			$qud->set('userg_subexp = "'.$sub->usrsub_end.'"');
+			$qud->set('userg_lastpaidvia = "'.$sub->usrsub_type.'"');
 			if ($member_since) $qud->set('userg_subsince = "'.$member_since.'"');
 			$qud->where('userg_user = '.$userid);
 			$db->setQuery($qud);

@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS `#__mue_usergroup` (
   `userg_siteurl` VARCHAR( 255 ) NOT NULL,
   `userg_subsince` DATE NOT NULL,
   `userg_subexp` DATE NOT NULL,
+  `userg_lastpaidvia` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`userg_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

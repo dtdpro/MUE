@@ -383,8 +383,15 @@ class MUEModelUser extends JModelLegacy
 					if ($mclist->params->mcrgroup) {
 						if (!$substatus) $mcdata[$mclist->params->mcrgroup]=$mclist->params->mcreggroup;
 						else $mcdata[$mclist->params->mcrgroup]=$mclist->params->mcsubgroup;
-						if ($mclist->params->mcsubsince) $mcdata[$mclist->params->mcsubsince] = $uginfo->userg_subsince;
-						if ($mclist->params->mcsubexp) $mcdata[$mclist->params->mcsubexp] = $uginfo->userg_subexp;
+						if ($mclist->params->mcsubsince) {
+							if ($uginfo->userg_subsince != "0000-00-00")	$mcdata[$mclist->params->mcsubsince] = $uginfo->userg_subsince;
+							else $mcdata[$mclist->params->mcsubsince] = "";
+						}
+						if ($mclist->params->mcsubexp) {
+							if ($uginfo->userg_subexp != '0000-00-00') $mcdata[$mclist->params->mcsubexp] = $uginfo->userg_subexp;
+							else $mcdata[$mclist->params->mcsubexp] = "";
+						}
+						if ($mclist->params->mcsubpaytype) $mcdata[$mclist->params->mcsubpaytype] = $uginfo->userg_lastpaidvia;
 					}
 					if ($mclist->params->mcigroup) {
 						$mcdata['groupings']=array(array("name"=>$mclist->params->mcigroup,"groups"=>$mclist->params->mcigroups));

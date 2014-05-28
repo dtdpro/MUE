@@ -1,0 +1,1 @@
+ALTER TABLE `#__mue_usergroup` ADD `userg_lastpaidvia` VARCHAR(50) NOT NULL ;

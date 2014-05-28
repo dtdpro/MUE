@@ -83,6 +83,7 @@ class MUEModelUsersub extends JModelAdmin
 			$qud->update('#__mue_usergroup');
 			$qud->set('userg_subexp = "'.$data['usrsub_end'].'"');
 			$qud->where('userg_user = '.$data['usrsub_user']);
+			$qud->set('userg_lastpaidvia = "'.$data['usrsub_type'].'"');
 			$db->setQuery($qud);
 			$db->query();
 			if (!$this->updateMCSub(JFactory::getUser($data['usrsub_user']),true)) return false;
@@ -202,8 +203,15 @@ class MUEModelUsersub extends JModelAdmin
 				if (!$sub) $mcdata[$f->params->mcrgroup]=$f->params->mcreggroup;
 				else $mcdata[$f->params->mcrgroup]=$f->params->mcsubgroup;
 
-				if ($f->params->mcsubsince) $mcdata[$f->params->mcsubsince] = $ug->userg_subsince;
-				if ($f->params->mcsubexp) $mcdata[$f->params->mcsubexp] = $ug->userg_subexp;
+				if ($f->params->mcsubsince) {
+					if ($ug->userg_subsince != "0000-00-00")	$mcdata[$f->params->mcsubsince] = $ug->userg_subsince;
+					else $mcdata[$f->params->mcsubsince] = "";
+				}
+				if ($f->params->mcsubexp) {
+					if ($ug->userg_subexp != '0000-00-00') $mcdata[$f->params->mcsubexp] = $ug->userg_subexp;
+					else $mcdata[$f->params->mcsubexp] = "";
+				}
+				if ($f->params->mcsubpaytype) $mcdata[$f->params->mcsubpaytype] = $ug->userg_lastpaidvia;
 				
 				$mcd=print_r($mcdata,true);
 				if ($mc->subStatus($user->email)) {

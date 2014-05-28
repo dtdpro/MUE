@@ -92,6 +92,14 @@ JHtml::_('behavior.formvalidation');
 	echo JHtml::_('select.options', $this->list->list_datevars, 'tag', 'name', $this->list->params->mcsubexp, true);
 	echo '</select>';
 	echo '</li>';
+	
+	//Sub Pay Type 
+	echo '<li><label for="jform_mcsubpaytype" id="jform_mcsubpaytype-lbl">Subscription Pay Type</label>';
+	echo '<select name="jform[mcsubpaytype]" id="jform_mcsubpaytype" class="inputbox">';
+	echo '<option value="">None</option>';
+	echo JHtml::_('select.options', $this->list->list_tvars, 'tag', 'name', $this->list->params->mcsubpaytype, true);
+	echo '</select>';
+	echo '</li>';
 
 	echo '</ul>';
 	echo '<div class="clr"></div>';

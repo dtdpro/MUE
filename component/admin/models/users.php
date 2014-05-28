@@ -211,7 +211,10 @@ class MUEModelUsers extends JModelList
 							
 			$qud = $db->getQuery(true);
 			$qud->update('#__mue_usergroup');
-			if ($i->sub) $qud->set('userg_subexp = "'.$subend.'"');
+			if ($i->sub) {
+				$qud->set('userg_subexp = "'.$subend.'"');
+				$qud->set('userg_lastpaidvia = "'.$i->sub->usrsub_type.'"');
+			}
 			else $qud->set('userg_subexp = "0000-00-00"');
 			if ($i->member_since) $qud->set('userg_subsince = "'.$i->member_since.'"');
 			else $qud->set('userg_subsince = "0000-00-00"');
