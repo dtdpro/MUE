@@ -8,6 +8,11 @@ $user =& JFactory::getUser();
 echo '<h2 class="componentheading uk-article-title">Complete Subscription</h2>';
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_mue&view=subscribe&layout=ppverify&purchaseid='.$this->usid.'&plan='.$this->pinfo->sub_id); ?>" method="POST">
+			<?php
+			if ($this->pinfo->sub_recurring) {
+				echo '<div class="uk-alert uk-alert-danger box-warning">This subscription reoccurs every '.$this->pinfo->sub_length." ".$this->pinfo->sub_period.'(s) for $'.$session->get('PAYMENTREQUEST_0_AMT').'</div>';
+			}
+			?>
 			<p style="padding-left:10px;">Your payment has been verified, please press <b>Complete Subscription</b> to finalize your payment and charge your account for the following plan:<br /><br />
 			<?php 
 			
