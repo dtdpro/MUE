@@ -190,7 +190,7 @@ class MUEModelCmlist extends JModelLegacy
 				$query->select('s.*,p.*,DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft');
 				$query->from('#__mue_usersubs as s');
 				$query->join('LEFT','#__mue_subs AS p ON s.usrsub_sub = p.sub_id');
-				$query->where('s.usrsub_status IN ("completed","verified","accepted")');
+				$query->where('s.usrsub_status IN ("completed","accepted")');
 				$query->where('s.usrsub_user="'.$i->id.'"');
 				$query->order('daysLeft DESC, s.usrsub_end DESC, s.usrsub_time DESC');
 				$db->setQuery($query,0,1);

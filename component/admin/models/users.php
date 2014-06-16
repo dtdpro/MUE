@@ -182,7 +182,7 @@ class MUEModelUsers extends JModelList
 			$query->clear();
 			$query->select('s.usrsub_start');
 			$query->from('#__mue_usersubs as s');
-			$query->where('s.usrsub_status IN ("completed","verified","accepted")');
+			$query->where('s.usrsub_status IN ("completed","accepted")');
 			$query->where('s.usrsub_user="'.$i->id.'"');
 			$query->order('s.usrsub_start ASC');
 			$db->setQuery($query,0,1);
@@ -199,7 +199,6 @@ class MUEModelUsers extends JModelList
 			if ($i->sub) {
 				switch ($i->sub->usrsub_status) {
 					case "completed": 
-					case "verified": 
 					case "accepted":
 						$subend = $i->sub->usrsub_end;
 						break;

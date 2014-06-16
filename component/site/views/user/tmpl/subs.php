@@ -45,7 +45,7 @@ if ($this->usersubs) {
 			switch ($sub->usrsub_status) {
 				case "notyetstarted": echo "Not Yet Started"; break;
 				case "canceled": echo "Canceled"; break;
-				case "accepted": echo "Accepted"; break;
+				case "verified": echo "Incomplete"; break;
 				case "pending": echo "Pending"; break;
 				case "started": echo "Started"; break;
 				case "denied": echo "Denied"; break;
@@ -58,7 +58,7 @@ if ($this->usersubs) {
 				case "expired": echo "Expired"; break;
 				case "voided": echo "Voided"; break;
 				case "completed": 
-				case "verified": echo ($sub->daysLeft > 0) ? $sub->daysLeft." Day(s) Left" : "Expired"; break;
+				case "accepted": echo ($sub->daysLeft > 0) ? $sub->daysLeft." Day(s) Left" : "Expired"; break;
 			}
 		} else {
 			switch ($sub->usrsub_rpstatus) {

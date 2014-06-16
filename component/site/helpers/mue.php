@@ -141,7 +141,7 @@ class MUEHelper {
 		$db =& JFactory::getDBO();
 		$query = 'SELECT s.*,p.*,DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft FROM #__mue_usersubs as s ';
 		$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
-		$query.= 'WHERE s.usrsub_status IN ("completed","accepted","verified") && s.usrsub_end >= DATE(NOW()) && s.usrsub_user="'.$userid.'" ';
+		$query.= 'WHERE s.usrsub_status IN ("completed","accepted") && s.usrsub_end >= DATE(NOW()) && s.usrsub_user="'.$userid.'" ';
 		$query.= 'ORDER BY daysLeft DESC, s.usrsub_end DESC, s.usrsub_time DESC LIMIT 1';
 		$db->setQuery($query); 
 		$sub = $db->loadObject();
