@@ -79,15 +79,15 @@ class MUEModelUser extends JModelAdmin
 				else { $mc_key = $cfg->mckey; $mc_list = $d->uf_default; }
 				$mc = new MailChimpHelper($mc_key,$mc_list);
 				$mcresult = $mc->subStatus($item->email);
-				if ($mcresult) $onlist=true;
-				else $onlist=false;
+				if ($mcresult) $onlist="1";
+				else $onlist="0";
 				$item->$fieldname=$onlist;
 			} else if ($d->uf_type == 'cmlist') {
 				include_once JPATH_ROOT.'/components/com_mue/lib/campaignmonitor.php';
 				$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
 				$cmresult = $cm->getSubscriberDetails($d->uf_default,$item->email);
-				if ($cmresult){ if ($cmresult->State=="Active")  { $onlist=true;} else { $onlist=false; } }
-				else $onlist=false;
+				if ($cmresult){ if ($cmresult->State=="Active")  { $onlist="0";} else { $onlist="0"; } }
+				else $onlist="0";
 				$item->$fieldname=$onlist;
 			} 
 		}

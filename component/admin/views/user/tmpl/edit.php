@@ -78,12 +78,12 @@ JHtml::_('behavior.formvalidation');
 					if ($f->uf_type=="yesno" || $f->uf_type=="cbox" || $f->uf_type=="mailchimp" || $f->uf_type=="cmlist") {
 						echo '<select id="jform_'.$sname.'" name="jform['.$sname.']" class="inputbox" size="1">';
 						$selected = ' selected="selected"';
-						echo '<option value="1"';
-						echo ($this->item->$sname == "1") ? $selected : '';
-						echo '>Yes</option>';
 						echo '<option value="0"';
 						echo ($this->item->$sname == "0") ? $selected : '';
 						echo '>No</option>';
+						echo '<option value="1"';
+						echo ($this->item->$sname == "1") ? $selected : '';
+						echo '>Yes</option>';
 						
 						echo '</select>';
 					}
