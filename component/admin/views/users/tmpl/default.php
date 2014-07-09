@@ -102,7 +102,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 					<?php echo $item->email; ?>
 				</td>
 				<td class="center small">
-					<?php echo $item->ug_name; ?>
+					<?php echo $this->usergroups[$item->userg_group]; ?>
 				</td>
 				<td class="center small">
 					<?php echo implode('<br />',$item->jgroups); ?>

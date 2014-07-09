@@ -127,10 +127,10 @@ class MUEModelUsers extends JModelList
 		$query->from('#__users as u');
 		
 		// Join over the users.
-		$query->select('ug.userg_update as lastUpdate,ug.userg_notes,ug.userg_siteurl,ug.userg_subsince,ug.userg_subexp');
+		$query->select('ug.userg_update as lastUpdate,ug.userg_notes,ug.userg_siteurl,ug.userg_subsince,ug.userg_subexp,ug.userg_group');
 		$query->join('LEFT', '#__mue_usergroup AS ug ON u.id = ug.userg_user');
-		$query->select('g.ug_name');
-		$query->join('LEFT', '#__mue_ugroups AS g ON ug.userg_group = g.ug_id');
+		//$query->select('g.ug_name');
+		//$query->join('LEFT', '#__mue_ugroups AS g ON ug.userg_group = g.ug_id');
 		
 		// Filter by userids.
 		if (count($ulist)) {

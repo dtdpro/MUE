@@ -25,6 +25,10 @@ class MUEViewUsers extends JViewLegacy
 		$this->items = $items;
 		$this->pagination = $pagination;
 		$this->ugroups = $ugroups;
+		$this->usergroups = array();
+		foreach ($this->ugroups as $u) {
+			$this->usergroups[$u->value] = $u->text;
+		}
 		// Set the toolbar
 		$this->addToolBar();
 

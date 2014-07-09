@@ -23,6 +23,11 @@ class MUEViewUsers extends JViewLegacy
 		$fdata=$model->getFields();
 		$adata=$model->getAnswers($fdata);
 		$udata=$model->getUserData($fdata);
+		$ugroups=$model->getUGroups();
+		$this->usergroups = array();
+		foreach ($ugroups as $u) {
+			$this->usergroups[$u->value] = $u->text;
+		}
 		
 		// Assign data to the view
 		$this->items = $items;

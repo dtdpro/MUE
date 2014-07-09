@@ -1,5 +1,5 @@
 <?php
-$path = JPATH_SITE.'/cache/';
+//$path = JPATH_SITE.'/cache/';
 $cfg=MUEHelper::getConfig();
 $filename = 'MUE_Users_Report' . '-' . date("Y-m-d").'.csv';
 $contents = "";
@@ -16,7 +16,7 @@ foreach ($this->items as $i) {
 	$contents .= '"'.$i->username.'",'; 
 	$contents .= '"'.preg_replace( "/\r|\n/", "", $i->name).'",';
 	$contents .= '"'.$i->email.'",'; 
-	$contents .= '"'.$i->ug_name.'",'; 
+	$contents .= '"'.$this->usergroups[$i->userg_group].'",'; 
 	$contents .= '"'.$i->userg_siteurl.'",'; 
 	$contents .= '"'.$i->lastvisitDate.'",'; 
 	$contents .= '"'.$i->lastUpdate.'",'; 
@@ -76,8 +76,19 @@ foreach ($this->items as $i) {
 	}
 	$contents .= "\n";
 }
-JFile::write($path.$filename,$contents);
 
- $app = JFactory::getApplication();
- $app->redirect('../cache/'.$filename);
+JResponse::clearHeaders();
+JResponse::setHeader("Pragma","public");
+JResponse::setHeader('Cache-Control', 'no-cache, must-revalidate', true);
+JResponse::setHeader('Expires', 'Sat, 26 Jul 1997 05:00:00 GMT', true);
+JResponse::setHeader('Content-Type', 'text/csv', true);
+JResponse::setHeader('Content-Description', 'File Transfer', true);
+JResponse::setHeader('Content-Disposition', 'attachment; filename="'.$filename.'"', true);
+JResponse::setHeader('Content-Transfer-Encoding', 'binary', true);
+JResponse::sendHeaders();
+echo $contents;
+exit();
+//JFile::write($path.$filename,$contents);
+//$app = JFactory::getApplication();
+//$app->redirect('../cache/'.$filename);
 
