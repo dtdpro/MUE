@@ -1,6 +1,8 @@
-<div id="system" class="uk-article">
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
+if ($this->params->get('divwrapper',1)) {
+	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
+}
 $cecfg = MUEHelper::getConfig();
 
 ?>
@@ -50,8 +52,5 @@ echo '<div style="clear:both;"></div>';
 echo '<div id="mue-user-regform"></div>';
 echo '</div>';
 //echo '<div id="mue-userreg-form"></div>';
+if ($this->params->get('divwrapper',1)) { echo '</div>'; }
 ?>
-</div>
-
-
-

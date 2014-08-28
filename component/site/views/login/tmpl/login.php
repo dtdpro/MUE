@@ -1,7 +1,8 @@
-<div id="system" class="uk-article">
 <?php
-
 defined('_JEXEC') or die;
+if ($this->params->get('divwrapper',1)) {
+	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
+}
 JHtml::_('behavior.keepalive');
 echo '<h2 class="componentheading uk-article-title">User Login</h2>';
 ?>
@@ -92,9 +93,5 @@ echo '<div style="clear:both;"></div>';
 echo '</div>';
 
 echo '</div>';
-
-
-
-
+if ($this->params->get('divwrapper',1)) { echo '</div>'; }
 ?>
-</div>

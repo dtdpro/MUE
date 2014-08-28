@@ -11,7 +11,7 @@ class MUEViewUserreg extends JViewLegacy
 	{
 		$layout = $this->getLayout();
 		$this->return = base64_decode(JRequest::getVar('return', '', 'POST', 'BASE64'));
-		
+		$this->params	= JFactory::getApplication()->getParams('com_mue');
 		switch($layout) {
 			case "default": 
 				$this->pickGroup();

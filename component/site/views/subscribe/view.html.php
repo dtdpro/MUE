@@ -22,11 +22,13 @@ class MUEViewSubscribe extends JViewLegacy
 	var $pinfo = null;
 	var $pid = null;
 	var $plans = null;
+	var $params;
 	
 	function display($tpl = null)
 	{
 		$layout = $this->getLayout();
 		$app=Jfactory::getApplication();
+		$this->params	= $app->getParams('com_mue');
 		$model =& $this->getModel();
 		$planid = JRequest::getVar( 'plan' );
 		$user =& JFactory::getUser();

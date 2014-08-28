@@ -1,6 +1,8 @@
-<div id="system" class="uk-article">
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
+if ($this->params->get('divwrapper',1)) {
+	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
+}
 $config = MUEHelper::getConfig();
 
 $session=JFactory::getSession();
@@ -27,4 +29,6 @@ echo '<h2 class="componentheading uk-article-title">Complete Subscription</h2>';
 			<input type="submit" value="<?php  echo $btntext; ?>" class="button uk-button"  /><br /><br /></p>
 		</form>
 
-</div>
+<?php 
+if ($this->params->get('divwrapper',1)) { echo '</div>'; }
+?>

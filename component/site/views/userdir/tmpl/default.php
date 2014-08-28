@@ -1,7 +1,9 @@
-<div id="system" class="uk-article">
-<?php // no direct access
+<<?php // no direct access
 // Based upon: https://developers.google.com/maps/articles/phpsqlsearch_v3
 defined('_JEXEC') or die('Restricted access');
+if ($this->params->get('divwrapper',1)) {
+	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
+}
 $cecfg = MUEHelper::getConfig();
 
 ?>
@@ -245,8 +247,5 @@ echo '</div>';
 echo '</form>';
 echo '<div style="clear:both;"></div>';
 echo '</div>';
+if ($this->params->get('divwrapper',1)) { echo '</div>'; }
 ?>
-</div>
-
-
-

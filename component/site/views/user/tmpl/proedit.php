@@ -1,7 +1,8 @@
-<div id="system" class="uk-article">
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
-
+if ($this->params->get('divwrapper',1)) {
+	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
+}
 ?>
 <h2 class="componentheading uk-article-title">User Profile Edit</h2>
 <script type="text/javascript">
@@ -255,6 +256,5 @@ echo JHtml::_('form.token');
 echo '</form>';
 echo '<div style="clear:both;"></div>';
 echo '</div>';
-
+if ($this->params->get('divwrapper',1)) { echo '</div>'; }
 ?>
-</div>

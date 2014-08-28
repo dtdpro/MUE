@@ -9,6 +9,7 @@ class MUEViewUser extends JViewLegacy
 	{
 		$cfg = MUEHelper::getConfig();
 		$layout = $this->getLayout();
+		$this->params	= JFactory::getApplication()->getParams('com_mue');
 		
 		switch($layout) {
 			case "cerecords": 

@@ -1,6 +1,8 @@
-<div id="system" class="uk-article">
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
+if ($this->params->get('divwrapper',1)) {
+	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
+}
 $config = MUEHelper::getConfig();
 	?>
 <h2 class="componentheading uk-article-title"><?php echo "User CE Records"; ?></h2>
@@ -39,5 +41,6 @@ if ($this->userrecs) {
 	echo '<tfoot><tr><td colspan="5"><strong>Total Credits: '.number_format($total_credits,2).'</strong></td></tr></tfoot>';
 	echo '</table>';
 } else echo '<p>At this time, you have not completed any CE programs.</p>';
+
+if ($this->params->get('divwrapper',1)) { echo '</div>'; }
 ?>
-	</div>

@@ -1,6 +1,8 @@
-<div id="system" class="uk-article">
 <?php 
 $config = MUEHelper::getConfig();
+if ($this->params->get('divwrapper',1)) {
+	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
+}
 $user=JFactory::getUser();
 echo '<h2 class="componentheading uk-article-title">Subscription by Check</h2>';
 echo '<p>';
@@ -18,11 +20,6 @@ echo '</p>';
 
 echo $config->paybycheck_content;
 
-
-
-
-
-
+if ($this->params->get('divwrapper',1)) { echo '</div>'; }
 
 ?>
-</div>

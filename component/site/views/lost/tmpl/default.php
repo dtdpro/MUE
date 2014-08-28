@@ -1,7 +1,8 @@
-<div id="system" class="uk-article">
 <?php
-
 defined('_JEXEC') or die;
+if ($this->params->get('divwrapper',1)) {
+	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
+}
 JHtml::_('behavior.keepalive');
 echo '<h2 class="componentheading uk-article-title">Lost username/password</h2>';
 
@@ -60,6 +61,5 @@ echo JHtml::_('form.token');
 echo '</form>';
 echo '<div style="clear:both;"></div>';
 echo '</div>';
-
+if ($this->params->get('divwrapper',1)) { echo '</div>'; }
 ?>
-</div>

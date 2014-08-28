@@ -11,6 +11,7 @@ class MUEViewUserdir extends JViewLegacy
 		$doc->addScript('http://maps.googleapis.com/maps/api/js?sensor=false');
 		$config=MUEHelper::getConfig();
 		$numsubs=count(MUEHelper::getUserSubs());
+		$this->params	= JFactory::getApplication()->getParams('com_mue');
 		$canview=true;
 		if ($config->subscribe && $config->usrdir_sub) {
 			if ($numsubs) {

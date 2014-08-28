@@ -1,7 +1,9 @@
-<div id="system" class="uk-article">
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
-	?>
+if ($this->params->get('divwrapper',1)) {
+	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
+}
+?>
 <h2 class="componentheading uk-article-title">User Profile</h2>
 <?php 
 $cfg=MUEHelper::getConfig();
@@ -61,5 +63,5 @@ foreach ($this->userfields as $f) {
 echo '<div style="clear:both;"></div>';
 echo '</div>';
 echo $cfg->profile_bottom_content;
+if ($this->params->get('divwrapper',1)) { echo '</div>'; }
 ?>
-</div>
