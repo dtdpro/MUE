@@ -205,7 +205,7 @@ class MUEModelMclist extends JModelLegacy
 			$mcitem['merge_vars']=$mcdata;
 			$mcitem['email_type']='html';
 			$mcbatch[] = $mcitem;
-			if (count($mcbatch) == 3000) {
+			if (count($mcbatch) == 1000) {
 				$result = $mc->listBatchSubscribe($mcbatch,$mc_list);
 				$resinfo['add_count'] = $resinfo['add_count'] + $result->add_count;
 				$resinfo['update_count'] = $resinfo['update_count'] + $result->update_count;
@@ -215,13 +215,14 @@ class MUEModelMclist extends JModelLegacy
 			}
 		}
 		
-		
-		$result = $mc->listBatchSubscribe($mcbatch,$mc_list);
-		$resinfo['add_count'] = $resinfo['add_count'] + $result->add_count;
-		$resinfo['update_count'] = $resinfo['update_count'] + $result->update_count;
-		$resinfo['error_count'] = $resinfo['error_count'] + $result->error_count;
-		$resinfo['errors'] = array_merge($resinfo['errors'],$result->errors);
-		$resinfo['total'] = count($users);
+		if (count($mcbatch)) {
+			$result = $mc->listBatchSubscribe($mcbatch,$mc_list);
+			$resinfo['add_count'] = $resinfo['add_count'] + $result->add_count;
+			$resinfo['update_count'] = $resinfo['update_count'] + $result->update_count;
+			$resinfo['error_count'] = $resinfo['error_count'] + $result->error_count;
+			$resinfo['errors'] = array_merge($resinfo['errors'],$result->errors);
+			$resinfo['total'] = count($users);
+		}
 		
 		$emlsrm = array();
 		foreach ($resinfo['errors'] as $e) {

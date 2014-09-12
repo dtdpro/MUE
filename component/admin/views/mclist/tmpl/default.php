@@ -151,7 +151,7 @@ JHtml::_('behavior.formvalidation');
 		if ($v['tag'] != "FNAME" && $v['tag'] != "LNAME" && $v['tag'] != "EMAIL") {
 			echo '<tr><td>'.$v['name'].'</td>';
 			echo '<td>'.$v['field_type'].'<input type="hidden" name="jform[mcfieldtypes]['.$v['tag'].']" value="'.$v['field_type'].'"></td><td>';
-			if ($v['tag'] != $this->list->params->mcrgroup) {
+			if ($v['tag'] != $this->list->params->mcrgroup && $v['tag'] != $this->list->params->mcsubsince && $v['tag'] != $this->list->params->mcsubexp && $v['tag'] != $this->list->params->mcsubpaytype) {
 				echo '<select name="jform[mcvars]['.$v['tag'].']" id="jform_'.$v['tag'].'" class="inputbox">';
 				echo '<option value="">None</option>';
 				echo JHtml::_('select.options', $this->ufields, 'value', 'text', $this->list->params->mcvars->$tag, true);
