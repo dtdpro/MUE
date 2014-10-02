@@ -11,7 +11,7 @@ $config = MUEHelper::getConfig();
 $sub=MUEHelper::getActiveSub();
 
 if ($this->userrecs) {
-	echo '<table width="100%" class="zebra">';
+	echo '<table width="100%" class="zebra uk-table uk-table-striped">';
 	echo '<thead><tr><th>Program</th><th>Completed</th><th>Status</th><th>Credits</th><th>Certificate</th></tr></thead><tbody>';
 	$total_credits = 0;
 	foreach ($this->userrecs as $course) {
