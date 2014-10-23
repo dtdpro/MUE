@@ -8,7 +8,7 @@ class MUEViewUserdir extends JViewLegacy
 	public function display($tpl = null)
 	{
 		$doc = &JFactory::getDocument();
-		$doc->addScript('http://maps.googleapis.com/maps/api/js?sensor=false');
+		$doc->addScript('https://maps.googleapis.com/maps/api/js?sensor=false');
 		$config=MUEHelper::getConfig();
 		$numsubs=count(MUEHelper::getUserSubs());
 		$this->params	= JFactory::getApplication()->getParams('com_mue');
