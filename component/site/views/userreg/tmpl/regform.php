@@ -44,7 +44,7 @@ foreach($this->userfields as $f) {
 	if ($f->uf_type == "message") echo '<strong>'.$f->uf_name.'</strong>';
 	
 	//checkbox
-	if ($f->uf_type=="cbox" || $f->uf_type=="mailchimp" || $f->uf_type=="cmlist") {
+	if ($f->uf_type=="cbox" || $f->uf_type=="mailchimp" || $f->uf_type=="cmlist" || $f->uf_type=="brlist") {
 		if (!empty($f->value) && $f->uf_type == "cbox") $checked = ($f->value == '1') ? ' checked="checked"' : '';
 		else $checked = '';
 		echo '<div class="checkbox"><input type="checkbox" name="jform['.$sname.']" id="jform_'.$sname.'" class="uf_radio"';

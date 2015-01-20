@@ -33,6 +33,9 @@ class JFormFieldMUEDefault extends JFormField
 			case "cmlist":
 				$html = $this->getCMList();
 				break;
+            case "brlist":
+                $html = $this->getBRList();
+                break;
 			case "textbox":
 			case "textar":
 			default:
@@ -57,6 +60,46 @@ class JFormFieldMUEDefault extends JFormField
 		return '<input type="text" name="' . $this->name . '" id="' . $this->id . '"' . ' value="'
 				. htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"' . $class . $size . $disabled . $readonly . $onchange . $maxLength . '/>';
 	}
+
+    protected function getBRList()
+    {
+        $app =& JFactory::getApplication('site');
+        $db  =& JFactory::getDBO();
+        $cfg=MUEHelper::getConfig();
+
+        if (!$cfg->brkey) return $this->getTextField();
+        else $token = $cfg->brkey;
+
+        $bronto = new Bronto_Api();
+        $bronto->setToken($token);
+        $bronto->login();
+
+        $listObject = $bronto->getListObject();
+
+        $br_lists = $listObject->readAll();
+        $lists = array();
+
+        foreach ($br_lists->iterate() as $l) {
+            $lists[] = JHtml::_('select.option', $l->id,$l->name);
+        }
+
+        // Initialize variables.
+        $html = array();
+        $attr = '';
+        $db = JFactory::getDBO();
+        // Initialize some field attributes.
+        $attr .= $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
+        $attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
+
+
+        // Initialize JavaScript field attributes.
+        $attr .= $this->element['onchange'] ? ' onchange="'.(string) $this->element['onchange'].'"' : '';
+
+        $html[] = JHtml::_('select.genericlist',$lists,$this->name,$attr, "value","text",$this->value);
+
+
+        return implode($html);
+    }
 	
 	protected function getCMList()
 	{

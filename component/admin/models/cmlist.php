@@ -18,7 +18,7 @@ class MUEModelCmlist extends JModelLegacy
 		$query = $this->_db->getQuery(true);
 		$query->select('*');
 		$query->from('#__mue_ufields');
-		$query->where('uf_type NOT IN ("mailchimp","captcha")');
+		$query->where('uf_type NOT IN ("brlist","cmlist","mailchimp","captcha")');
 		$query->where('uf_cms = 0');
 		$query->where('published = 1');
 		$query->order('ordering');

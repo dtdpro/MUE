@@ -8,21 +8,24 @@ jimport('joomla.application.component.view');
 
 class MUEViewUfields extends JViewLegacy
 {
+    protected $items;
+    protected $pagination;
+    protected $state;
+
 	function display($tpl = null) 
 	{
 		// Get data from the model
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
+		$this->items = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
 		$this->state		= $this->get('State');
+        $this->filterForm    = $this->get('FilterForm');
+        $this->activeFilters = $this->get('ActiveFilters');
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) 
 		{
 			JError::raiseError(500, implode('<br />', $errors));
 			return false;
 		}
-		// Assign data to the view
-		$this->items = $items;
-		$this->pagination = $pagination;
 		// Set the toolbar
 		$this->addToolBar();
 
@@ -59,4 +62,12 @@ class MUEViewUfields extends JViewLegacy
 		$document = JFactory::getDocument();
 		$document->setTitle(JText::_('COM_MUE_MANAGER_UFIELDS'));
 	}
+
+
+    protected function getSortFields()
+    {
+        return array(
+            'f.ordering'     => JText::_('JGRID_HEADING_ORDERING')
+        );
+    }
 }

@@ -83,7 +83,25 @@ class MUEHelper {
 					else $onlist=false;
 					if ($useids && $u->uf_change) $user->$fn=$onlist;
 					else $user->$fn = ($onlist) ? "Yes" : "No";
-				} else if ($u->uf_type == 'birthday') {
+				} else if ($u->uf_type == 'brlist') {
+                    $token = $cfg->brkey;
+                    $bronto = new Bronto_Api();
+                    $bronto->setToken($token);
+                    $bronto->login();
+                    $contactObject = $bronto->getContactObject();
+                    $contact = $contactObject->createRow();
+                    $contact->email = $user->email;
+                    $contact->read();
+                    $onlist = false;
+                    if ($contact->status == 'active' || $contact->status == 'onboarding') {
+                        if (in_array($u->uf_default,$contact->listIds)) $onlist = true;
+                        else $onlist = false;
+                    } else {
+                        $onlist = false;
+                    }
+                    if ($useids && $u->uf_change) $user->$fn=$onlist;
+                    else $user->$fn = ($onlist) ? "Yes" : "No";
+                } else if ($u->uf_type == 'birthday') {
 					if ($useids && $u->uf_change) $user->$fn=$u->usr_data;
 					else $user->$fn = date("F j",strtotime('2000-'.substr($u->usr_data,0,2)."-".substr($u->usr_data,2,2).''));
 				} else{

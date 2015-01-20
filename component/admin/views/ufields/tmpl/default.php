@@ -1,34 +1,67 @@
 <?php
-
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 // load tooltip behavior
-JHtml::_('behavior.tooltip');
+JHtml::_('bootstrap.tooltip');
+JHtml::_('behavior.multiselect');
+JHtml::_('dropdown.init');
+JHtml::_('formbehavior.chosen', 'select');
+JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 
+$app	= JFactory::getApplication();
+$user	= JFactory::getUser();
+$userId	= $user->get('id');
 $listOrder	= $this->escape($this->state->get('list.ordering'));
 $listDirn	= $this->escape($this->state->get('list.direction'));
-$saveOrder	= $listOrder == 'f.ordering';
-$ordering	= ($listOrder == 'f.ordering');
+$archived	= $this->state->get('filter.published') == 2 ? true : false;
+$trashed	= $this->state->get('filter.published') == -2 ? true : false;
+$published = $this->state->get('filter.published');
+$saveOrder = ($listOrder == 'f.ordering');
+$sortFields = $this->getSortFields();
+if ($saveOrder) {
+    $saveOrderingUrl = 'index.php?option=com_mue&task=ufields.saveOrderAjax&tmpl=component';
+    JHtml::_('sortablelist.sortable', 'MUEFieldList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
+}
+
 ?>
+<script type="text/javascript">
+    Joomla.orderTable = function()
+    {
+        table = document.getElementById("sortTable");
+        direction = document.getElementById("directionTable");
+        order = table.options[table.selectedIndex].value;
+        if (order != '<?php echo $listOrder; ?>')
+        {
+            dirn = 'asc';
+        }
+        else
+        {
+            dirn = direction.options[direction.selectedIndex].value;
+        }
+        Joomla.tableOrdering(order, dirn, '');
+    }
+</script>
+
+
 <form action="<?php echo JRoute::_('index.php?option=com_mue&view=ufields'); ?>" method="post" name="adminForm" id="adminForm">
-	<fieldset id="filter-bar pull-left">
-		<div class="filter-search fltlft">
-			
-		</div>
-		<div class="filter-select fltrt pull-right">
-			<select name="filter_published" class="inputbox" onchange="this.form.submit()">
-				<option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-				<?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
-			</select>
-		</div>
-	</fieldset>
+
+    <div id="j-main-container">
+
+
+        <?php
+        // Search tools bar
+        echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this));
+        ?>
+
+        <div class="clearfix"> </div>
 	
-	<div class="clr"> </div>
-	
-	<table class="adminlist table table-striped">
+	<table class="adminlist table table-striped" id ="MUEFieldList">
 		<thead>
 			<tr>
-				<th width="5">
+                <th width="1%" class="nowrap center hidden-phone">
+                    <?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'a.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
+                </th>
+                <th width="5">
 					<?php echo JText::_('COM_MUE_UFIELD_HEADING_ID'); ?>
 				</th>
 				<th width="20">
@@ -39,10 +72,6 @@ $ordering	= ($listOrder == 'f.ordering');
 				</th>	
 				<th width="100">
 					<?php echo JText::_('JPUBLISHED'); ?>
-				</th>	
-				<th width="100">
-					<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ORDERING', 'f.ordering', $listDirn, $listOrder); ?>
-					<?php echo JHtml::_('grid.order',  $this->items, 'filesave.png', 'ufields.saveorder'); ?>
 				</th>
 				<th width="75">
 					<?php echo JText::_( 'COM_MUE_UFIELD_HEADING_TYPE' ); ?>
@@ -74,8 +103,22 @@ $ordering	= ($listOrder == 'f.ordering');
 		</tfoot>
 		<tbody>
 		<?php foreach($this->items as $i => $item): ?>
-			<tr class="row<?php echo $i % 2; ?>">
-				<td>
+            <tr class="row<?php echo $i % 2; ?>" sortable-group-id="muefields">
+                <td class="order nowrap center hidden-phone">
+                    <?php
+                    $disableClassName = '';
+                    $disabledLabel	  = '';
+                    if (!$saveOrder) :
+                        $disabledLabel    = JText::_('JORDERINGDISABLED');
+                        $disableClassName = 'inactive tip-top';
+                    endif; ?>
+                    <span class="sortable-handler hasTooltip <?php echo $disableClassName?>" title="<?php echo $disabledLabel?>">
+							<i class="icon-menu"></i>
+						</span>
+                    <input type="text" style="display:none" name="order[]" size="5" value="<?php echo $item->ordering;?>" class="width-20 text-area-order " />
+
+                </td>
+                <td>
 					<?php echo $item->uf_id; ?>
 				</td>
 				<td>
@@ -88,20 +131,6 @@ $ordering	= ($listOrder == 'f.ordering');
 				<td class="center">
 					<?php if ($item->uf_id > 9) echo JHtml::_('jgrid.published', $item->published, $i, 'ufields.', true);?>
 				</td>
-		        <td class="order">	<div class="input-prepend">
-						<?php if ($saveOrder) :?>
-							<?php if ($listDirn == 'asc') : ?>
-								<span class="add-on"><?php echo $this->pagination->orderUpIcon($i, true, 'ufields.orderup', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
-								<span class="add-on"><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, true, 'ufields.orderdown', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
-							<?php elseif ($listDirn == 'desc') : ?>
-								<span class="add-on"><?php echo $this->pagination->orderUpIcon($i, true, 'ufields.orderdown', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
-								<span class="add-on"><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, true, 'ufields.orderup', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
-							<?php endif; ?>
-						<?php endif; ?>
-						<?php $disabled = $saveOrder ?  '' : 'disabled="disabled"'; ?>
-						<input type="text" name="order[]" size="5" value="<?php echo $item->ordering;?>" <?php echo $disabled ?> class="width-20 text-area-order" />
-		
-				</div></td>
 				<td>
 					<?php 
 					switch ($item->uf_type) {
@@ -122,6 +151,7 @@ $ordering	= ($listOrder == 'f.ordering');
 						case "captcha": echo "Captcha"; break;
 						case "mailchimp": echo "MailChimp List"; break;
 						case "cmlist": echo 'Campaign Monitor List'; break;
+                        case "brlist": echo 'Bronto Mail List'; break;
 					}
 					?>
 				</td>
@@ -182,6 +212,15 @@ $ordering	= ($listOrder == 'f.ordering');
 							echo "LIST NOT SET";
 						}
 					}
+                    if ($item->uf_type=="brlist") {
+                        if ($item->uf_default) {
+                            JHtml::_('behavior.modal', 'a.modal');
+                            $link = 'index.php?option=com_mue&amp;view=brlist&amp;tmpl=component&amp;field='.$item->uf_id;
+                            echo '<a class="modal" title="Edit List Options"  href="'.$link.'" rel="{handler: \'iframe\', size: {x: 800, y: 450}}">List Options</a>';
+                        } else {
+                            echo "LIST NOT SET";
+                        }
+                    }
 				
 				?>
 				</td>

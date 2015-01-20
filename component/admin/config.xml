@@ -42,6 +42,9 @@
 		<field name="spacer_apis2" type="spacer" label="COM_MUE_CONFIG_CAMPAIGNMONITOR_LABEL" />
 		<field name="cmkey" type="text" label="COM_MUE_CONFIG_FIELD_CMKEY_LABEL" description="COM_MUE_CONFIG_FIELD_MCKEY_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="cmclient" type="text" label="COM_MUE_CONFIG_FIELD_CMCLIENT_LABEL" description="COM_MUE_CONFIG_FIELD_CMCLIENT_DESC" size="70" class="inputbox" required="false" default="" />
+        <field name="spacer_apis3" type="spacer" hr="true" />
+        <field name="spacer_apis4" type="spacer" label="COM_MUE_CONFIG_BRONTO_LABEL" />
+        <field name="brkey" type="text" label="COM_MUE_CONFIG_FIELD_BRKEY_LABEL" description="COM_MUE_CONFIG_FIELD_BRKEY_DESC" size="70" class="inputbox" required="false" default="" />
 		
 	</fieldset>
 	<fieldset name="subscribing" label="COM_MUE_CONFIG_SUBSCRIBE_LABEL" description="COM_MUE_CONFIG_SUBSCRIBE_DESC">
