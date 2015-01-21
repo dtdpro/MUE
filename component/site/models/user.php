@@ -350,9 +350,19 @@ class MUEModelUser extends JModelLegacy
                 $contact = $contactObject->createRow();
                 $contact->email = $user->email;
                 $contact->read();
+				$unsubed=false;
+
+                // Update Status, but only if we are unsubscribed, transactional, or unconfirmed
+                if ($data[$brlist->uf_sname]) {
+                    if ($contact->status == 'transactional' || $contact->status == 'unconfirmed' || $contact->status == 'unsub') {
+                    	if ($contact->status == 'unsub') $unsubed=true;
+                    	$contact->status = "onboarding";
+                    	$contact->save();
+                    }
+                }
 
                 // Update fields
-                if ($brlist->params->brvars) {
+                if ($brlist->params->brvars && $data[$brlist->uf_sname]) {
                     $othervars=$brlist->params->brvars;
                     foreach ($othervars as $brv=>$mue) {
                         if ($mue) {
@@ -382,20 +392,16 @@ class MUEModelUser extends JModelLegacy
 
                 // Update Lists
                 if ($data[$brlist->uf_sname]) {
-                    if ($contact->status == 'unsub') { //Remove all previous list
+                    if ($unsubed) { //Remove all previous list
                         $currentLists = $contact->getLists();
                         foreach ($currentLists as $l) {
                             $contact->removeFromList($l);
                         }
+						$contact->save(true);
                     }
                     $contact->addToList($brlist->uf_default);
                 } else {
                     $contact->removeFromList($brlist->uf_default);
-                }
-
-                // Update Status, but only if we are subscribed
-                if ($data[$brlist->uf_sname]) {
-                    if ($contact->status == 'transactional' || $contact->status == 'unconfirmed' || $contact->status == 'unsub') $contact->status = "onboarding";
                 }
 
                 // Save

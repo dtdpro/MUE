@@ -61,38 +61,38 @@ if ($saveOrder) {
                 <th width="1%" class="nowrap center hidden-phone">
                     <?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'a.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
                 </th>
-                <th width="5">
-					<?php echo JText::_('COM_MUE_UFIELD_HEADING_ID'); ?>
-				</th>
-				<th width="20">
+				<th width="1%">
 					<input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($this->items); ?>);" />
-				</th>			
+				</th>	
+				<th width="1%">
+					<?php echo JText::_('JSTATUS'); ?>
+				</th>		
 				<th>
 					<?php echo JText::_('COM_MUE_UFIELD_HEADING_TITLE'); ?>
 				</th>	
-				<th width="100">
-					<?php echo JText::_('JPUBLISHED'); ?>
-				</th>
-				<th width="75">
+				<th width="10%">
 					<?php echo JText::_( 'COM_MUE_UFIELD_HEADING_TYPE' ); ?>
 				</th>
-				<th width="50">
+				<th width="1%">
 					<?php echo JText::_( 'COM_MUE_UFIELD_HEADING_REQUIRED' ); ?>
 				</th>
-				<th width="50">
+				<th width="1%">
 					<?php echo JText::_( 'COM_MUE_UFIELD_HEADING_REG' ); ?>
 				</th>
-				<th width="50">
+				<th width="1%">
 					<?php echo JText::_( 'COM_MUE_UFIELD_HEADING_PROFILE' ); ?>
 				</th>
-				<th width="50">
+				<th width="1%">
 					<?php echo JText::_( 'COM_MUE_UFIELD_HEADING_HIDDEN' ); ?>
 				</th>
-				<th width="50">
+				<th width="1%">
 					<?php echo JText::_( 'COM_MUE_UFIELD_HEADING_CHANGE' ); ?>
 				</th>
-				<th width="75">
+				<th width="10%">
 					<?php echo JText::_( 'COM_MUE_UFIELD_HEADING_OPTIONS' ); ?>
+				</th>
+                <th width="1%">
+					<?php echo JText::_('COM_MUE_UFIELD_HEADING_ID'); ?>
 				</th>
 			</tr>
 		</thead>
@@ -118,20 +118,17 @@ if ($saveOrder) {
                     <input type="text" style="display:none" name="order[]" size="5" value="<?php echo $item->ordering;?>" class="width-20 text-area-order " />
 
                 </td>
-                <td>
-					<?php echo $item->uf_id; ?>
-				</td>
 				<td>
 					<?php echo JHtml::_('grid.id', $i, $item->uf_id); ?>
-				</td>
-				<td>
-						<a href="<?php echo JRoute::_('index.php?option=com_mue&task=ufield.edit&uf_id='.(int) $item->uf_id); ?>">
-						<?php echo $item->uf_name; ?></a> ( <?php echo $item->uf_sname; ?> )
 				</td>
 				<td class="center">
 					<?php if ($item->uf_id > 9) echo JHtml::_('jgrid.published', $item->published, $i, 'ufields.', true);?>
 				</td>
 				<td>
+						<a href="<?php echo JRoute::_('index.php?option=com_mue&task=ufield.edit&uf_id='.(int) $item->uf_id); ?>">
+						<?php echo $item->uf_name; ?></a> ( <?php echo $item->uf_sname; ?> )
+				</td>
+				<td class="small">
 					<?php 
 					switch ($item->uf_type) {
 						case "textar": echo "Text Box"; break;
@@ -155,31 +152,31 @@ if ($saveOrder) {
 					}
 					?>
 				</td>
-				<td>
+				<td class="small">
 					<?php 
 					if ($item->uf_req) echo '<span style="color:#008800">Yes</span>';
 					else echo '<span style="color:#880000">No</span>'; 
 					?>
 				</td>
-				<td>
+				<td class="small">
 					<?php 
 					if ($item->uf_reg) echo '<span style="color:#008800">Yes</span>';
 					else echo '<span style="color:#880000">No</span>'; 
 					?>
 				</td>
-				<td>
+				<td class="small">
 					<?php 
 					if ($item->uf_profile) echo '<span style="color:#008800">Yes</span>';
 					else echo '<span style="color:#880000">No</span>'; 
 					?>
 				</td>
-				<td>
+				<td class="small">
 					<?php 
 					if ($item->uf_hidden) echo '<span style="color:#008800">Yes</span>';
 					else echo '<span style="color:#880000">No</span>'; 
 					?>
 				</td>
-				<td>
+				<td class="small">
 					<?php 
 					if ($item->uf_change) echo '<span style="color:#008800">Yes</span>';
 					else echo '<span style="color:#880000">No</span>'; 
@@ -223,6 +220,9 @@ if ($saveOrder) {
                     }
 				
 				?>
+				</td>
+                <td>
+					<?php echo $item->uf_id; ?>
 				</td>
 			
 			</tr>

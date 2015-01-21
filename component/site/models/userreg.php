@@ -91,10 +91,13 @@ class MUEModelUserreg extends JModelLegacy
 			$moptfs = array();
 			$mclists = array();
 			$cmlists = array();
+			$brlists = array();
 			$flist = $this->getUserFields($data['userGroupID'],false);
 			foreach ($flist as $d) {
 				$fieldname = $d->uf_sname;
-				if ($d->uf_type == 'mailchimp') {
+				if ($d->uf_type == 'brlist') {
+					$brlists[]=$d;
+				} else if ($d->uf_type == 'mailchimp') {
 					$mclists[]=$d;
 				} else if ($d->uf_type == 'cmlist') {
 					$cmlists[]=$d;
@@ -158,6 +161,75 @@ class MUEModelUserreg extends JModelLegacy
 			if (!$user->save()) {
 				$this->setError('Save Error:'.$user->getError());
 				return false;
+			}
+			
+			// Bronto Mail Integration
+			foreach ($brlists as $brlist) {
+				// Get contact and status
+				$token = $cfg->brkey;
+				$bronto = new Bronto_Api();
+				$bronto->setToken($token);
+				$bronto->login();
+				$contactObject = $bronto->getContactObject();
+				$contact = $contactObject->createRow();
+				$contact->email = $item->email;
+				$contact->read();
+				$unsubed=false;
+			
+				// Update Status, but only if we are unsubscribed, transactional, or unconfirmed
+                if ($data[$brlist->uf_sname]) {
+                    if ($contact->status == 'transactional' || $contact->status == 'unconfirmed' || $contact->status == 'unsub') {
+                    	if ($contact->status == 'unsub') $unsubed=true;
+                    	$contact->status = "onboarding";
+                    	$contact->save();
+                    }
+                }
+
+                // Update fields
+                if ($brlist->params->brvars && $data[$brlist->uf_sname]) {
+               		$othervars=$brlist->params->brvars;
+					foreach ($othervars as $brv=>$mue) {
+						if ($mue) {
+							if ($brlist->params->brfieldtypes->$brv == "checkbox") {
+								if ($item->$mue == "1") $contact->setField($brv,'true');
+								else $contact->setField($brv,'false');
+							} else if (in_array($mue,$optfs)) {
+								$contact->setField($brv,$optionsdata[$item->$mue]);
+							}
+							else if (in_array($mue,$moptfs)) {
+								$mcdata[$mcv] = "";
+								$fv = '';
+								foreach (explode(" ",$item->$mue) as $mfo) {
+									$fv .= $optionsdata[$mfo]." ";
+								}
+								$contact->setField($brv,$fv);
+							}
+							else {
+								$contact->setField($brv,$item->$mue);
+							}
+						}
+					}
+				}
+			
+				// Update Subscription Info
+			
+			
+				// Update Lists
+				if ($data[$brlist->uf_sname]) {
+                    if ($unsubed) { //Remove all previous list
+                        $currentLists = $contact->getLists();
+                        foreach ($currentLists as $l) {
+                            $contact->removeFromList($l);
+                        }
+						$contact->save(true);
+                    }
+					$contact->addToList($brlist->uf_default);
+				} else {
+					$contact->removeFromList($brlist->uf_default);
+				}
+			
+				// Save
+				$contact->save(true);
 			}
 						
 			//Campaign Monitor Integration
