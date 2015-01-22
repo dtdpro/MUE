@@ -49,7 +49,7 @@ class MUEModelUser extends JModelAdmin
 		$cfg = MUEHelper::getConfig();
 		
 		//set item variable
-		$qu='SELECT id,username,block,email FROM #__users WHERE id = '.$pk;
+		$qu='SELECT id,username,block,email,requireReset FROM #__users WHERE id = '.$pk;
 		$this->_db->setQuery($qu);
 		$item = $this->_db->loadObject();
 		
@@ -89,8 +89,26 @@ class MUEModelUser extends JModelAdmin
 				if ($cmresult){ if ($cmresult->State=="Active")  { $onlist="0";} else { $onlist="0"; } }
 				else $onlist="0";
 				$item->$fieldname=$onlist;
+			} else if ($d->uf_type == 'brlist') {
+				$token = $cfg->brkey;
+				$bronto = new Bronto_Api();
+				$bronto->setToken($token);
+				$bronto->login();
+				$contactObject = $bronto->getContactObject();
+				$contact = $contactObject->createRow();
+				$contact->email = $item->email;
+				$contact->read();
+				$onlist = false;
+				if ($contact->status == 'active' || $contact->status == 'onboarding') {
+					if (in_array($d->uf_default,$contact->listIds)) $onlist = "1";
+					else $onlist = "0";
+				} else {
+					$onlist = "0";
+				}
+				$item->$fieldname=$onlist;
 			} 
 		}
+
 				
 		//get users group
 		$qg = 'SELECT * FROM #__mue_usergroup WHERE userg_user = '.$item->usr_user;
@@ -131,7 +149,7 @@ class MUEModelUser extends JModelAdmin
 			
 			//Update Joomla User Info
 			if ($userId != 0) {
-				$user=JFactory::getUser($userId);
+				$user=JUser::getInstance($userId);
 				$oldemail = $user->email;
 			} else {
 				$user = new JUser;
@@ -143,6 +161,7 @@ class MUEModelUser extends JModelAdmin
 			$udata['username']=$item->username;
 			$udata['password']=$item->password;
 			$udata['password2']=$item->cpassword;
+			$udata['requireReset']=$data['requireReset'];
 			$udata['block']=$item->block;
 			if (!$user->bind($udata)) {
 				$this->setError('Bind Error: '.$user->getError());
@@ -256,9 +275,87 @@ class MUEModelUser extends JModelAdmin
 			$optionsdata[$o->opt_id]=$o->opt_text;
 		}
 		
-		//Update Mailing lists if not a new user, Admin can subscribe user but they must confirm, only update usr information
+		//Update Mailing lists if not a new user, Admin can subscribe user but they must confirm, only update user information
 		if (!$isNew) {
 			$usernotes = "";
+			
+			// Bronto Mail Integration
+			$brlists = $this->getFields(false,"brlist");
+			foreach ($brlists as $brlist) {
+				// Get contact and status
+				$token = $cfg->brkey;
+				$bronto = new Bronto_Api();
+				$bronto->setToken($token);
+				$bronto->login();
+				$contactObject = $bronto->getContactObject();
+				$oldcontact = $contactObject->createRow();
+				$oldcontact->email = $oldemail;
+				$oldcontact->read();
+				$contactid = $oldcontact->id;
+
+				$contact = $contactObject->createRow();
+				$contact->id = $contactid;
+				$contact->read();
+				
+				if ($oldemail != $user->email) $contact->email = $user->email;
+				
+				$unsubed=false;
+			
+				// Update Status to unconfirmed, but only if we are unsubscribed, transactional
+				if ($data[$brlist->uf_sname]) {
+					if ($contact->status == 'transactional' || $contact->status == 'unsub') {
+						if ($contact->status == 'unsub') $unsubed=true;
+						$contact->status = "unconfirmed";
+						$contact->save();
+					}
+				}
+			
+				// Update fields
+				if ($brlist->params->brvars && $data[$brlist->uf_sname]) {
+					$othervars=$brlist->params->brvars;
+					foreach ($othervars as $brv=>$mue) {
+						if ($mue) {
+							if ($brlist->params->brfieldtypes->$brv == "checkbox") {
+								if ($item->$mue == "1") $contact->setField($brv,'true');
+								else $contact->setField($brv,'false');
+							} else if (in_array($mue,$optfs)) {
+								$contact->setField($brv,$optionsdata[$item->$mue]);
+							}
+							else if (in_array($mue,$moptfs)) {
+								$mcdata[$mcv] = "";
+								$fv = '';
+								foreach (explode(" ",$item->$mue) as $mfo) {
+									$fv .= $optionsdata[$mfo]." ";
+								}
+								$contact->setField($brv,$fv);
+							}
+							else {
+								$contact->setField($brv,$item->$mue);
+							}
+						}
+					}
+				}
+			
+				// Update Subscription Info
+			
+			
+				// Update Lists
+				if ($data[$brlist->uf_sname]) {
+					if ($unsubed) { //Remove all previous list
+						$currentLists = $contact->getLists();
+						foreach ($currentLists as $l) {
+							$contact->removeFromList($l);
+						}
+						$contact->save(true);
+					}
+					$contact->addToList($brlist->uf_default);
+				} else {
+					$contact->removeFromList($brlist->uf_default);
+				}
+			
+				// Save
+				$contact->save(true);
+			}
 			
 			// Update MailChimp Lists
 			$mclists = $this->getFields(false,"mailchimp");
@@ -589,6 +686,16 @@ class MUEModelUser extends JModelAdmin
 			}
 			$done = true;
 		}
+		
+		if (!empty($commands['reset_id']))
+		{
+			if (!$this->batchReset($pks, $commands['reset_id']))
+			{
+				return false;
+			}
+			$done = true;
+		}
+		
 	
 		if (!$done)
 		{
@@ -599,6 +706,45 @@ class MUEModelUser extends JModelAdmin
 		// Clear the cache
 		$this->cleanCache();
 	
+		return true;
+	}
+	
+	public function batchReset($user_ids, $action)
+	{
+		// Set the action to perform
+		if ($action === 'yes')
+		{
+			$value = 1;
+		}
+		else
+		{
+			$value = 0;
+		}
+		
+		// Prune out the current user if they are in the supplied user ID array
+		$user_ids = array_diff($user_ids, array(JFactory::getUser()->id));
+		
+		// Get the DB object
+		$db = $this->getDbo();
+		JArrayHelper::toInteger($user_ids);
+		$query = $db->getQuery(true);
+		
+		// Update the reset flag
+		$query->update($db->quoteName('#__users'))
+		->set($db->quoteName('requireReset') . ' = ' . $value)
+		->where($db->quoteName('id') . ' IN (' . implode(',', $user_ids) . ')');
+		$db->setQuery($query);
+		
+		try
+		{
+			$db->execute();
+		}
+		catch (RuntimeException $e)
+		{
+			$this->setError($e->getMessage());
+			return false;
+		}
+		
 		return true;
 	}
 	

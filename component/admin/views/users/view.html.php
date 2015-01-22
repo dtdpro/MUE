@@ -11,24 +11,23 @@ class MUEViewUsers extends JViewLegacy
 	function display($tpl = null) 
 	{
 		// Get data from the model
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
+		$this->items = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
 		$this->state		= $this->get('State');
-		$ugroups = $this->get('UGroups');
+		$this->ugroups = $this->get('UGroups');
+		$this->filterForm    = $this->get('FilterForm');
+		$this->activeFilters = $this->get('ActiveFilters');
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) 
 		{
 			JError::raiseError(500, implode('<br />', $errors));
 			return false;
 		}
-		// Assign data to the view
-		$this->items = $items;
-		$this->pagination = $pagination;
-		$this->ugroups = $ugroups;
 		$this->usergroups = array();
 		foreach ($this->ugroups as $u) {
 			$this->usergroups[$u->value] = $u->text;
 		}
+		
 		// Set the toolbar
 		$this->addToolBar();
 
@@ -54,16 +53,35 @@ class MUEViewUsers extends JViewLegacy
 		$tbar->appendButton('Link','export','Export CSV','index.php?option=com_mue&view=users&format=csv');
 		if ($cfg->subscribe) JToolBarHelper::custom('users.syncsubs', 'refresh.png', 'refresh_f2.png', 'COM_MUE_TOOLBAR_SYNCSUB', false);
 		JToolBarHelper::divider();
+		
+		JHtml::_('bootstrap.modal', 'collapseModal');
+		$title = JText::_('JTOOLBAR_BATCH');
+		// Instantiate a new JLayoutFile instance and render the batch button
+		$layout = new JLayoutFile('joomla.toolbar.batch');
+		$dhtml = $layout->render(array('title' => $title));
+		$tbar->appendButton('Custom', $dhtml, 'batch');
+		
 		JToolBarHelper::preferences('com_mue');
 	}
-	/**
-	 * Method to set up the document properties
-	 *
-	 * @return void
-	 */
+
 	protected function setDocument() 
 	{
 		$document = JFactory::getDocument();
 		$document->setTitle(JText::_('COM_MUE_MANAGER_USERS'));
+	}
+	protected function getSortFields()
+	{
+		return array(
+				'u.name' => JText::_('COM_USERS_HEADING_NAME'),
+				'u.username' => JText::_('JGLOBAL_USERNAME'),
+				'u.block' => JText::_('COM_MUE_USER_HEADING_ENABLED'),
+				'g.ug_name' => JText::_('COM_MUE_USER_HEADING_GROUP'),
+				'g.userg_siteurl' => JText::_('COM_MUE_USER_HEADING_JOINSITE'),
+				'u.email' => JText::_('JGLOBAL_EMAIL'),
+				'u.lastvisitDate' => JText::_('COM_USERS_HEADING_LAST_VISIT_DATE'),
+				'u.registerDate' => JText::_('COM_USERS_HEADING_REGISTRATION_DATE'),
+				'ug.userg_update' => JText::_('COM_MUE_USER_HEADING_UPDATE'),
+				'a.id' => JText::_('JGRID_HEADING_ID')
+		);
 	}
 }

@@ -116,7 +116,7 @@ JHtml::_('behavior.formvalidation');
 	echo JHtml::_('bootstrap.endTab');
 	echo JHtml::_('bootstrap.addTab', 'myTab', 'brlist-ops', "Operations");
 
-	echo '<p><button type="button" onclick="Joomla.submitform(\'brlist.syncList\', this.form);">Sync MC List</button> This Process is very DB and API Intensive, use with care.</p>';
+	echo '<p><button type="button" onclick="Joomla.submitform(\'brlist.syncList\', this.form);">Sync Bronto Contacts</button> This will overwrite contact details, but will not change list assignments. This Process is very DB and API Intensive, use with care.</p>';
 	echo '<div class="clr"></div>';
 	
 

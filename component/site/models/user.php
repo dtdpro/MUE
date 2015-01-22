@@ -47,7 +47,7 @@ class MUEModelUser extends JModelLegacy
 			$this->setError($db->getErrorMsg());
 			return false;
 		}
-        /*
+        
         // Bronto Mail Integration
         $brlists = $this->getUserFields(1,false,false,false,"brlist");
         foreach ($brlists as $brlist) {
@@ -57,8 +57,13 @@ class MUEModelUser extends JModelLegacy
             $bronto->setToken($token);
             $bronto->login();
             $contactObject = $bronto->getContactObject();
+            $oldcontact = $contactObject->createRow();
+            $oldcontact->email = $oldemail;
+            $oldcontact->read();
+            $contactid = $oldcontact->id;            
+
             $contact = $contactObject->createRow();
-            $contact->email = $user->email;
+            $contact->id = $contactid;
             $contact->read();
 
             if ($contact->status != 'unsub') {
@@ -69,7 +74,7 @@ class MUEModelUser extends JModelLegacy
             }
 
         }
-        */
+        
 		//MC Update
 		$mclists = $this->getUserFields(1,false,false,false,"mailchimp");
 		foreach ($mclists as $mclist) {

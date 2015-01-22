@@ -36,9 +36,6 @@ class MUEModelBrlist extends JModelLegacy
 	}
 
 	function syncList($field) {
-		require_once(JPATH_ROOT.'/administrator/components/com_mue/helpers/mue.php');
-		require_once(JPATH_ROOT.'/components/com_mue/lib/mailchimp.php');
-		
 		if (!$field) { $this->setError("Field ID Not Provided"); return false; }
 		
 		$db = JFactory::getDBO();
@@ -57,23 +54,16 @@ class MUEModelBrlist extends JModelLegacy
 		}
 		
 		$cfg=MUEHelper::getConfig();
-		if (!$cfg->mckey) { $this->setError("MailChimp not Configured"); return false; }
-		if (strstr($list->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$list->uf_default,2);	}
-		else { $mc_key = $cfg->mckey; $mc_list = $list->uf_default; }
-		$mc = new MailChimpHelper($mc_key);
+		if (!$cfg->brkey) { $this->setError("Bronto Mail not Configured"); return false; }
 		
-		//Users in list
-		$query = $db->getQuery(true);
-		$query->select("usr_user");
-		$query->from('#__mue_users');
-		$query->where('usr_field='.$field);
-		$query->where('usr_data = "1"');
-		$db->setQuery($query);
-		$inlist = $db->loadColumn();
+		$token = $cfg->brkey;
+		$bronto = new Bronto_Api();
+		$bronto->setToken($token);
+		$bronto->login();
 		
 		//Fields for Merge Data
 		$muef=array("fname","lname","email");
-		foreach ($list->params->mcvars as $mcv=>$mue) { if ($mue) { $muef[]=$mue; } }
+		foreach ($list->params->brvars as $brv=>$mue) { if ($mue) { $muef[]=$mue; } }
 		$query = $db->getQuery(true);
 		$query->select("*");
 		$query->from('#__mue_ufields');
@@ -89,11 +79,10 @@ class MUEModelBrlist extends JModelLegacy
 		$query->join('LEFT', '#__mue_usergroup AS ug ON u.id = ug.userg_user');
 		$query->select('g.ug_name');
 		$query->join('LEFT', '#__mue_ugroups AS g ON ug.userg_group = g.ug_id');
-		$query->where('u.id IN ('.implode(',',$inlist).')');
 		$db->setQuery($query);
 		$users=$db->loadObjectList();
 		
-		//User Sub Status
+		/*//User Sub Status
 		if ($cfg->subscribe) {
 			foreach ($users as &$i) {
 				$query = $db->getQuery(true);
@@ -113,7 +102,7 @@ class MUEModelBrlist extends JModelLegacy
 					$i->substatus=false;
 				}
 			}
-		}
+		}*/
 		
 		//User Field Data
 		foreach ($muefields as $f) {
@@ -125,7 +114,6 @@ class MUEModelBrlist extends JModelLegacy
 				$q2->select('usr_user,usr_data');
 				$q2->from('#__mue_users');
 				$q2->where('usr_field = '.$fid);
-				$q2->where('usr_user IN ('.implode(',',$inlist).')');
 				$db->setQuery($q2);
 				$opts = $db->loadObjectList();
 				foreach ($opts as $o) {
@@ -157,95 +145,60 @@ class MUEModelBrlist extends JModelLegacy
 			$optionsdata[$o->opt_id] = $o->opt_text;
 		}
 		
-		//Build MC Batch Data
-		$mcbatch=array(); 
+		//Build Bronto Contact Data
+		$brbatch=array(); 
 		$resinfo=array();
 		$resinfo['errors']=array();
 		foreach ($users as $u) {
 			$userid=$u->id; 
-			$mcitem=array('email'=>array("email"=>$u->email));
-			$mcdata = array('FNAME'=>$udata->fname[$userid], 'LNAME'=>$udata->lname[$userid]);
-			if ($list->params->mcvars) {
-				$othervars=$list->params->mcvars;
-				foreach ($othervars as $mcv=>$mue) { 
+			$britem=array('email'=>$u->email);
+			$brfields = array();
+			
+			// Update fields
+			if ($list->params->brvars) {
+				$othervars=$list->params->brvars;
+				foreach ($othervars as $brv=>$mue) {
 					if ($mue) {
-					$ufield = $udata->$mue;
-						if ($mue == 'username') { $mcdata[$mcv] = $u->username; }
-						else if ($mue == 'user_group') { $mcdata[$mcv] = $u->ug_name; }
-						else if ($mue == 'site_url') { $mcdata[$mcv] = $u->userg_siteurl; }
-						else if ($mue && $udata->$mue) { 
-							if (in_array($mue,$optfs)) $mcdata[$mcv] = $optionsdata[$ufield[$userid]];
-							else if (in_array($mue,$moptfs)) {
-								$mcdata[$mcv] = "";
-								foreach (explode(" ",$ufield[$userid]) as $mfo) {
-									$mcdata[$mcv] .= $optionsdata[$mfo]." ";
-								}
+						$ufield = $udata->$mue;
+						if ($mue == 'username') { $brfields[] = array("fieldId" => $brv, "content" => $u->username); }
+						else if ($mue == 'user_group') { $brfields[] = array("fieldId" => $brv, "content" => $u->ug_name); }
+						else if ($mue == 'site_url') { $brfields[] = array("fieldId" => $brv, "content" => $u->userg_siteurl); }
+						else if ($brlist->params->brfieldtypes->$brv == "checkbox") {
+							if ($ufield[$userid] == "1") $brfields[] = array("fieldId" => $brv, "content" => 'true');
+							else $brfields[] = array("fieldId" => $brv, "content" => 'false');
+						} else if (in_array($mue,$optfs)) {
+							$brfields[] = array("fieldId" => $brv, "content" => $optionsdata[$ufield[$userid]]);
+						}
+						else if (in_array($mue,$moptfs)) {
+							$mcdata[$mcv] = "";
+							$fv = '';
+							foreach (explode(" ",$ufield[$userid]) as $mfo) {
+								$fv .= $optionsdata[$mfo]." ";
 							}
-							else $mcdata[$mcv] = $ufield[$userid];
+							$brfields[] = array("fieldId" => $brv, "content" => $fv);
+						}
+						else {
+							$brfields[] = array("fieldId" => $brv, "content" => $ufield[$userid]);
 						}
 					}
 				}
 			}
-			if ($list->params->mcrgroup && $cfg->subscribe) {
-				if (!$u->substatus) $mcdata[$list->params->mcrgroup]=$list->params->mcreggroup;
-				else $mcdata[$list->params->mcrgroup]=$list->params->mcsubgroup;
-				if ($list->params->mcsubsince) {
-					if ($u->userg_subsince != "0000-00-00")	$mcdata[$list->params->mcsubsince] = $u->userg_subsince;
-					else $mcdata[$list->params->mcsubsince] = "";
-				}
-				if ($list->params->mcsubexp) {
-					if ($u->userg_subexp != '0000-00-00') $mcdata[$list->params->mcsubexp] = $u->userg_subexp;
-					else $mcdata[$list->params->mcsubexp] = "";
-				}
-				if ($list->params->mcsubpaytype) $mcdata[$list->params->mcsubpaytype] = $u->userg_lastpaidvia;
-			}
-			if ($list->params->mcigroup) {
-				$mcdata['groupings']=array(array("name"=>$list->params->mcigroup,"groups"=>$list->params->mcigroups));
-			}
-			$mcitem['merge_vars']=$mcdata;
-			$mcitem['email_type']='html';
-			$mcbatch[] = $mcitem;
-			if (count($mcbatch) == 1000) {
-				$result = $mc->listBatchSubscribe($mcbatch,$mc_list);
-				$resinfo['add_count'] = $resinfo['add_count'] + $result->add_count;
-				$resinfo['update_count'] = $resinfo['update_count'] + $result->update_count;
-				$resinfo['error_count'] = $resinfo['error_count'] + $result->error_count;
-				$resinfo['errors'] = array_merge($resinfo['errors'],$result->errors);
-				$mcbatch = array();
+
+			$britem['fields']=$brfields;
+			$brbatch[] = $britem;
+			if (count($brbatch) == 1000) {
+				$contactObject = $bronto->getContactObject();
+				$contacts = $contactObject->addOrUpdate($brbatch);
+				$brbatch = array();
 			}
 		}
 		
-		if (count($mcbatch)) {
-			$result = $mc->listBatchSubscribe($mcbatch,$mc_list);
-			$resinfo['add_count'] = $resinfo['add_count'] + $result->add_count;
-			$resinfo['update_count'] = $resinfo['update_count'] + $result->update_count;
-			$resinfo['error_count'] = $resinfo['error_count'] + $result->error_count;
-			$resinfo['errors'] = array_merge($resinfo['errors'],$result->errors);
-			$resinfo['total'] = count($users);
+		if (count($brbatch)) {
+			$contactObject = $bronto->getContactObject();
+			$contacts = $contactObject->addOrUpdate($brbatch);
 		}
 		
-		$emlsrm = array();
-		foreach ($resinfo['errors'] as $e) {
-			$emlsrm[] = $e['email']['email'];
-		}
-		if (count($emlsrm)) {
-			$query = $db->getQuery(true);
-			$query->select("id");
-			$query->from('#__users');
-			$query->where('email IN ("'.implode('","',$emlsrm).'")');
-			$db->setQuery($query);
-			$rmids = $db->loadColumn();
-			
-			$query = $db->getQuery(true);
-			$query->update('#__mue_users');
-			$query->set('usr_data = "0"');
-			$query->where('usr_field = '.$field);
-			$query->where('usr_user IN ('.implode(",",$rmids).')');
-			$db->setQuery($query);
-			$db->query();
-		}		
-		
-		return $resinfo;
+		return true;
 				
 		
 	}

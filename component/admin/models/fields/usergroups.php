@@ -2,36 +2,30 @@
 
 defined('JPATH_BASE') or die;
 
-jimport('joomla.html.html');
-jimport('joomla.form.formfield');
 
-class JFormFieldUserGroups extends JFormField
+JFormHelper::loadFieldClass('list');
+
+class JFormFieldUserGroups extends JFormFieldList
 {
 	protected $type = 'UserGroups';
+	protected static $options = array();
 
-	protected function getInput()
+	protected function getOptions()
 	{
-		// Initialize variables.
-		$html = array();
-		$attr = '';
+		$hash = md5($this->element);
+		$type = strtolower($this->type);
+		
 		$db = JFactory::getDBO();
-		// Initialize some field attributes.
-		$attr .= $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
-		$attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
-		$attr .= $this->element['size'] ? ' size="'.(int) $this->element['size'].'"' : '';
-
-		// Initialize JavaScript field attributes.
-		$attr .= $this->element['onchange'] ? ' onchange="'.(string) $this->element['onchange'].'"' : '';
-
-
+		
 		// Build the query for the ordering list.
 		$query = 'SELECT ug_id AS value, ug_name AS text' .
 				' FROM #__mue_ugroups' .
 				' ORDER BY ug_name';
 		$db->setQuery($query);
-		$html[] = JHtml::_('select.genericlist',$db->loadObjectList(),$this->name,$attr, "value","text",$this->value);
 		
-
-		return implode($html);
+		static::$options[$type][$hash] = parent::getOptions();		
+		static::$options[$type][$hash] = array_merge(static::$options[$type][$hash], $db->loadObjectList());
+		
+		return static::$options[$type][$hash];
 	}
 }

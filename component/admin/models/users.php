@@ -28,7 +28,12 @@ class MUEModelUsers extends JModelList
 							'lastvisitDate', 'u.lastvisitDate',
 							'userg_update', 'ug.userg_update',
 							'userg_subsince', 'ug.userg_subsince',
-							'userg_subexp','ug.userg_subexp'
+							'userg_subexp','ug.userg_subexp',
+							'active',
+							'group_id',
+							'range',
+							'state',
+							'ugroup'
 			);
 			}
 		} else {
@@ -43,7 +48,12 @@ class MUEModelUsers extends JModelList
 							'userg_siteurl', 'ug.userg_siteurl',
 							'registerDate', 'u.registerDate',
 							'lastvisitDate', 'u.lastvisitDate',
-							'userg_update', 'ug.userg_update'
+							'userg_update', 'ug.userg_update',
+							'active',
+							'group_id',
+							'range',
+							'state',
+							'ugroup'
 			);
 			}
 			
@@ -67,6 +77,23 @@ class MUEModelUsers extends JModelList
 		
 		$state = $this->getUserStateFromRequest($this->context.'.filter.state', 'filter_state');
 		$this->setState('filter.state', $state);
+		
+		$active = $this->getUserStateFromRequest($this->context . '.filter.active', 'filter_active');
+		$this->setState('filter.active', $active);
+		
+		$groupId = $this->getUserStateFromRequest($this->context . '.filter.group', 'filter_group_id', null, 'int');
+		$this->setState('filter.group_id', $groupId);
+		
+		$groups = json_decode(base64_decode($app->input->get('groups', '', 'BASE64')));
+		if (isset($groups))
+		{
+			JArrayHelper::toInteger($groups);
+		}
+		$this->setState('filter.groups', $groups);
+		
+		
+		$range = $this->getUserStateFromRequest($this->context . '.filter.range', 'filter_range');
+		$this->setState('filter.range', $range);		
 
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_mue');
@@ -137,10 +164,10 @@ class MUEModelUsers extends JModelList
 			$query->where('u.id IN ('.implode(',',$ulist).')');
 		}
 		
-		// Filter by group.
+		// Filter by MUE group.
 		$groupId = $this->getState('filter.ugroup');
 		if (is_numeric($groupId)) {
-			$query->where('g.ug_id = '.(int) $groupId);
+			$query->where('ug.userg_group = '.(int) $groupId);
 		}
 		
 		// Filter by state.
@@ -148,6 +175,77 @@ class MUEModelUsers extends JModelList
 		if (is_numeric($state)) {
 			$query->where('u.block = '.(int) $state);
 		}
+		
+		// Filter by Joomla User Group
+		$groups  = $this->getState('filter.groups');
+		$groupId = $this->getState('filter.group_id');
+		if ($groupId || isset($groups))
+		{
+			$query->join('LEFT', '#__user_usergroup_map AS map2 ON map2.user_id = u.id')
+			->group($db->quoteName(array('u.id', 'u.name', 'u.username', 'u.password', 'u.block', 'u.sendEmail', 'u.registerDate', 'u.lastvisitDate', 'u.activation', 'u.params', 'u.email')));
+			if ($groupId)
+			{
+				$query->where('map2.group_id = ' . (int) $groupId);
+			}
+			if (isset($groups))
+			{
+				$query->where('map2.group_id IN (' . implode(',', $groups) . ')');
+			}
+		}
+		
+		// Add filter for registration ranges select list
+		$range = $this->getState('filter.range');
+		// Apply the range filter.
+		if ($range)
+		{
+			// Get UTC for now.
+			$dNow   = new JDate;
+			$dStart = clone $dNow;
+			switch ($range)
+			{
+				case 'past_week':
+					$dStart->modify('-7 day');
+					break;
+				case 'past_1month':
+					$dStart->modify('-1 month');
+					break;
+				case 'past_3month':
+					$dStart->modify('-3 month');
+					break;
+				case 'past_6month':
+					$dStart->modify('-6 month');
+					break;
+				case 'post_year':
+				case 'past_year':
+					$dStart->modify('-1 year');
+					break;
+				case 'today':
+					// Ranges that need to align with local 'days' need special treatment.
+					$app    = JFactory::getApplication();
+					$offset = $app->get('offset');
+					// Reset the start time to be the beginning of today, local time.
+					$dStart = new JDate('now', $offset);
+					$dStart->setTime(0, 0, 0);
+					// Now change the timezone back to UTC.
+					$tz = new DateTimeZone('GMT');
+					$dStart->setTimezone($tz);
+					break;
+			}
+			if ($range == 'post_year')
+			{
+				$query->where(
+						$db->qn('u.registerDate') . ' < ' . $db->quote($dStart->format('Y-m-d H:i:s'))
+				);
+			}
+			else
+			{
+				$query->where(
+						$db->qn('u.registerDate') . ' >= ' . $db->quote($dStart->format('Y-m-d H:i:s')) .
+						' AND ' . $db->qn('u.registerDate') . ' <= ' . $db->quote($dNow->format('Y-m-d H:i:s'))
+				);
+			}
+		}
+		
 		
 		// Filter by search in title
 		$search = $this->getState('filter.search');

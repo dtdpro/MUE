@@ -65,7 +65,7 @@ class MUEControllerBrlist extends JControllerLegacy
 
 		// Initialise variables.
 		$app	= JFactory::getApplication();
-		$model	= $this->getModel('Mclist');
+		$model	= $this->getModel('Brlist');
 		$field	= JRequest::getInt('field');
 
 		// Check if the user is authorized to do this.
@@ -89,11 +89,6 @@ class MUEControllerBrlist extends JControllerLegacy
 
 		
 		$message = JText::_('COM_MUE_BRLIST_SYNC_SUCCESS');
-		if ($return['total']) $message .= '<br>Users Processed: '.$return['total'];
-		if ($return['add_count']) $message .= '<br>Added: '.$return['add_count'];
-		if ($return['update_count']) $message .= '<br>Updated: '.$return['update_count'];
-		if ($return['error_count']) $message .= '<br>Not on List/Errored: '.$return['error_count'];
-		//if (count($return['errors'])) $message .= '<br>Errors: <pre>'.print_r($return,true).'</pre>';
 		
 		$this->setRedirect('index.php?option=com_mue&view=brlist&field='.$field.'&tmpl=component&refresh=1', $message);
 				

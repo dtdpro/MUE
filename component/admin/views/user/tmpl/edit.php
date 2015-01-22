@@ -21,18 +21,43 @@ JHtml::_('behavior.formvalidation');
 	<div class="width-50 fltlft span6">
 		<fieldset class="adminform">
 			<legend><?php echo JText::_( 'COM_MUE_USER_DETAILS' ); ?></legend>
-			<ul class="adminformlist treeselect">
-				<li><label id="jform_usergroup-lbl" for="jform_usergroup" class="hasTip" title="Group::Users' Group">MUE Group</label>
-				<select id="jform_usergroup" name="jform[usergroup]" class="inputbox" size="1">
-				<?php echo JHtml::_('select.options',$this->usergroups,"value","text",$this->item->usergroup); ?>
-				</select>
-				</li>
+			
+				<div class="control-group">
+					<div class="control-label">
+						<label id="jform_usergroup-lbl" for="jform_usergroup" class="hasTip" title="Group::Users' Group">MUE Group</label>
+					</div>
+					<div class="controls">
+						<select id="jform_usergroup" name="jform[usergroup]" class="inputbox" size="1">
+						<?php echo JHtml::_('select.options',$this->usergroups,"value","text",$this->item->usergroup); ?>
+						</select>
+					</div>
+				</div>
+				<div class="control-group">
+					<div class="control-label">
+						<label data-original-title="<strong>Require Password Reset</strong><br />Setting this option to yes requires the user to reset their password the next time they log into the site." id="jform_requireReset-lbl" for="jform_requireReset" class="hasTooltip" title="">Require Password Reset</label>
+					</div>
+					<div class="controls"><?php 
+						echo '<select id="jform_requireReset" name="jform[requireReset]" class="inputbox" size="1">';
+						$selected = ' selected="selected"';
+						echo '<option value="0"';
+						echo ($this->item->requireReset == "0") ? $selected : '';
+						echo '>No</option>';
+						echo '<option value="1"';
+						echo ($this->item->requireReset == "1") ? $selected : '';
+						echo '>Yes</option>';
+						
+						echo '</select>';
+						?>
+					</div>
+				</div>
 				<?php foreach($this->fields as $f) {
-					echo '<li>';
+					echo '<div class="control-group">';
 					$sname = $f->uf_sname;
 					//field title
+					echo '<div class="control-label">';
 					echo '<label id="jform_'.$sname.'-lbl" for="jform_'.$sname.'" class="hasTip" title="'.$f->uf_name.'::">'.$f->uf_name.'</label>';
-					
+					echo '</div>';
+					echo '<div class="controls">';
 					//multi checkbox
 					if ($f->uf_type=="mcbox" || $f->uf_type=="mlist") {
 						echo '<fieldset id="jform_'.$sname.'" class="radio inputbox">';
@@ -75,7 +100,7 @@ JHtml::_('behavior.formvalidation');
 					}
 					
 					//Yes no
-					if ($f->uf_type=="yesno" || $f->uf_type=="cbox" || $f->uf_type=="mailchimp" || $f->uf_type=="cmlist") {
+					if ($f->uf_type=="yesno" || $f->uf_type=="cbox" || $f->uf_type=="mailchimp" || $f->uf_type=="cmlist" || $f->uf_type=="brlist") {
 						echo '<select id="jform_'.$sname.'" name="jform['.$sname.']" class="inputbox" size="1">';
 						$selected = ' selected="selected"';
 						echo '<option value="0"';
@@ -87,10 +112,11 @@ JHtml::_('behavior.formvalidation');
 						
 						echo '</select>';
 					}
-				
-					echo '</li>';
+
+					echo '</div>';
+					echo '</div>';
 				} ?>
-			</ul>
+			
 		</fieldset>
 
 			<p>Note: If mailing lists are changed to yes, a list based confirmation WILL be sent to the user, change will not be reflected until user confirms</p>
