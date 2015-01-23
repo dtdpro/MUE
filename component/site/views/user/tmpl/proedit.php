@@ -1,5 +1,6 @@
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
+JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 if ($this->params->get('divwrapper',1)) {
 	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
 }
@@ -46,87 +47,27 @@ foreach($this->userfields as $f) {
 	
 		//checkbox
 		if ($f->uf_type=="cbox" || $f->uf_type=="mailchimp" || $f->uf_type=="cmlist" || $f->uf_type=="brlist") {
-			if (!empty($this->userinfo->$sname)) $checked = ($this->userinfo->$sname == '1') ? ' checked="checked"' : '';
-			else $checked = '';
-			echo '<div class="checkbox"><input type="checkbox" name="jform['.$sname.']" id="jform_'.$sname.'" class="uf_radio"';
-			if ($f->uf_req && $f->uf_type=="cbox") { echo ' data-rule-required="true" data-msg-required="This Field is required"'; }
-			echo $checked.'/>'."\n";
-			echo '<label for="jform_'.$sname.'">';
-			echo ' '.$f->uf_name.'</label></div>'."\n";
+			echo JHtml::_('muefields.cbox',$f,$this->userinfo->$sname);
 		}
 	
 		//multi checkbox
 		if ($f->uf_type=="mcbox") {
-			$first = true;
-			foreach ($f->options as $o) {
-				if (!empty($this->userinfo->$sname)) $checked = in_array($o->value,$this->userinfo->$sname) ? ' checked="checked"' : '';
-				else $checked = '';
-				echo '<div class="checkbox"><input type="checkbox" name="jform['.$sname.'][]" value="'.$o->value.'" class="uf_radio" id="jform_'.$sname.$o->value.'"';
-				if ($f->uf_req && $first) {
-					echo ' data-rule-required="true"';
-					if ($f->uf_min) echo ' data-rule-minlength="'.$f->uf_min.'"';
-					if ($f->uf_max) echo ' data-rule-maxlength="'.$f->uf_max.'"';
-					echo ' data-msg-required="This Field is required"';
-					if ($f->uf_min) echo ' data-msg-minlength="Select at least '.$f->uf_min.'"';
-					if ($f->uf_max) echo ' data-msg-maxlength="Select at most '.$f->uf_max.'"';
-					$first=false;
-				}
-				echo $checked.'/>'."\n";
-				echo '<label for="jform_'.$sname.$o->value.'">';
-				echo ' '.$o->text.'</label></div>'."\n";
-				
-			}
+			echo JHtml::_('muefields.mcbox',$f,$this->userinfo->$sname);
 		}
 	
 		//radio
 		if ($f->uf_type=="multi") {
-			$first=true;
-			foreach ($f->options as $o) {
-				if (!empty($this->userinfo->$sname)) $checked = in_array($o->value,$this->userinfo->$sname) ? ' checked="checked"' : '';
-				else $checked = '';
-				echo '<div class="radio"><input type="radio" name="jform['.$sname.']" value="'.$o->value.'" id="jform_'.$sname.$o->value.'" class="uf_radio"';
-				if ($f->uf_req && $first) { echo ' data-rule-required="true" data-msg-required="This Field is required"'; $first=false;}
-				echo $checked.'/>'."\n";
-				echo '<label for="jform_'.$sname.$o->value.'">';
-				echo ' '.$o->text.'</label></div>>'."\n";
-				
-			}
+			echo JHtml::_('muefields.multi',$f,$this->userinfo->$sname);
 		}
 	
 		//dropdown
 		if ($f->uf_type=="dropdown") {
-			echo '<div class=""><select id="jform_'.$sname.'" name="jform['.$sname.']" class="form-control uf_field uf_select input-sm"';
-			if ($f->uf_req) { echo ' data-rule-required="true" data-msg-required="This Field is required"'; }
-			echo '>';
-			foreach ($f->options as $o) {
-				if (!empty($this->userinfo->$sname)) $selected = in_array($o->value,$this->userinfo->$sname) ? ' selected="selected"' : '';
-				else $selected = '';
-				echo '<option value="'.$o->value.'"'.$selected.'>';
-				echo ' '.$o->text.'</option>';
-			}
-			echo '</select></div>';
+			echo JHtml::_('muefields.dropdown',$f,$this->userinfo->$sname);
 		}
 		
 		//multilist
 		if ($f->uf_type=="mlist") {
-			echo '<div class=""><select id="jform_'.$sname.'" name="jform['.$sname.'][]" class="form-control uf_field uf_mselect input-sm" size="4" multiple="multiple"';
-			if ($f->uf_req) {
-				echo ' data-rule-required="true"';
-				if ($f->uf_min) echo ' data-rule-minlength="'.$f->uf_min.'"';
-				if ($f->uf_max) echo ' data-rule-maxlength="'.$f->uf_max.'"';
-				echo ' data-msg-required="This Field is required"';
-				if ($f->uf_min) echo ' data-msg-minlength="Select at least '.$f->uf_min.'"';
-				if ($f->uf_max) echo ' data-msg-maxlength="Select at most '.$f->uf_max.'"';
-				$first=false;
-			}
-			echo '>';
-			foreach ($f->options as $o) {
-				if (!empty($this->userinfo->$sname)) $selected = in_array($o->value,$this->userinfo->$sname) ? ' selected="selected"' : '';
-				else $selected = '';
-				echo '<option value="'.$o->value.'"'.$selected.'>';
-				echo ' '.$o->text.'</option>';
-			}
-			echo '</select></div>';
+			echo JHtml::_('muefields.mlist',$f,$this->userinfo->$sname);
 		}
 		
 		//text field, phone #, email, username
@@ -153,69 +94,29 @@ foreach($this->userfields as $f) {
 		
 		//password
 		if ($f->uf_type=="password") {
-			echo '<div class=""><input name="jform['.$sname.']" id="jform_'.$sname.'" class="form-control uf_field input-sm" size="20" type="password" ';
-			echo 'data-rule-minlength="8"';
-			if ($f->uf_match) echo ' data-rule-equalTo="#jform_'.$f->uf_match.'"';
-			echo ' data-msg-minlength="Minimum length 8 characters"';
-			if ($f->uf_match) echo ' data-msg-equalTo="Fields must match"';
-			echo '></div>';
+			echo JHtml::_('muefields.password',$f);
 		}
 		
 		//text area
 		if ($f->uf_type=="textar") {
-			echo '<div class=""><textarea name="jform['.$sname.']" id="jform_'.$sname.'" cols="70" rows="4" class="form-control uf_field input-sm"';
-			if ($f->uf_req) { echo ' data-rule-required="true" data-msg-required="This Field is required"'; }
-			echo '>'.$this->userinfo->$sname.'</textarea></div>';
+			echo JHtml::_('muefields.textar',$f,$this->userinfo->$sname);
 		}
 		
 		//Yes no
 		if ($f->uf_type=="yesno") {
-			echo '<div class=""><select id="jform_'.$sname.'" name="jform['.$sname.']" class="form-control uf_field input-sm" size="1">';
-			$selected = ' selected="selected"';
-			echo '<option value="1"';
-			echo ($this->userinfo->$sname == "1") ? $selected : '';
-			echo '>Yes</option>';
-			echo '<option value="0"';
-			echo ($this->userinfo->$sname == "0") ? $selected : '';
-			echo '>No</option>';
-			
-			echo '</select></div>';
+			echo JHtml::_('muefields.yesno',$f,$this->userinfo->$sname);
 			
 		}
 	
 		//Birthday
 		if ($f->uf_type=="birthday") {
-			$selected = ' selected="selected"';
-			echo '<div class=""><select id="jform_'.$sname.'_month" name="jform['.$sname.'_month]" class="form-control uf_bday_month input-sm">';
-			echo '<option value="01"'; echo (substr($this->userinfo->$sname,0,2) == "01") ? $selected : ''; echo '>01 - January</option>';
-			echo '<option value="02"'; echo (substr($this->userinfo->$sname,0,2) == "02") ? $selected : ''; echo '>02 - February</option>';
-			echo '<option value="03"'; echo (substr($this->userinfo->$sname,0,2) == "03") ? $selected : ''; echo '>03 - March</option>';
-			echo '<option value="04"'; echo (substr($this->userinfo->$sname,0,2) == "04") ? $selected : ''; echo '>04 - April</option>';
-			echo '<option value="05"'; echo (substr($this->userinfo->$sname,0,2) == "05") ? $selected : ''; echo '>05 - May</option>';
-			echo '<option value="06"'; echo (substr($this->userinfo->$sname,0,2) == "06") ? $selected : ''; echo '>06 - June</option>';
-			echo '<option value="07"'; echo (substr($this->userinfo->$sname,0,2) == "07") ? $selected : ''; echo '>07 - July</option>';
-			echo '<option value="08"'; echo (substr($this->userinfo->$sname,0,2) == "08") ? $selected : ''; echo '>08 - August</option>';
-			echo '<option value="09"'; echo (substr($this->userinfo->$sname,0,2) == "09") ? $selected : ''; echo '>09 - September</option>';
-			echo '<option value="10"'; echo (substr($this->userinfo->$sname,0,2) == "10") ? $selected : ''; echo '>10 - October</option>';
-			echo '<option value="11"'; echo (substr($this->userinfo->$sname,0,2) == "11") ? $selected : ''; echo '>11 - November</option>';
-			echo '<option value="12"'; echo (substr($this->userinfo->$sname,0,2) == "12") ? $selected : ''; echo '>12 - December</option>';
-			echo '</select>';
-			echo '<select id="jform_'.$sname.'_day" name="jform['.$sname.'_day]" class="form-control uf_bday_day input-sm">';
-			for ($i=1;$i<=31;$i++) {
-				if ($i<10) $val = "0".$i;
-				else $val=$i;
-				echo '<option value="'.$val.'"';
-				echo (substr($this->userinfo->$sname,2,2) == $val) ? $selected : '';
-				echo '>'.$val.'</option>';
-			}
-			echo '</select></div>';	
+			echo JHtml::_('muefields.birthday',$f,$this->userinfo->$sname);
 		}
 		
 		if ($f->uf_note) echo '<span class="uf_note">'.$f->uf_note.'</span>';
 		echo '</div>';
 		echo '<div class="mue-user-edit-error">';
-		//if ($f->uf_type=="multi" || $f->uf_type=="mcbox") echo '<label id="jform_'.$sname.'-lbl" for="jform['.$sname.']" class="uf_error"></label>';
-		//else echo '<label id="jform_'.$sname.'-lbl" for="jform_'.$sname.'" class="uf_error"></label>';
+		
 		echo '</div>';
 		echo '</div>';
 	} else {
@@ -233,8 +134,7 @@ foreach($this->userfields as $f) {
 			echo '<input type="hidden" name="jform['.$sname.']" value="'.$this->userinfo->$sname.'">';
 			echo '</div>';
 			echo '<div class="mue-user-edit-error">';
-			//if ($f->uf_type=="multi" || $f->uf_type=="mcbox") echo '<label id="jform_'.$sname.'-lbl" for="jform['.$sname.']" class="uf_error"></label>';
-			//else echo '<label id="jform_'.$sname.'-lbl" for="jform_'.$sname.'" class="uf_error"></label>';
+			
 			echo '</div>';
 			echo '</div>';
 		}
