@@ -10,6 +10,14 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_mue&view=usersubs'); ?>" method="post" name="adminForm" id="adminForm">
+    <?php if (!empty($this->sidebar)) : ?>
+    <div id="j-sidebar-container" class="span2">
+        <?php echo $this->sidebar; ?>
+    </div>
+    <div id="j-main-container" class="span10">
+        <?php else : ?>
+        <div id="j-main-container">
+            <?php endif;?>
 	<fieldset id="filter-bar">
 		<div class="filter-search fltlft pull-left">
 			<input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" title="<?php echo JText::_('COM_CONTINUED_SEARCH_IN_PURCHASE'); ?>" />
@@ -161,8 +169,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 		
 		</tbody>
 	</table>
-	
-	<div>
+
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />
 		<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />

@@ -22,8 +22,12 @@ class MUEViewUsersubs extends JViewLegacy
 			JError::raiseError(500, implode('<br />', $errors));
 			return false;
 		}
-		
-		// Set the toolbar
+
+        // Set the submenu
+        MUEHelper::addSubmenu(JRequest::getVar('view'));
+        $this->sidebar = JHtmlSidebar::render();
+
+        // Set the toolbar
 		$this->addToolBar();
 
 		// Display the template

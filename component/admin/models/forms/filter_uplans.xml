@@ -16,6 +16,15 @@
                 >
             <option value="">JOPTION_SELECT_PUBLISHED</option>
         </field>
+        <field
+                name="access"
+                type="accesslevel"
+                label="JOPTION_FILTER_ACCESS"
+                description="JOPTION_FILTER_ACCESS_DESC"
+                onchange="this.form.submit();"
+                >
+            <option value="">JOPTION_SELECT_ACCESS</option>
+        </field>
     </fields>
     <fields name="list">
         <field
@@ -24,11 +33,13 @@
                 label="COM_CONTENT_LIST_FULL_ORDERING"
                 description="COM_CONTENT_LIST_FULL_ORDERING_DESC"
                 onchange="this.form.submit();"
-                default="f.ordering ASC"
+                default="p.ordering ASC"
                 >
             <option value="">JGLOBAL_SORT_BY</option>
-            <option value="f.ordering ASC">JGRID_HEADING_ORDERING_ASC</option>
-            <option value="f.ordering DESC">JGRID_HEADING_ORDERING_DESC</option>
+            <option value="p.ordering ASC">JGRID_HEADING_ORDERING_ASC</option>
+            <option value="p.ordering DESC">JGRID_HEADING_ORDERING_DESC</option>
+            <option value="p.access ASC">JGRID_HEADING_ACCESS_ASC</option>
+            <option value="p.access DESC">JGRID_HEADING_ACCESS_DESC</option>
         </field>
         <field
                 name="limit"

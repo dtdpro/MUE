@@ -15,6 +15,9 @@ class MUEModelUgroups extends JModelList
 	if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
 				'ordering', 'ug.ordering',
+                'ug_name','ug.ug_name',
+                'published',
+                'access','ug.access'
 			);
 		}
 		parent::__construct($config);
@@ -24,6 +27,9 @@ class MUEModelUgroups extends JModelList
 	{
 		// Initialise variables.
 		$app = JFactory::getApplication('administrator');
+
+        $search = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
+        $this->setState('filter.search', $search);
 
 		$accessId = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', null, 'int');
 		$this->setState('filter.access', $accessId);
@@ -67,6 +73,17 @@ class MUEModelUgroups extends JModelList
 		} else if ($published === '') {
 			$query->where('(ug.published IN (0, 1))');
 		}
+
+        // Filter by search in title
+        $search = $this->getState('filter.search');
+        if (!empty($search)) {
+            if (stripos($search, 'id:') === 0) {
+                $query->where('ug.ug_id = '.(int) substr($search, 3));
+            } else {
+                $search = $db->Quote('%'.$db->escape($search, true).'%');
+                $query->where('(ug.ug_name LIKE '.$search.')');
+            }
+        }
 		
 		$orderCol	= $this->state->get('list.ordering');
 		$orderDirn	= $this->state->get('list.direction');

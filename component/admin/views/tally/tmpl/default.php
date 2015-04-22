@@ -3,7 +3,15 @@
 .muecom-opt-bar-box { background-color: #777777; width: 100%; height: 10px; float:left;}
 .muecom-opt-bar-bar { height: 10px; }
 </style>
-<?php 
+<?php if (!empty($this->sidebar)) : ?>
+    <div id="j-sidebar-container" class="span2">
+        <?php echo $this->sidebar; ?>
+    </div>
+    <div id="j-main-container" class="span10">
+<?php else : ?>
+    <div id="j-main-container">
+<?php endif;?>
+<?php
 $db =& JFactory::getDBO();
 		
 	foreach ($this->fdata as $f) {
@@ -11,9 +19,8 @@ $db =& JFactory::getDBO();
 		switch ($f->uf_type) {
 			case 'multi':
 			case 'dropdown':
-				echo '<table class="adminform"><tbody><tr><td>';
 				echo '<h3>'.$f->uf_name.'</h3>';
-				echo '<table class="adminlist">';
+				echo '<table class="adminlist table table-striped" width="100%">';
 				echo '<thead><tr><th align="left" width="30%">Option</th><th width="10%">Count</th><th></th></tr></thead>';
 				echo '<tfoot><tr><td colspan="4"></td></tr></tfoot>';
 				echo '<tbody>';
@@ -45,7 +52,6 @@ $db =& JFactory::getDBO();
 					echo '</td></tr>';
 				}
 				echo '</tbody></table>';
-				echo '</td></tr></tbody></table>';
 				break;
 			case 'message':
 				echo '<h2>'.$f->uf_name.'</h2>';
@@ -56,3 +62,4 @@ $db =& JFactory::getDBO();
 	}
 	
 ?>
+        </div>

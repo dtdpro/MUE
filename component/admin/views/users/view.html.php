@@ -17,6 +17,7 @@ class MUEViewUsers extends JViewLegacy
 		$this->ugroups = $this->get('UGroups');
 		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
+
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) 
 		{
@@ -27,7 +28,12 @@ class MUEViewUsers extends JViewLegacy
 		foreach ($this->ugroups as $u) {
 			$this->usergroups[$u->value] = $u->text;
 		}
-		
+
+        // Set the submenu
+        MUEHelper::addSubmenu(JRequest::getVar('view'));
+
+        $this->sidebar = JHtmlSidebar::render();
+
 		// Set the toolbar
 		$this->addToolBar();
 

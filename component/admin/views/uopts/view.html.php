@@ -8,18 +8,16 @@ jimport('joomla.application.component.view');
 
 class MUEViewUopts extends JViewLegacy
 {
-	protected $items;
-	protected $pagination;
-	protected $state;
-	protected $fields;
 	
 	function display($tpl = null) 
 	{
 		// Get data from the model
-		$this->state = $this->get('State');
-		$this->pagination = $this->get('Pagination');
-		$this->items = $this->get('Items');
-		$this->fields = $this->get('UFields');
+        $this->state = $this->get('State');
+        $this->items = $this->get('Items');
+        $this->pagination = $this->get('Pagination');
+		$this->field = $this->get('Field');
+        $this->filterForm    = $this->get('FilterForm');
+        $this->activeFilters = $this->get('ActiveFilters');
 		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) 
@@ -27,7 +25,11 @@ class MUEViewUopts extends JViewLegacy
 			JError::raiseError(500, implode('<br />', $errors));
 			return false;
 		}
-		
+
+        // Set the submenu
+        MUEHelper::addSubmenu(JRequest::getVar('view'),$this->field->uf_name);
+        $this->sidebar = JHtmlSidebar::render();
+
 		// Set the toolbar
 		$this->addToolBar();
 
@@ -54,8 +56,6 @@ class MUEViewUopts extends JViewLegacy
 		} else  {
 			JToolBarHelper::trash('uopts.trash');
 		}
-		JToolBarHelper::divider();
-		JToolBarHelper::back('COM_MUE_TOOLBAR_FIELDS','index.php?option=com_mue&view=ufields');
 	}
 	
 	protected function setDocument() 
@@ -63,4 +63,12 @@ class MUEViewUopts extends JViewLegacy
 		$document = JFactory::getDocument();
 		$document->setTitle(JText::_('COM_MUE_MANAGER_UOPTS'));
 	}
+
+
+    protected function getSortFields()
+    {
+        return array(
+            'o.ordering'     => JText::_('JGRID_HEADING_ORDERING')
+        );
+    }
 }

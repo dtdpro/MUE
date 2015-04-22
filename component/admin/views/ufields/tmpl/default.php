@@ -44,8 +44,15 @@ if ($saveOrder) {
 
 
 <form action="<?php echo JRoute::_('index.php?option=com_mue&view=ufields'); ?>" method="post" name="adminForm" id="adminForm">
+    <?php if (!empty($this->sidebar)) : ?>
+    <div id="j-sidebar-container" class="span2">
+        <?php echo $this->sidebar; ?>
+    </div>
+    <div id="j-main-container" class="span10">
+        <?php else : ?>
+        <div id="j-main-container">
+            <?php endif;?>
 
-    <div id="j-main-container">
 
 
         <?php
@@ -59,9 +66,9 @@ if ($saveOrder) {
 		<thead>
 			<tr>
                 <th width="1%" class="nowrap center hidden-phone">
-                    <?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'a.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
+                    <?php echo JHtml::_('searchtools.sort', '', 'f.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING', 'icon-menu-2'); ?>
                 </th>
-				<th width="1%">
+                <th width="1%">
 					<input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($this->items); ?>);" />
 				</th>	
 				<th width="1%">
@@ -122,7 +129,7 @@ if ($saveOrder) {
 					<?php echo JHtml::_('grid.id', $i, $item->uf_id); ?>
 				</td>
 				<td class="center">
-					<?php if ($item->uf_id > 9) echo JHtml::_('jgrid.published', $item->published, $i, 'ufields.', true);?>
+					<?php if ($item->uf_id > 8) echo JHtml::_('jgrid.published', $item->published, $i, 'ufields.', true);?>
 				</td>
 				<td>
 						<a href="<?php echo JRoute::_('index.php?option=com_mue&task=ufield.edit&uf_id='.(int) $item->uf_id); ?>">
@@ -231,12 +238,9 @@ if ($saveOrder) {
 		</tbody>
 	</table>
 	
-	<div>
+
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />
-		<input type="hidden" name="filter_area" value="<?php echo $this->state->get('filter.area'); ?>" />
-		<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />
-		<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 	</div>
 </form>

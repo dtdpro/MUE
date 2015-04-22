@@ -16,6 +16,7 @@ class MUEModelUfields extends JModelList
 		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
 				'ordering', 'f.ordering',
+                'published'
 			);
 		}
 		parent::__construct($config);
@@ -26,7 +27,10 @@ class MUEModelUfields extends JModelList
 		// Initialise variables.
 		$app = JFactory::getApplication('administrator');
 
-		$published = $this->getUserStateFromRequest($this->context.'.filter.published', 'filter_published', '', 'string');
+        $search = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
+        $this->setState('filter.search', $search);
+
+        $published = $this->getUserStateFromRequest($this->context.'.filter.published', 'filter_published', '', 'string');
 		$this->setState('filter.published', $published);
 		
 		// Load the parameters.
@@ -56,6 +60,17 @@ class MUEModelUfields extends JModelList
 		} else if ($published === '') {
 			$query->where('(f.published IN (0, 1))');
 		}
+
+        // Filter by search in title
+        $search = $this->getState('filter.search');
+        if (!empty($search)) {
+            if (stripos($search, 'id:') === 0) {
+                $query->where('f.uf_id = '.(int) substr($search, 3));
+            } else {
+                $search = $db->Quote('%'.$db->escape($search, true).'%');
+                $query->where('(f.uf_name LIKE '.$search.' OR f.uf_sname LIKE '.$search.')');
+            }
+        }
 				
 		$orderCol	= $this->state->get('list.ordering');
 		$orderDirn	= $this->state->get('list.direction');

@@ -39,7 +39,7 @@
 			label="COM_MUE_UOPT_FIELD_NAME_LABEL"
 			description="COM_MUE_UOPT_FIELD_NAME_DESC"
 			rows="4"
-			cols="70"
+			cols="80"
 			class="inputbox"
 			required="true"
 			filter="safehtml"

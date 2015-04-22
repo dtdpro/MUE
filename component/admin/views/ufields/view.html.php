@@ -15,9 +15,9 @@ class MUEViewUfields extends JViewLegacy
 	function display($tpl = null) 
 	{
 		// Get data from the model
-		$this->items = $this->get('Items');
-		$this->pagination = $this->get('Pagination');
-		$this->state		= $this->get('State');
+        $this->state = $this->get('State');
+        $this->items = $this->get('Items');
+        $this->pagination = $this->get('Pagination');
         $this->filterForm    = $this->get('FilterForm');
         $this->activeFilters = $this->get('ActiveFilters');
 		// Check for errors.
@@ -26,6 +26,11 @@ class MUEViewUfields extends JViewLegacy
 			JError::raiseError(500, implode('<br />', $errors));
 			return false;
 		}
+
+        // Set the submenu
+        MUEHelper::addSubmenu(JRequest::getVar('view'));
+        $this->sidebar = JHtmlSidebar::render();
+
 		// Set the toolbar
 		$this->addToolBar();
 

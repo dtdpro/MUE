@@ -16,6 +16,7 @@ class MUEModelUopts extends JModelList
 		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
 				'ordering', 'o.ordering',
+                'published'
 			);
 		}
 		parent::__construct($config);
@@ -27,7 +28,10 @@ class MUEModelUopts extends JModelList
 		$app = JFactory::getApplication('administrator');
 
 		// Load the filter state.
-		$qId = $this->getUserStateFromRequest($this->context.'.filter.field', 'filter_field', '');
+        $search = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
+        $this->setState('filter.search', $search);
+
+        $qId = $this->getUserStateFromRequest($this->context.'.filter.field', 'filter_field', '');
 		$this->setState('filter.field', $qId);
 
 		$published = $this->getUserStateFromRequest($this->context.'.filter.published', 'filter_published', '', 'string');
@@ -66,6 +70,17 @@ class MUEModelUopts extends JModelList
 		if (is_numeric($qId)) {
 			$query->where('o.opt_field = '.(int) $qId);
 		}
+
+        // Filter by search in title
+        $search = $this->getState('filter.search');
+        if (!empty($search)) {
+            if (stripos($search, 'id:') === 0) {
+                $query->where('o.opt_id = '.(int) substr($search, 3));
+            } else {
+                $search = $db->Quote('%'.$db->escape($search, true).'%');
+                $query->where('(o.opt_text LIKE '.$search.' )');
+            }
+        }
 				
 		$orderCol	= $this->state->get('list.ordering');
 		$orderDirn	= $this->state->get('list.direction');
@@ -75,14 +90,13 @@ class MUEModelUopts extends JModelList
 		return $query;
 	}
 	
-	public function getUFields() {
+	public function getField() {
 		$app = JFactory::getApplication('administrator');
 		$query = $this->_db->getQuery(true);
-		$query->select('uf_id AS value, uf_sname AS text');
+		$query->select('*');
 		$query->from('#__mue_ufields');
-		$query->where('uf_type IN ("mcbox","multi","dropdown")');
-		$query->order('ordering');
+		$query->where('uf_id = '.$this->getState('filter.field'));
 		$this->_db->setQuery($query);
-		return $this->_db->loadObjectList();
+		return $this->_db->loadObject();
 	}
 }

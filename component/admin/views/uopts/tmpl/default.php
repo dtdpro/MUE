@@ -3,51 +3,55 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 // load tooltip behavior
-JHtml::_('behavior.tooltip');
+JHtml::_('bootstrap.tooltip');
+JHtml::_('behavior.multiselect');
+JHtml::_('dropdown.init');
+JHtml::_('formbehavior.chosen', 'select');
 
 $listOrder	= $this->escape($this->state->get('list.ordering'));
 $listDirn	= $this->escape($this->state->get('list.direction'));
 $saveOrder	= $listOrder == 'o.ordering';
 $ordering	= ($listOrder == 'o.ordering');
+$sortFields = $this->getSortFields();
+if ($saveOrder) {
+    $saveOrderingUrl = 'index.php?option=com_mue&task=uopts.saveOrderAjax&tmpl=component';
+    JHtml::_('sortablelist.sortable', 'MUEOptionList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
+}
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_mue&view=uopts'); ?>" method="post" name="adminForm" id="adminForm">
-	<fieldset id="filter-bar">
-		<div class="filter-search fltlft pull-left">
-			
-		</div>
-		<div class="filter-select fltrt pull-right">
-			<select name="filter_published" class="inputbox" onchange="this.form.submit()">
-				<option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-				<?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
-			</select>
-			<select name="filter_field" class="inputbox" onchange="this.form.submit()">
-				<option value=""><?php echo JText::_('COM_MUE_SELECT_QUESTION');?></option>
-				<?php echo $html[] = JHtml::_('select.options',$this->fields,"value","text",$this->state->get('filter.field')); ?>
-			</select>
-		</div>
-	</fieldset>
+    <?php if (!empty($this->sidebar)) : ?>
+    <div id="j-sidebar-container" class="span2">
+        <?php echo $this->sidebar; ?>
+    </div>
+    <div id="j-main-container" class="span10">
+        <?php else : ?>
+        <div id="j-main-container">
+            <?php endif;?>
+            <?php
+            // Search tools bar
+            echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this));
+            ?>
 	
 	<div class="clr"> </div>
 	
-	<table class="adminlist table table-striped">
+	<table class="adminlist table table-striped" id ="MUEOptionList">
 		<thead>
 			<tr>
-				<th width="5">
-					<?php echo JText::_('COM_MUE_UOPT_HEADING_ID'); ?>
-				</th>
-				<th width="20">
-					<input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($this->items); ?>);" />
-				</th>			
+                <th width="1%" class="nowrap center hidden-phone">
+                    <?php echo JHtml::_('searchtools.sort', '', 'o.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING', 'icon-menu-2'); ?>
+                </th>
+                <th width="1%">
+                    <input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($this->items); ?>);" />
+                </th>
+                <th width="1%">
+                    <?php echo JText::_('JPUBLISHED'); ?>
+                </th>
 				<th>
 					<?php echo JText::_('COM_MUE_UOPT_HEADING_TITLE'); ?>
-				</th>	
-				<th width="100">
-					<?php echo JText::_('JPUBLISHED'); ?>
-				</th>	
-				<th width="10%">
-					<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ORDERING', 'o.ordering', $listDirn, $listOrder); ?>
-					<?php echo JHtml::_('grid.order',  $this->items, 'filesave.png', 'uopts.saveorder'); ?>
 				</th>
+                <th width="1%">
+                    <?php echo JText::_('COM_MUE_UOPT_HEADING_ID'); ?>
+                </th>
 			</tr>
 		</thead>
 		<tfoot>
@@ -58,33 +62,33 @@ $ordering	= ($listOrder == 'o.ordering');
 		<tbody>
 		<?php foreach($this->items as $i => $item): ?>
 			<tr class="row<?php echo $i % 2; ?>">
-				<td>
-					<?php echo $item->opt_id; ?>
-				</td>
-				<td>
+                <td class="order nowrap center hidden-phone">
+                    <?php
+                    $disableClassName = '';
+                    $disabledLabel	  = '';
+                    if (!$saveOrder) :
+                        $disabledLabel    = JText::_('JORDERINGDISABLED');
+                        $disableClassName = 'inactive tip-top';
+                    endif; ?>
+                    <span class="sortable-handler hasTooltip <?php echo $disableClassName?>" title="<?php echo $disabledLabel?>">
+							<i class="icon-menu"></i>
+						</span>
+                    <input type="text" style="display:none" name="order[]" size="5" value="<?php echo $item->ordering;?>" class="width-20 text-area-order " />
+
+                </td>
+                <td>
 					<?php echo JHtml::_('grid.id', $i, $item->opt_id); ?>
 				</td>
+                <td class="center">
+                    <?php echo JHtml::_('jgrid.published', $item->published, $i, 'uopts.', true);?>
+                </td>
 				<td>
 						<a href="<?php echo JRoute::_('index.php?option=com_mue&task=uopt.edit&opt_id='.(int) $item->opt_id); ?>">
 						<?php echo $this->escape($item->opt_text); ?></a>
 				</td>
-				<td class="center">
-					<?php echo JHtml::_('jgrid.published', $item->published, $i, 'uopts.', true);?>
-				</td>
-				<td class="order">	<div class="input-prepend">
-						<?php if ($saveOrder) :?>
-							<?php if ($listDirn == 'asc') : ?>
-								<span class="add-on"><?php echo $this->pagination->orderUpIcon($i, ($item->opt_field == @$this->items[$i-1]->opt_field), 'uopts.orderup', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
-								<span class="add-on"><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, ($item->opt_field == @$this->items[$i+1]->opt_field), 'uopts.orderdown', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
-							<?php elseif ($listDirn == 'desc') : ?>
-								<span class="add-on"><?php echo $this->pagination->orderUpIcon($i, ($item->opt_field == @$this->items[$i-1]->opt_field), 'uopts.orderdown', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
-								<span class="add-on"><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, ($item->opt_field == @$this->items[$i+1]->opt_field), 'uopts.orderup', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
-							<?php endif; ?>
-						<?php endif; ?>
-						<?php $disabled = $saveOrder ?  '' : 'disabled="disabled"'; ?>
-						<input type="text" name="order[]" size="5" value="<?php echo $item->ordering;?>" <?php echo $disabled ?> class="text-area-order width-20" />
-		
-				</div></td>
+                <td>
+                    <?php echo $item->opt_id; ?>
+                </td>
 			
 			</tr>
 		<?php endforeach; ?></tbody>
@@ -92,10 +96,9 @@ $ordering	= ($listOrder == 'o.ordering');
 
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />
-		<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />
-		<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
+        <input type="hidden" name="filter_field" value="<?php echo $this->field->uf_id; ?>">
 		<?php echo JHtml::_('form.token'); ?>
-
+</div>
 </form>
 
 

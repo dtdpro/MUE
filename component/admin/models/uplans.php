@@ -15,7 +15,7 @@ class MUEModelUplans extends JModelList
 		
 		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
-				'ordering', 'o.ordering',
+				'ordering', 'p.ordering','access','p.access','published'
 			);
 		}
 		parent::__construct($config);
@@ -26,7 +26,10 @@ class MUEModelUplans extends JModelList
 		// Initialise variables.
 		$app = JFactory::getApplication('administrator');
 
-		$accessId = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', null, 'int');
+        $search = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
+        $this->setState('filter.search', $search);
+
+        $accessId = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', null, 'int');
 		$this->setState('filter.access', $accessId);
 
 		$published = $this->getUserStateFromRequest($this->context.'.filter.published', 'filter_published', '', 'string');
@@ -69,7 +72,18 @@ class MUEModelUplans extends JModelList
 			$query->where('p.access = '.(int) $access);
 		}
 
-		$orderCol	= $this->state->get('list.ordering');
+        // Filter by search in title
+        $search = $this->getState('filter.search');
+        if (!empty($search)) {
+            if (stripos($search, 'id:') === 0) {
+                $query->where('p.sub_id = '.(int) substr($search, 3));
+            } else {
+                $search = $db->Quote('%'.$db->escape($search, true).'%');
+                $query->where('(p.sub_extitle LIKE '.$search.' )');
+            }
+        }
+
+        $orderCol	= $this->state->get('list.ordering');
 		$orderDirn	= $this->state->get('list.direction');
 		
 		$query->order($db->escape($orderCol.' '.$orderDirn));

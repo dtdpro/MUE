@@ -11,7 +11,6 @@ class MUEController extends JControllerLegacy
 	{
 		// Set the submenu
 		parent::display();
-		MUEHelper::addSubmenu(JRequest::getVar('view'));
 	}
 
 }

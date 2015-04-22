@@ -14,7 +14,8 @@ class MUEViewUplans extends JViewLegacy
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 		$this->state		= $this->get('State');
-		$flist = $this->get('Fields');
+        $this->filterForm    = $this->get('FilterForm');
+        $this->activeFilters = $this->get('ActiveFilters');
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) 
 		{
@@ -24,7 +25,11 @@ class MUEViewUplans extends JViewLegacy
 		// Assign data to the view
 		$this->items = $items;
 		$this->pagination = $pagination;
-		$this->flist = $flist;
+
+        // Set the submenu
+        MUEHelper::addSubmenu(JRequest::getVar('view'));
+        $this->sidebar = JHtmlSidebar::render();
+
 		// Set the toolbar
 		$this->addToolBar();
 
@@ -58,4 +63,11 @@ class MUEViewUplans extends JViewLegacy
 		$document = JFactory::getDocument();
 		$document->setTitle(JText::_('COM_MUE_MANAGER_UPLANS'));
 	}
+    protected function getSortFields()
+    {
+        return array(
+            'p.ordering'     => JText::_('JGRID_HEADING_ORDERING'),
+            'p.access'     => JText::_('JGRID_HEADING_ACESS')
+        );
+    }
 }

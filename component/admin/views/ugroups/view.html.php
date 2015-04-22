@@ -14,6 +14,9 @@ class MUEViewUgroups extends JViewLegacy
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 		$this->state		= $this->get('State');
+        $this->filterForm    = $this->get('FilterForm');
+        $this->activeFilters = $this->get('ActiveFilters');
+
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) 
 		{
@@ -24,7 +27,12 @@ class MUEViewUgroups extends JViewLegacy
 		$this->items = $items;
 		$this->pagination = $pagination;
 		$this->qlist = $qlist;
-		// Set the toolbar
+
+        // Set the submenu
+        MUEHelper::addSubmenu(JRequest::getVar('view'));
+        $this->sidebar = JHtmlSidebar::render();
+
+        // Set the toolbar
 		$this->addToolBar();
 
 		// Display the template
@@ -57,4 +65,11 @@ class MUEViewUgroups extends JViewLegacy
 		$document = JFactory::getDocument();
 		$document->setTitle(JText::_('COM_MUE_MANAGER_UGROUPS'));
 	}
+    protected function getSortFields()
+    {
+        return array(
+            'ug.ordering'     => JText::_('JGRID_HEADING_ORDERING'),
+            'ug.access'     => JText::_('JGRID_HEADING_ACESS')
+        );
+    }
 }

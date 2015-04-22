@@ -11,6 +11,9 @@ class MUEViewMue extends JViewLegacy
 	{
 		JToolBarHelper::title(   JText::_( 'MUE User Extension' ), 'mue' );
 		JToolBarHelper::preferences('com_mue');
-		parent::display($tpl);
+        // Set the submenu
+        MUEHelper::addSubmenu(JRequest::getVar('view'));
+        $this->sidebar = JHtmlSidebar::render();
+        parent::display($tpl);
 	}
 }

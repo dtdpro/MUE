@@ -11,8 +11,11 @@ class MUEViewTally extends JViewLegacy
 	{
 		JToolBarHelper::title(   JText::_( 'MUE User Fields - Results' ), 'mue' );
 		$model = $this->getModel('tally');
-		// Get data from the model
-		$this->fdata=$model->getFields();		
+		// Set the submenu
+        MUEHelper::addSubmenu(JRequest::getVar('view'));
+        $this->sidebar = JHtmlSidebar::render();
+        // Get data from the model
+        $this->fdata=$model->getFields();
 		parent::display($tpl);
 	}
 }
