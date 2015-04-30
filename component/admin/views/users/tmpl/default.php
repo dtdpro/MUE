@@ -66,7 +66,7 @@ JFactory::getDocument()->addScriptDeclaration('
 					<?php echo JHtml::_('searchtools.sort',  'COM_MUE_USER_HEADING_USERSNAME' , 'u.name', $listDirn, $listOrder); ?>
 				</th>
 				<th width="200">
-					<?php echo JHtml::_('grisearchtoolsd.sort',  'COM_MUE_USER_HEADING_EMAIL' , 'u.email', $listDirn, $listOrder); ?>
+					<?php echo JHtml::_('searchtools.sort',  'COM_MUE_USER_HEADING_EMAIL' , 'u.email', $listDirn, $listOrder); ?>
 				</th>
 				<th width="150">
 					<?php echo JText::_('COM_MUE_USER_HEADING_GROUP'); ?>
