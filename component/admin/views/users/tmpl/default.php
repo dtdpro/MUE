@@ -54,19 +54,19 @@ JFactory::getDocument()->addScriptDeclaration('
 		<thead>
 			<tr>
 				<th width="5">
-					<?php echo JHtml::_('grid.sort', 'COM_MUE_USER_HEADING_ID', 'u.id', $listDirn, $listOrder); ?>
+					<?php echo JHtml::_('searchtools.sort', 'COM_MUE_USER_HEADING_ID', 'u.id', $listDirn, $listOrder); ?>
 				</th>
 				<th width="20">
 					<input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($this->items); ?>);" />
 				</th>			
 				<th>
-					<?php echo JHtml::_('grid.sort', 'COM_MUE_USER_HEADING_USERNAME', 'u.username', $listDirn, $listOrder); ?>
+					<?php echo JHtml::_('searchtools.sort', 'COM_MUE_USER_HEADING_USERNAME', 'u.username', $listDirn, $listOrder); ?>
 				</th>	
 				<th width="150">
-					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_USERSNAME' , 'u.name', $listDirn, $listOrder); ?>
+					<?php echo JHtml::_('searchtools.sort',  'COM_MUE_USER_HEADING_USERSNAME' , 'u.name', $listDirn, $listOrder); ?>
 				</th>
 				<th width="200">
-					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_EMAIL' , 'u.email', $listDirn, $listOrder); ?>
+					<?php echo JHtml::_('grisearchtoolsd.sort',  'COM_MUE_USER_HEADING_EMAIL' , 'u.email', $listDirn, $listOrder); ?>
 				</th>
 				<th width="150">
 					<?php echo JText::_('COM_MUE_USER_HEADING_GROUP'); ?>
@@ -75,19 +75,19 @@ JFactory::getDocument()->addScriptDeclaration('
 					<?php echo JText::_('COM_MUE_USER_HEADING_JGROUP'); ?>
 				</th>
 				<th width="150">
-					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_JOINSITE' , 'g.userg_siteurl', $listDirn, $listOrder); ?>
+					<?php echo JHtml::_('searchtools.sort',  'COM_MUE_USER_HEADING_JOINSITE' , 'g.userg_siteurl', $listDirn, $listOrder); ?>
 				</th>
 				<th class="nowrap" width="60">
-					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_ENABLED', 'u.block', $listDirn, $listOrder); ?>
+					<?php echo JHtml::_('searchtools.sort',  'COM_MUE_USER_HEADING_ENABLED', 'u.block', $listDirn, $listOrder); ?>
 				</th>
 				<th width="150">
-					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_VISIT' , 'u.lastvisitDate', $listDirn, $listOrder); ?>
+					<?php echo JHtml::_('searchtools.sort',  'COM_MUE_USER_HEADING_VISIT' , 'u.lastvisitDate', $listDirn, $listOrder); ?>
 				</th>
 				<th width="150">
-					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_UPDATE' , 'ug.userg_update', $listDirn, $listOrder); ?>
+					<?php echo JHtml::_('searchtools.sort',  'COM_MUE_USER_HEADING_UPDATE' , 'ug.userg_update', $listDirn, $listOrder); ?>
 				</th>
 				<th width="150">
-					<?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_REGISTERED' , 'u.registerDate', $listDirn, $listOrder); ?>
+					<?php echo JHtml::_('searchtools.sort',  'COM_MUE_USER_HEADING_REGISTERED' , 'u.registerDate', $listDirn, $listOrder); ?>
 				</th>
 				<?php if ($cfg->subscribe) { ?>
 					<th width="150"><?php echo JHtml::_('grid.sort',  'COM_MUE_USER_HEADING_SINCE' , 'ug.userg_subsince', $listDirn, $listOrder); ?></th>
@@ -239,8 +239,6 @@ JHtml::_('formbehavior.chosen', 'select');
 
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />
-		<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />
-		<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 	</div>
 </form>
