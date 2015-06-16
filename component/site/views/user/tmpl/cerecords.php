@@ -32,7 +32,7 @@ if ($this->userrecs) {
 			$total_credits = $total_credits + floatval($course->course_credits);
 		}
 		echo '</td><td> ';
-		if ($course->sess_pstatus == "pass" && $course->course_hascert) {
+		if ($course->sess_pstatus == "pass" && $course->course_hascert && $course->givecert) {
 			echo '<a href="'.JURI::base( true ).'/components/com_mcme/gencert.php?certid='.$course->ci_id.'" target="_blank" class="button uk-button">Download</a>';
 		}
 		echo '</td></tr>';

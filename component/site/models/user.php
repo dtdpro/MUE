@@ -244,7 +244,30 @@ class MUEModelUser extends JModelLegacy
 		$qci->where('c.published >= 1');
 		$qci->order('s.sess_start DESC');
 		$db->setQuery($qci);
-		return $db->loadObjectList();
+		$items = $db->loadObjectList();
+
+		// Check if certificate available
+		foreach ($items as &$item) {
+			if (!$item->course_altcert) {
+				$usergroupid = MUEHelper::getUserGroup($user->id)->userGroupID;
+				$qe = $db->getQuery(true);
+				$qe->select('cg_group');
+				$qe->from('#__mcme_coursegroups');
+				$qe->where('cg_course = '.$item->course_id);
+				$db->setQuery($qe);
+				$coursegroups=$db->loadColumn();
+				if (in_array($usergroupid,$coursegroups)) {
+					$item->givecert = true;
+				} else {
+					$item->givecert = false;
+				}
+
+			} else {
+				$item->givecert = true;
+			}
+		}
+
+		return $items;
 	}
 	
 	function getUserFields($group,$showhidden=false,$all=false,$changable=false,$type="") {
