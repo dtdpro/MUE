@@ -265,6 +265,9 @@ class MUEModelUser extends JModelLegacy
 			} else {
 				$item->givecert = true;
 			}
+
+            // Check Credits
+            if ($item->ci_credits == 0) $item->ci_credits = $item->course_credits;
 		}
 
 		return $items;

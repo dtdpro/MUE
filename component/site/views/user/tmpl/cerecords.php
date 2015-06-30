@@ -28,8 +28,8 @@ if ($this->userrecs) {
 		}
 		echo '</td><td>';
 		if ($course->sess_pstatus == "pass") {
-			echo number_format($course->course_credits,2);
-			$total_credits = $total_credits + floatval($course->course_credits);
+			echo number_format($course->ci_credits,2);
+			$total_credits = $total_credits + floatval($course->ci_credits);
 		}
 		echo '</td><td> ';
 		if ($course->sess_pstatus == "pass" && $course->course_hascert && $course->givecert) {
