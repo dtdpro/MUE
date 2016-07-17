@@ -3,13 +3,13 @@ defined('_JEXEC') or die('Restricted access');
 
 class MUEHelper {
 
-	function getConfig() {
+	public static function getConfig() {
 		$config = JComponentHelper::getParams('com_mue'); 
 		$cfg = $config->toObject();
 		return $cfg;
 	}
-	
-	function getDaysSinceLastUpdate() {
+
+	public static function getDaysSinceLastUpdate() {
 		$user =& JFactory::getUser();
 		$userid = $user->id;
 		$db =& JFactory::getDBO();
@@ -26,8 +26,8 @@ class MUEHelper {
 			return -1;
 		}
 	}
-	
-	function getUserInfo($useids = false) {
+
+	public static function getUserInfo($useids = false) {
 		$cfg = MUEHelper::getConfig();
 		$user =& JFactory::getUser();
 		$userid = $user->id;
@@ -111,8 +111,8 @@ class MUEHelper {
 		}
 		return $user;
 	}
-	
-	function getUserGroup($userid = 0) {
+
+	public static function getUserGroup($userid = 0) {
 		if (!$userid) {
 			$user =& JFactory::getUser();
 			$userid = $user->id;
@@ -125,8 +125,8 @@ class MUEHelper {
 		$usergroup = $db->loadObject();
 		return $usergroup;
 	}
-	
-	function getGroupInfo($groupid) {
+
+	public static function getGroupInfo($groupid) {
 		if (!$groupid) {
 			return false;
 		}
@@ -137,8 +137,8 @@ class MUEHelper {
 		$usergroup = $db->loadObject();
 		return $usergroup;
 	}
-	
-	function getUserSubs() {
+
+	public static function getUserSubs() {
 		$user =& JFactory::getUser();
 		$userid = $user->id;
 		$db =& JFactory::getDBO();
@@ -150,8 +150,8 @@ class MUEHelper {
 		$usersubs = $db->loadObjectList();
 		return $usersubs;
 	}
-	
-	function getActiveSub($userid=0) {
+
+	public static function getActiveSub($userid=0) {
 		if (!$userid) {
 			$user =& JFactory::getUser();
 			$userid = $user->id;
@@ -188,8 +188,8 @@ class MUEHelper {
 			return false;
 		}
 	}
-	
-	function updateSubJoomlaGroup($userid=0) {
+
+	public static function updateSubJoomlaGroup($userid=0) {
 		$cfg = MUEHelper::getConfig();
 		if (!$userid) return false;
 		$hasactsub = MUEHelper::getActiveSub($userid);

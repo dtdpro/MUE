@@ -20,7 +20,7 @@ abstract class MUEHelper
 		JHtmlSidebar::addEntry(JText::_('COM_MUE_SUBMENU_USERSUBS'), 'index.php?option=com_mue&view=usersubs', $submenu == 'usersubs');
 	}
 	
-	static function getStateOptions()
+	public static function getStateOptions()
 	{
 		// Build the filter options.
 		$options = array();
@@ -29,8 +29,8 @@ abstract class MUEHelper
 		
 		return $options;
 	}
-	
-	function getConfig() {
+
+	public static function getConfig() {
 		$config = JComponentHelper::getParams('com_mue'); 
 		$cfg = $config->toObject();
 		return $cfg;
