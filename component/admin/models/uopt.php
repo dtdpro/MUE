@@ -50,7 +50,7 @@ class MUEModelUOpt extends JModelAdmin
 		return $data;
 	}
 	
-	protected function prepareTable(&$table)
+	protected function prepareTable($table)
 	{
 		jimport('joomla.filter.output');
 		$date = JFactory::getDate();

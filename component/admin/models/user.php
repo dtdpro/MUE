@@ -582,7 +582,7 @@ class MUEModelUser extends JModelAdmin
 		return $fields;
 	}
 	
-	function validate($data, $group = null)
+	function validate($form, $data, $group = NULL)
 	{
 		// Filter and validate the form data.
 		$return	= true; //$form->validate($data, $group);
@@ -603,7 +603,7 @@ class MUEModelUser extends JModelAdmin
 			return false;
 		}
 
-		return $data;
+		return $form;
 	}
 	
 	function block(&$pks, $value = 1)
