@@ -244,7 +244,7 @@ class MUEModelBrlist extends JModelLegacy
 		foreach ($brfields->iterate() as $v) {
 			if ($v->type == 'select' || $v->type == 'radio') {
 				$list->list_msvars[$n] = (object)$v;
-				foreach ($v['options']->iterate() as $o) {
+				foreach ($v['options'] as $o) {
 					$list->list_msvars[$n]->options[] = JHtml::_('select.option', $o->value,$o->label);
 				}
 			}
