@@ -21,7 +21,7 @@ $first=true;
 	
 	});
 	function loadPaymentOptions() {
-		var url = '<?php echo JURI::base( true ); ?>/components/com_mue/subplans.php';
+		var url = '<?php echo JURI::base( true ); ?>/index.php?option=com_mue&view=subscribe&layout=cartops&tmpl=raw';
 		jQuery.post( url, jQuery("#subform").serialize(),
 			function( data ) {
 				jQuery( "#mue-processors" ).empty().append( data );
