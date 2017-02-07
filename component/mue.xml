@@ -5,10 +5,10 @@
 	<author>DtD Productions</author>
 	<authorEmail>info@dtdpro.com</authorEmail>
 	<authorUrl>http://www.dtdpro.com</authorUrl>
-	<copyright>Copyright 2012-2013 DtD Productions</copyright>
+	<copyright>Copyright 2012-2017 DtD Productions</copyright>
 	<license>GPL v2</license>
-	<version>1.7.5</version>
-	<releaseDate>2015.07.17</releaseDate>
+	<version>1.8.0</version>
+	<releaseDate>201.02.14</releaseDate>
 	<releaseType>Update</releaseType>
 	<downloadUrl>http://www.dtdpro.com/</downloadUrl>
 	<description>COM_MUE_DESC</description>
@@ -28,7 +28,6 @@
 		<filename>mue.php</filename>
 		<filename>controller.php</filename>
 		<filename>paypalipn.php</filename>
-		<filename>subplans.php</filename>
 		<filename>metadata.xml</filename>
 		<folder>models</folder>
 		<folder>views</folder>
@@ -50,6 +49,7 @@
 			<menu view="uplans">COM_MUE_SUBMENU_UPLANS</menu>
 			<menu view="users">COM_MUE_SUBMENU_USERS</menu>
 			<menu view="usersubs">COM_MUE_SUBMENU_USERSUBS</menu>
+			<menu view="couponcodes">COM_MUE_SUBMENU_COUPONS</menu>
 		</submenu>
 		<files folder="admin">
 			<filename>index.html</filename>
