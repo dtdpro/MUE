@@ -16,19 +16,24 @@
 		<field name="LOSTINFO_SUBJECT" type="text" label="COM_MUE_CONFIG_FIELD_LOSTINFO_SUBJECT_LABEL" description="COM_MUE_CONFIG_FIELD_LOSTINFO_SUBJECT_DESC" size="70" class="inputbox" required="false" default="" /> 
 		<field name="profile_top_content" type="textarea" label="COM_MUE_CONFIG_FIELD_PROFILE_TOP_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_PROFILE_TOP_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
 		<field name="profile_bottom_content" type="textarea" label="COM_MUE_CONFIG_FIELD_PROFILE_BOTTOM_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_PROFILE_BOTTOM_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
+		<field name="mailing_list" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_MAILING_LIST_LABEL" description="COM_MUE_CONFIG_FIELD_MAILING_LIST_DESC" default="0">
+			<option value="0">Opt-In</option>
+			<option value="1">Opt-Out</option>
+		</field>
 	</fieldset>
 	<fieldset name="reports" label="COM_MUE_CONFIG_REPORTS_LABEL" description="COM_MUE_CONFIG_REPORTS_DESC" addfieldpath="/administrator/components/com_mue/models/fields">
 		<field name="on_list_field" type="FieldInclude" class="inputbox" label="COM_MUE_CONFIG_FIELD_ONLIST_LABEL" description="COM_MUE_CONFIG_FIELD_ONLIST_DESC" />
 	</fieldset>
 	<fieldset name="userdirectory" label="COM_MUE_CONFIG_USERDIR_LABEL" description="COM_MUE_CONFIG_USERDIR_DESC" addfieldpath="/administrator/components/com_mue/models/fields">
-		<field name="userdir" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_USERDIR_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_DESC" default="0">
+		<field name="userdir" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_USERDIR_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_DESC" default="0">
 			<option value="0">No</option>
 			<option value="1">Yes</option>
 		</field>
-		<field name="usrdir_sub" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_USERDIRSUB_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIRSUB_DESC" default="0">
+		<field name="usrdir_sub" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_USERDIRSUB_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIRSUB_DESC" default="0">
 			<option value="0">No</option>
 			<option value="1">Yes</option>
 		</field>
+		<field name="gm_api_key" type="text" label="COM_MUE_CONFIG_FIELD_GM_APIKEY_LABEL" description="COM_MUE_CONFIG_FIELD_GM_APIKEY_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="userdir_title" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_TITLE_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_TITLE_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="on_userdir_field" type="FieldOnList" class="inputbox" label="COM_MUE_CONFIG_FIELD_ONUSERDIR_LABEL" description="COM_MUE_CONFIG_FIELD_ONUSERDIR_DESC" />
 		<field name="userdir_mapfields" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_MAPFIELDS_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_MAPFIELDS_DESC" size="70" class="inputbox" required="false" default="" />
@@ -48,11 +53,15 @@
 		
 	</fieldset>
 	<fieldset name="subscribing" label="COM_MUE_CONFIG_SUBSCRIBE_LABEL" description="COM_MUE_CONFIG_SUBSCRIBE_DESC">
-		<field name="subscribe" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_SUBSCRIBE_LABEL" description="COM_MUE_CONFIG_FIELD_SUBSCRIBE_DESC" default="0">
+		<field name="subscribe" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_SUBSCRIBE_LABEL" description="COM_MUE_CONFIG_FIELD_SUBSCRIBE_DESC" default="0">
 			<option value="0">No</option>
 			<option value="1">Yes</option>
 		</field>
 		<field name="subgroup" type="usergroup" default="2" label="COM_MUE_CONFIG_SUBSCRIBEGROUP_LABEL" description="COM_MUE_CONFIG_SUBSCRIBEGROUP_DESC" />
+		<field name="show_progbar" class="btn-group" type="radio" description="COM_MUE_CONFIG_SHOW_PROGBAR_DESC" label="COM_MUE_CONFIG_SHOW_PROGBAR_LABEL" default="1">
+			<option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
+		</field>
 		<field name="sub_page_content" type="textarea" label="COM_MUE_CONFIG_FIELD_SUB_PAGE_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_SUB_PAGE_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
 		<field name="usersub_page_content" type="textarea" label="COM_MUE_CONFIG_FIELD_USERSUB_PAGE_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_USERSUB_PAGE_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
 		<field name="profile_sub_content" type="textarea" label="COM_MUE_CONFIG_FIELD_PROFILE_SUB_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_PROFILE_SUB_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
@@ -62,11 +71,11 @@
 		<field name="subemail_subject" type="text" label="COM_MUE_CONFIG_FIELD_SUBEMAIL_SUBJECT_LABEL" description="COM_MUE_CONFIG_FIELD_SUBEMAIL_SUBJECT_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="subemail_content" type="textarea" label="COM_MUE_CONFIG_FIELD_SUBEMAIL_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_SUBEMAIL_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
 		<field name="spacer2" type="spacer" hr="true" />
-		<field name="paypal" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_PAYPAL_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPAL_DESC" default="1">
+		<field name="paypal" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_PAYPAL_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPAL_DESC" default="1">
 			<option value="0">No</option>
 			<option value="1">Yes</option>
 		</field>
-		<field name="paypal_mode" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_PAYPALMODE_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPALMODE_DESC">
+		<field name="paypal_mode" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_PAYPALMODE_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPALMODE_DESC">
 			<option value="live">Live</option>
 			<option value="sandbox">Sandbox</option>
 		</field>
@@ -74,7 +83,7 @@
 		<field name="paypal_password" type="text" label="COM_MUE_CONFIG_FIELD_PAYPALPASSWORD_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPALPASSWORD_DESC" size="70" class="inputbox" required="false" default="" /> 
 		<field name="paypal_signature" type="text" label="COM_MUE_CONFIG_FIELD_PAYPALSIG_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPALSIG_DESC" size="70" class="inputbox" required="false" default="" /> 
 		<field name="spacer3" type="spacer" hr="true" />
-		<field name="paybycheck" type="radio" class="inputbox" label="COM_MUE_CONFIG_FIELD_PAYBYCHECK_LABEL" description="COM_MUE_CONFIG_FIELD_PAYBYCHECK_DESC" default="1">
+		<field name="paybycheck" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_PAYBYCHECK_LABEL" description="COM_MUE_CONFIG_FIELD_PAYBYCHECK_DESC" default="1">
 			<option value="0">No</option>
 			<option value="1">Yes</option>
 		</field>

@@ -79,15 +79,6 @@ class MUEModelUsersub extends JModelAdmin
 					$db->query();
 				}
 			}
-			$qud = $db->getQuery(true);
-			$qud->update('#__mue_usergroup');
-			$qud->set('userg_subexp = "'.$data['usrsub_end'].'"');
-			$qud->where('userg_user = '.$data['usrsub_user']);
-			$qud->set('userg_lastpaidvia = "'.$data['usrsub_type'].'"');
-			$db->setQuery($qud);
-			$db->query();
-			if (!$this->updateMCSub(JFactory::getUser($data['usrsub_user']),true)) return false;
-			if (!$this->updateCMSub(JFactory::getUser($data['usrsub_user']),true)) return false;
 		} else {
 			if ($cfg->subgroup > 2) {
 				$query = $db->getQuery(true);
@@ -99,12 +90,45 @@ class MUEModelUsersub extends JModelAdmin
 				$db->setQuery($query);
 				$db->query();
 			}
-			if (!$this->updateMCSub(JFactory::getUser($data['usrsub_user']),false)) return false;
-			if (!$this->updateCMSub(JFactory::getUser($data['usrsub_user']),true)) return false;
-
 		}
+		$subStatus = $this->updateUserSub((int) $data['usrsub_user']);
+		if (!$this->updateMCSub(JFactory::getUser($data['usrsub_user']),$subStatus)) return false;
+		if (!$this->updateCMSub(JFactory::getUser($data['usrsub_user']),$subStatus)) return false;
+		if (!$this->updateBRSub(JFactory::getUser($data['usrsub_user']),$subStatus)) return false;
 		return parent::save($data);
 	}
+
+	public function delete(&$pks) {
+		$pks = (array) $pks;
+		$usersToUpdate = array();
+		$table = $this->getTable();
+
+		// Grab Users ids to update Sub info on
+		foreach ($pks as $pk)
+		{
+			if ($table->load($pk))
+			{
+				$usersToUpdate[] = $table->usrsub_user;
+			}
+		}
+
+		// Call parent delete to delete sub
+		$ret = parent::delete($pks);
+
+		// if delete failed, return
+		if (!$ret) return $ret;
+
+		// Update users sub info
+		foreach ($usersToUpdate as $u) {
+			$subStatus = $this->updateUserSub((int)$u);
+			if (!$this->updateMCSub(JFactory::getUser((int)$u),$subStatus)) return false;
+			if (!$this->updateCMSub(JFactory::getUser((int)$u),$subStatus)) return false;
+			if (!$this->updateBRSub(JFactory::getUser((int)$u),$subStatus)) return false;
+		}
+
+		return $ret;
+	}
+
 
 	public function copy(&$pks)
 	{
@@ -166,6 +190,23 @@ class MUEModelUsersub extends JModelAdmin
 		}
 		return $ufields;
 	}
+
+	function getBRFields() {
+		$db =& JFactory::getDBO();
+		$qd = 'SELECT f.* FROM #__mue_ufields as f ';
+		$qd.= ' WHERE f.published = 1 ';
+		$qd .= ' && f.uf_type = "brlist"';
+		$qd.= ' ORDER BY f.ordering';
+		$db->setQuery( $qd );
+		$ufields = $db->loadObjectList();
+		foreach ($ufields as &$f) {
+			$registry = new JRegistry();
+			$registry->loadString($f->params);
+			$f->params = $registry->toObject();
+		}
+		return $ufields;
+	}
+
 	function getCMFields() {
 		$db =& JFactory::getDBO();
 		$qd = 'SELECT f.* FROM #__mue_ufields as f ';
@@ -181,7 +222,42 @@ class MUEModelUsersub extends JModelAdmin
 		}
 		return $ufields;
 	}
-	
+
+	function updateUserSub($userid) {
+		$db =& JFactory::getDBO();
+		$query = 'SELECT s.*,p.*,DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft FROM #__mue_usersubs as s ';
+		$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
+		$query.= 'WHERE s.usrsub_status IN ("completed","accepted") && s.usrsub_end >= DATE(NOW()) && s.usrsub_user="'.$userid.'" ';
+		$query.= 'ORDER BY daysLeft DESC, s.usrsub_end DESC, s.usrsub_time DESC LIMIT 1';
+		$db->setQuery($query);
+		$sub = $db->loadObject();
+
+		//Member Since
+		$query = $db->getQuery(true);
+		$query->select('s.usrsub_start');
+		$query->from('#__mue_usersubs as s');
+		$query->where('s.usrsub_status IN ("completed","accepted","verified")');
+		$query->where('s.usrsub_user="'.$userid.'"');
+		$query->order('s.usrsub_start ASC');
+		$db->setQuery($query,0,1);
+		$member_since = $db->loadResult();
+
+		if ($sub) {
+			$qud = $db->getQuery(true);
+			$qud->update('#__mue_usergroup');
+			$qud->set('userg_subexp = "'.$sub->usrsub_end.'"');
+			$qud->set('userg_lastpaidvia = "'.$sub->usrsub_type.'"');
+			$qud->set('userg_subendplanname = "'.$sub->sub_exttitle.'"');
+			if ($member_since) $qud->set('userg_subsince = "'.$member_since.'"');
+			$qud->where('userg_user = '.$userid);
+			$db->setQuery($qud);
+			$db->query();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	function updateMCSub($user,$sub=false) {
 		if (!$user->id) return false;
 		$cfg = MUEHelper::getConfig();
@@ -230,6 +306,69 @@ class MUEModelUsersub extends JModelAdmin
 		}
 		return true;
 	}
+
+	function updateBRSub($user,$sub=false) {
+		if (!$user->id) return false;
+		$cfg = MUEHelper::getConfig();
+		$db =& JFactory::getDBO();
+		$date = new JDate('now');
+		$usernotes = '';
+		$ugq = "SELECT * FROM #__mue_usergroup WHERE userg_user = ".$user->id;
+		$db->setQuery($ugq);
+		$uginfo = $db->loadObject();
+		foreach ($this->getBRFields() as $f) {
+
+			// Update Subscription Info
+			if ($f->params->brsubstatus) {
+				$token = $cfg->brkey;
+				$bronto = new Bronto_Api();
+				$bronto->setToken($token);
+				$bronto->login();
+
+				// Get Contact
+				$contactObject = $bronto->getContactObject();
+				$contact = $contactObject->createRow();
+				$contact->email = $user->email;
+				$contact->read();
+
+				// Set Member Status
+				if ($sub) $contact->setField( $f->params->brsubstatus, $f->params->brsubtextyes );
+				else $contact->setField( $f->params->brsubstatus, $f->params->brsubtextno );
+
+				// Set Member Since
+				if ( $f->params->brsubsince ) {
+					$contact->setField( $f->params->brsubsince, $uginfo->userg_subsince );
+				}
+
+				// Set Member Exp
+				if ( $f->params->brsubexp ) {
+					$contact->setField( $f->params->brsubexp, $uginfo->userg_subexp );
+				}
+
+				// Set Active/End Member Plan
+				if ( $f->params->brsubplan ) {
+					if ( !$sub ) {
+						$contact->setField( $f->params->brsubplan, 'None' );
+					} else {
+						$contact->setField( $f->params->brsubplan, $uginfo->userg_subendplanname );
+					}
+				}
+
+				// Save Contact
+				$contact->save();
+
+				$usernotes .= $date->toSql(true)." EMail Contact Updated on Bronto List ID: ".$f->uf_default."\r\n";
+			}
+		}
+		//Update update date
+		$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
+		$db->setQuery($qud);
+		if (!$db->query()) {
+			$this->setError($db->getErrorMsg());
+			return false;
+		}
+		return true;
+	}
 	
 	function updateCMSub($user,$sub=false) {
 		if (!$user->id) return false;
@@ -246,8 +385,9 @@ class MUEModelUsersub extends JModelAdmin
 				$cmdata = array('Name'=>$user->name, 'EmailAddress'=>$user->email, 'Resubscribe'=>'true');
 				$customfields = array();
 				$newcmf=array(); 
-				$newcmf['Key']=$f->params->msgroup->field; 
-				$newcmf['Value']=$f->params->msgroup->sub; 
+				$newcmf['Key']=$f->params->msgroup->field;
+				if (!$sub) { $newcmf['Value']=$f->params->msgroup->reg; }
+				else { $newcmf['Value']=$f->params->msgroup->sub; }
 				$customfields[]=$newcmf;
 				$cmdata['CustomFields']=$customfields;
 				

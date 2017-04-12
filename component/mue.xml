@@ -34,6 +34,9 @@
 		<folder>lib</folder>
 		<folder>helpers</folder>
 	</files>
+	<languages folder="site">
+		<language tag="en-GB">language/en-GB.com_mue.ini</language>
+	</languages>
     <media destination="com_mue" folder="media">
             <filename>index.html</filename>
             <folder>scripts</folder>

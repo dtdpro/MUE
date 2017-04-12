@@ -22,6 +22,18 @@
 			<option	value="-2">JTRASHED</option>
 		</field>
 		<field
+				name="ug_send_welcome_email"
+				type="radio"
+				label="COM_MUE_UGROUP_FIELD_SEND_WELCOME_EMAIL_LABEL"
+				description="COM_MUE_UGROUP_FIELD_SEND_WELCOME_EMAIL_DESC"
+				size="1"
+				class="btn-group"
+				required="true"
+				default="0">
+			<option	value="1">Yes</option>
+			<option	value="0">No</option>
+		</field>
+		<field
 			name="access"
 			type="accesslevel"
 			id="access"

@@ -30,9 +30,15 @@ class MUEViewUserreg extends JViewLegacy
 	}
 	
 	protected function pickGroup() {
+		$app=Jfactory::getApplication();
 		$model =& $this->getModel();
 		$groups=$model->getUserGroups();
 		$this->assignRef('groups',$groups);
+		if (count($groups) == 1) {
+			$app->setUserState('mue.userreg.groupid',$groups[0]->ug_id);
+			$app->setUserState('mue.userreg.return',$this->return);
+			$app->redirect('index.php?option=com_mue&view=userreg&layout=regform&onegroup=1');
+		}
 	}
 	
 	protected function setGroup() {
@@ -52,6 +58,11 @@ class MUEViewUserreg extends JViewLegacy
 		if ($groupid) {
 			$groupinfo = $model->getUserGroups($groupid);
 			$userfields=$model->getUserFields($groupid);
+			if (count($model->getUserGroups()) == 1) {
+				$this->show_header = true;
+			} else {
+				$this->show_header = false;
+			}
 			$this->assignRef('groupinfo',$groupinfo);
 			$this->assignRef('groupid',$groupid);
 			$this->assignRef('userfields',$userfields);

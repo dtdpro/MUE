@@ -75,6 +75,10 @@ class MUEViewUser extends JViewLegacy
 		$newgroup = JRequest::getVar('newgroup');
 		$user =& JFactory::getUser();
 		$userid = $user->id;
+		if (count($model->getGroups()) == 1) {
+			$app=Jfactory::getApplication();
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'));
+		}
 		if ($userid != 0) {
 			if (!$model->saveGroup($newgroup)) {
 				$app=Jfactory::getApplication();
@@ -92,6 +96,10 @@ class MUEViewUser extends JViewLegacy
 		$print = JRequest::getVar('print');
 		$user =& JFactory::getUser();
 		$userid = $user->id;
+		if (count($model->getGroups()) == 1) {
+			$app=Jfactory::getApplication();
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'));
+		}
 		if ($userid != 0) {
 			$userinfo=MUEHelper::getUserInfo(true);
 			$groups=$model->getGroups();
@@ -133,6 +141,7 @@ class MUEViewUser extends JViewLegacy
 		if ($userid != 0) {
 			$userinfo=MUEHelper::getUserInfo();
 			$userfields=$model->getUserFields($userinfo->userGroupID);
+			if (count($model->getGroups()) == 1) $this->one_group = true;
 			$this->assignRef('userinfo',$userinfo);
 			$this->assignRef('userfields',$userfields);
 		}
@@ -147,6 +156,7 @@ class MUEViewUser extends JViewLegacy
 		if ($userid != 0) {
 			$userinfo=MUEHelper::getUserInfo(true);
 			$userfields=$model->getUserFields($userinfo->userGroupID,false,true);
+			if (count($model->getGroups()) == 1) $this->one_group = true;
 			$this->assignRef('userinfo',$userinfo);
 			$this->assignRef('userfields',$userfields);
 		}

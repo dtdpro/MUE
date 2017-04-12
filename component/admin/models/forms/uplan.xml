@@ -49,6 +49,18 @@
 			default=""
 		/>
 		<field
+			name="sub_type"
+			type="radio"
+			id="sub_type"
+			class="btn-group"
+			label="COM_MUE_UPLAN_FIELD_TYPE_LABEL"
+			description="COM_MUE_UPLAN_FIELD_TYPE_DESC"
+			size="1"
+			default="normal">
+			<option	value="normal">Normal</option>
+			<option	value="trial">Trial</option>
+		</field>
+		<field
 			name="sub_cost"
 			type="text"
 			label="COM_MUE_UPLAN_FIELD_COST_LABEL"
@@ -64,7 +76,7 @@
 			label="COM_MUE_UPLAN_FIELD_RECURRING_LABEL"
 			description="COM_MUE_UPLAN_FIELD_RECURRING_DESC"
 			size="1"
-			class="inputbox"
+			class="btn-group"
 			required="true"
 			default="0">
 			<option	value="1">Yes</option>
@@ -83,9 +95,9 @@
 		/>
 		<field
 			name="sub_period"
-			type="list"
+			type="radio"
 			extension="com_continued"
-			class="inputbox"
+			class="btn-group"
 			default=""
 			label="COM_MUE_UPLAN_FIELD_PERIOD_LABEL"
 			description="COM_MUE_UPLAN_FIELD_PERIOD_DESC"

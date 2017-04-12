@@ -78,7 +78,7 @@
 			label="COM_MUE_UFIELD_FIELD_REQ_LABEL"
 			description="COM_MUE_UFIELD_FIELD_REQ_DESC"
 			size="1"
-			class="inputbox"
+			class="btn-group"
 			required="true"
 			default="0">
 			<option	value="1">Yes</option>
@@ -117,7 +117,7 @@
 			label="COM_MUE_UFIELD_FIELD_CHANGE_LABEL"
 			description="COM_MUE_UFIELD_FIELD_CHANGE_DESC"
 			size="1"
-			class="inputbox"
+			class="btn-group"
 			required="true"
 			default="1">
 			<option	value="1">Yes</option>
@@ -136,7 +136,7 @@
 			label="COM_MUE_UFIELD_FIELD_HIDDEN_LABEL"
 			description="COM_MUE_UFIELD_FIELD_HIDDEN_DESC"
 			size="1"
-			class="inputbox"
+			class="btn-group"
 			required="true"
 			default="0">
 			<option	value="1">Yes</option>
@@ -148,7 +148,7 @@
 			label="COM_MUE_UFIELD_FIELD_REG_LABEL"
 			description="COM_MUE_UFIELD_FIELD_REG_DESC"
 			size="1"
-			class="inputbox"
+			class="btn-group"
 			required="true"
 			default="1">
 			<option	value="1">Yes</option>
@@ -160,7 +160,7 @@
 			label="COM_MUE_UFIELD_FIELD_PROFILE_LABEL"
 			description="COM_MUE_UFIELD_FIELD_PROFILE_DESC"
 			size="1"
-			class="inputbox"
+			class="btn-group"
 			required="true"
 			default="1">
 			<option	value="1">Yes</option>
@@ -172,7 +172,7 @@
 			label="COM_MUE_UFIELD_FIELD_USERDIR_LABEL"
 			description="COM_MUE_UFIELD_FIELD_USERDIR_DESC"
 			size="1"
-			class="inputbox"
+			class="btn-group"
 			required="true"
 			default="1">
 			<option	value="1">Yes</option>

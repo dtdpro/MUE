@@ -4,28 +4,28 @@ if ($this->params->get('divwrapper',1)) {
 	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
 }
 $config = MUEHelper::getConfig();
-	?>
-<h2 class="componentheading uk-article-title"><?php echo "User Subscriptions"; ?></h2>
-<?php 
+
+echo '<h2 class="componentheading uk-article-title">'.JText::_('COM_MUE_USER_SUBS_PAGE_TITLE').'</h2>';
+
 echo $config->usersub_page_content;
 
 $sub=MUEHelper::getActiveSub();
 $numsubs=count(MUEHelper::getUserSubs());
 if ($numsubs) {
 if (!$sub) {
-	echo '<p>Subscription Expired <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button uk-button">Renew Subscription</a></p>';
+	echo '<p>Subscription Expired <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button uk-button">'.JText::_('COM_MUE_USER_SUBS_BUTTON_RENEW_SUB').'</a></p>';
 } else {
 	echo $config->profile_sub_content;
 	if ((!$sub->sub_recurring || $sub->usrsub_rpstatus != "ActiveProfile") && $sub->daysLeft <= 10) {
-		echo '<p>Subscription Expires in '.$sub->daysLeft. ' day(s) <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button uk-button">Renew Subscription</a></p>';
+		echo '<p>Subscription Expires in '.$sub->daysLeft. ' day(s) <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button uk-button">'.JText::_('COM_MUE_USER_SUBS_BUTTON_RENEW_SUB').'</a></p>';
 	}
 }
 } else {
-	echo '<p>Subscription Required <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button uk-button">Add Subscription</a></p>';
+	echo '<p>Subscription Required <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button uk-button">'.JText::_('COM_MUE_USER_SUBS_BUTTON_ADD_SUB').'</a></p>';
 }
 
 if ($this->usersubs) {
-	echo '<table width="100%" class="zebra">';
+	echo '<table width="100%" class="uk-table uk-table-striped">';
 	echo '<thead><tr><th>Plan</th><th>Begins</th><th>Expires</th><th>Method</th><th>Status</th><th>Cost</th></tr></thead><tbody>';
 	foreach ($this->usersubs as $sub) {
 		echo '<tr><td><b>';
@@ -36,6 +36,7 @@ if ($this->usersubs) {
 		echo '<td>';
 		switch ($sub->usrsub_type) {
 			case "paypal": echo "PayPal"; break;
+			case "trial": echo "Trial"; break;
 			case "redeem": echo "Code"; break;
 			case "admin": echo "Admin"; break;
 			case "google": echo "Google"; break;
@@ -69,13 +70,13 @@ if ($this->usersubs) {
 			}
 		}
 		echo '</td><td>';
-		if ($sub->usrsub_type == "paypal" || $sub->usrsub_type=="google" || $sub->usrsub_type=="check") {
-			echo "$".number_format($sub->sub_cost,2);
+		if ($sub->usrsub_type == "paypal" || $sub->usrsub_type=="google" || $sub->usrsub_type=="check" || $sub->usrsub_type=="trial") {
+			echo "$".number_format($sub->usrsub_cost,2);
 			if ($sub->sub_recurring) echo '/'.$sub->sub_length.' '.$sub->sub_period.'(s)';
 		}
 		echo '</td></tr>';
 	}
 	echo '</tbody></table>';
-} else echo '<p>At this time, you have not purchased any subscriptions.</p>';
+} else echo JText::_('COM_MUE_USER_SUBS_MESSAGE_NO_SUBS');
 if ($this->params->get('divwrapper',1)) { echo '</div>'; }
 ?>

@@ -28,6 +28,20 @@
 			label="COM_MUE_USERSUB_FIELD_PLAN_LABEL"
 			description="COM_MUE_USERSUB_FIELD_PLAN_DESC" 
 		/>
+		<field
+				name="usrsub_coupon"
+				type="text"
+				class="inputbox"
+				label="COM_MUE_USERSUB_FIELD_COUPON_LABEL"
+				description="COM_MUE_USERSUB_FIELD_COUPON_DESC"
+		/>
+		<field
+				name="usrsub_cost"
+				type="text"
+				class="inputbox"
+				label="COM_MUE_USERSUB_FIELD_COST_LABEL"
+				description="COM_MUE_USERSUB_FIELD_COST_DESC"
+		/>
 		<field 
 			name="usrsub_user" 
 			type="user" 

@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `#__mue_ufields` (
   `uf_sname` varchar(50) NOT NULL,
   `ordering` smallint(6) NOT NULL COMMENT 'qnum',
   `uf_name` varchar(255) NOT NULL,
-  `uf_type` enum('textar',  'textbox',  'multi',  'cbox',  'mcbox',  'yesno',  'dropdown',  'message',  'email',  'username',  'phone',  'password',  'mlist',  'birthday',  'captcha',  'mailchimp',  'cmlist') NOT NULL,
+  `uf_type` varchar(25) NOT NULL,
   `uf_cms` tinyint(1) NOT NULL,
   `uf_req` tinyint(1) NOT NULL DEFAULT '1',
   `uf_note` text NOT NULL,
@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS `#__mue_ugroups` (
   `ug_id` int(11) NOT NULL AUTO_INCREMENT,
   `ug_name` varchar(255) NOT NULL,
   `ug_desc` text NOT NULL,
+  `ug_send_welcome_email` tinyint(1) NOT NULL DEFAULT '1',
   `ug_welcome_email` text NOT NULL,
   `ug_lostinfo_email` text NOT NULL,
   `access` int(11) NOT NULL,
@@ -70,6 +71,7 @@ CREATE TABLE IF NOT EXISTS `#__mue_usergroup` (
   `userg_subsince` DATE NOT NULL,
   `userg_subexp` DATE NOT NULL,
   `userg_lastpaidvia` VARCHAR(50) NOT NULL,
+  `userg_subendplanname` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`userg_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -95,6 +97,7 @@ CREATE TABLE IF NOT EXISTS `#__mue_subs` (
   `sub_inttitle` varchar(255) NOT NULL,
   `sub_exttitle` varchar(255) NOT NULL,
   `sub_desc` text NOT NULL,
+  `sub_type` varchar(10) NOT NULL DEFAULT 'normal',
   `sub_length` int(11) NOT NULL,
   `sub_period` enum('Day','Week','Month','Year') NOT NULL,
   `sub_cost` float NOT NULL,
@@ -109,7 +112,7 @@ CREATE TABLE IF NOT EXISTS `#__mue_usersubs` (
   `usrsub_id` int(11) NOT NULL AUTO_INCREMENT,
   `usrsub_user` int(11) NOT NULL,
   `usrsub_sub` int(11) NOT NULL,
-  `usrsub_type` enum('paypal','redeem','admin','google','migrate','check') NOT NULL,
+  `usrsub_type` varchar(25) NOT NULL,
   `usrsub_transid` varchar(255) NOT NULL,
   `usrsub_email` varchar(255) NOT NULL,
   `usrsub_rpprofile` varchar(255) NOT NULL,
@@ -120,6 +123,7 @@ CREATE TABLE IF NOT EXISTS `#__mue_usersubs` (
   `usrsub_start` date NOT NULL,
   `usrsub_end` date NOT NULL,
   `usrsub_coupon` varchar(50) NOT NULL,
+  `usrsub_cost` varchar(50) NOT NULL,
   PRIMARY KEY (`usrsub_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 

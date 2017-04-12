@@ -4,7 +4,7 @@ if ($this->params->get('divwrapper',1)) {
 	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
 }
 JHtml::_('behavior.keepalive');
-echo '<h2 class="componentheading uk-article-title">Lost username/password</h2>';
+echo '<h2 class="componentheading uk-article-title">'.JText::_('COM_MUE_LOST_PAGE_TITLE').'</h2>';
 
 ?>
 <script type="text/javascript">
@@ -30,16 +30,16 @@ echo '<div id="mue-lost-lost">';
 echo '<form action="" method="post" name="loginform" id="loginform">';
 echo '<div class="mue-lost-lost-row">';
 echo '<div class="mue-lost-lost-hdr">';
-echo 'Please enter the email address for your account. Your username and a new password will be sent to you.';
+echo JText::_('COM_MUE_LOST_INSTRUCTIONS');
 echo '</div>';
 echo '</div>';
 
 //Email Address
 echo '<div class="mue-lost-lost-row">';
-echo '<div class="mue-lost-lost-label">Email</div>';
+echo '<div class="mue-lost-lost-label">'.JText::_('COM_MUE_LOST_LABEL_EMAIL').'</div>';
 echo '<div class="mue-lost-lost-value">';
 echo '<input name="lost_email" id="lost_email" type="text" class="uf_lost" value=""';
-echo ' data-rule-required="true" data-msg-required="Required" data-rule-email="true" data-msg-email="Email address must be valid">';
+echo ' data-rule-required="true" data-msg-required="Required" data-rule-email="true" data-msg-email="'.JText::_('COM_MUE_LOST_VALID_EMAIL').'">';
 echo '</div>';
 echo '<div class="mue-lost-lost-error"></div>';
 echo '</div>';
@@ -48,7 +48,7 @@ echo '</div>';
 echo '<div class="mue-lost-lost-row">';
 echo '<div class="mue-lost-lost-label"></div>';
 echo '<div class="mue-lost-lost-submit">';
-echo '<input type="submit" value="Send Information" class="button uk-button" border="0" name="submit">';
+echo '<input type="submit" value="'.JText::_('COM_MUE_LOST_BUTTON_SUBMIT').'" class="button uk-button" border="0" name="submit">';
 echo '</div>';
 echo '</div>';
 

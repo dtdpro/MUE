@@ -23,16 +23,26 @@ class MUEViewSubscribe extends JViewLegacy
 	var $pid = null;
 	var $plans = null;
 	var $params;
+	var $code = null;
+	var $discountcode = "";
 	
 	function display($tpl = null)
 	{
 		$layout = $this->getLayout();
 		$app=Jfactory::getApplication();
 		$this->params	= $app->getParams('com_mue');
+		$this->discountcode = $app->getUserState('com_mue.discountcode',"");
 		$model =& $this->getModel();
 		$planid = JRequest::getVar( 'plan' );
 		$user =& JFactory::getUser();
-		if ($planid) $this->pinfo = $model->getPlanInfo($planid);
+		$hadTrial = MUEHelper::userHadTrial();
+		$this->subCount = count(MUEHelper::getUserSubs());
+		if ($planid) {
+			$this->pinfo = $model->getPlanInfo($planid,$this->discountcode);
+			if ($hadTrial && $this->pinfo->sub_type == "trial") {
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe'));
+			}
+		}
 
 		
 		switch ($layout) {
@@ -54,8 +64,14 @@ class MUEViewSubscribe extends JViewLegacy
 			case "paybycheck":
 				$this->payByCheck();
 				break;
+			case "freeofcharge":
+				$this->freeOfCharge();
+				break;
 			case "check":
 				$this->checkInfo();
+				break;
+			case "addcode":
+				$this->addCode();
 				break;
 			case 'default':
 			default:
@@ -69,7 +85,7 @@ class MUEViewSubscribe extends JViewLegacy
 	
 	function subPlans() {
 		$model =& $this->getModel();
-		$this->plans=$model->getPlans();
+		$this->plans=$model->getPlans($this->discountcode);
 	}
 	
 	function cartForm() {
@@ -147,8 +163,29 @@ class MUEViewSubscribe extends JViewLegacy
 		$paypal->cancelPayment($this->pinfo,$this->usid);
 		$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id),'Canceled');
 	}
-	
-	
+
+	function freeOfCharge() {
+		$user =& JFactory::getUser();
+		$app=Jfactory::getApplication();
+		$muecfg = MUEHelper::getConfig();
+		$model =& $this->getModel();
+		$sub = MUEHelper::getActiveSub();
+		if ($sub) $end = $sub->usrsub_end;
+		if (!$user->id ) {
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
+		}
+		if ($this->pinfo->sub_cost == 0 || $this->pinfo->discounted == 0) {
+			if (!$subid = $model->freeOfCharge($this->pinfo,$end)) {
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id),"Free subscription not available",'error');
+			} else {
+				$model->sendSubedEmail($this->pinfo);
+				$model->updateProfile();
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'),'Thank you, your subscription has been activated.');
+			}
+		} else {
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
+		}
+	}
 	
 	function payByCheck() {
 		$user =& JFactory::getUser();
@@ -168,6 +205,13 @@ class MUEViewSubscribe extends JViewLegacy
 			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id.'&layout=check'),'Thank you, Please see details below.');
 				
 		}
+	}
+
+	function addCode() {
+		$this->discountcode = JRequest::getVar( 'discountcode' );
+		$app=Jfactory::getApplication();
+		$app->setUserState('com_mue.discountcode',$this->discountcode);
+		$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 	}
 }
 ?>

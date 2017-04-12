@@ -13,10 +13,14 @@ class MUEModelUserreg extends JModelLegacy
 		$db =& JFactory::getDBO();
 		$user =& JFactory::getUser();
 		$aid = $user->getAuthorisedViewLevels();
-		$qd = 'SELECT ug.* FROM #__mue_ugroups as ug WHERE ug.access IN ('.implode(",",$aid).')';
-		if ($id) $qd .= " && ug.ug_id = ".$id;
-		$qd.= ' ORDER BY ug.ordering';
-		$db->setQuery( $qd ); 
+		$query = $db->getQuery(true);
+		$query->select('*');
+		$query->from('#__mue_ugroups');
+		$query->where('published = 1');
+		$query->where('access IN ('.implode(",",$aid).')');
+		if ($id) $query->where('ug_id = '.$id);
+		$query->order('ordering');
+		$db->setQuery($query);
 		$ugroups = $db->loadObjectList();
 		return $ugroups;
 	}
@@ -212,7 +216,10 @@ class MUEModelUserreg extends JModelLegacy
 				}
 			
 				// Update Subscription Info
-			
+				if ($brlist->params->brsubstatus) {
+					// Set Member Status
+					$contact->setField( $brlist->params->brsubstatus, $brlist->params->brsubtextno );
+				}
 			
 				// Update Lists
 				if ($data[$brlist->uf_sname]) {
@@ -417,18 +424,20 @@ class MUEModelUserreg extends JModelLegacy
 			
 			//Setup Welcome email
 			$groupinfo = $this->getUserGroups($data['userGroupID']);
-			$emailtoaddress = $item->email;
-			$emailtoname = $item->fname." ".$item->lname;
-			$emailfromaddress = $cfg->FROM_EMAIL;
-			$emailfromname = $cfg->FROM_NAME;
-			$emailsubject = $cfg->WELCOME_SUBJECT;
-			
-			$emailmsg = $groupinfo[0]->ug_welcome_email;
-			$emailmsg = str_replace("{fullname}",$item->fname." ".$item->lname,$emailmsg);
-			$emailmsg = str_replace("{username}",(strtolower($item->username)) ? strtolower($item->username) : strtolower($item->email),$emailmsg);
-			$emailmsg = str_replace("{password}",$item->password,$emailmsg);
-			$emailmsg = str_replace("{site_url}",$item->site_url,$emailmsg);
-			
+			if ($groupinfo->ug_send_welcome_email) {
+				$emailtoaddress = $item->email;
+				$emailtoname = $item->fname . " " . $item->lname;
+				$emailfromaddress = $cfg->FROM_EMAIL;
+				$emailfromname = $cfg->FROM_NAME;
+				$emailsubject = $cfg->WELCOME_SUBJECT;
+
+				$emailmsg = $groupinfo[0]->ug_welcome_email;
+				$emailmsg = str_replace( "{fullname}", $item->fname . " " . $item->lname, $emailmsg );
+				$emailmsg = str_replace( "{username}",
+					( strtolower( $item->username ) ) ? strtolower( $item->username ) : strtolower( $item->email ),
+					$emailmsg );
+				$emailmsg = str_replace( "{site_url}", $item->site_url, $emailmsg );
+			}
 			
 			//remove joomla user info from item
 			unset($item->password); 
@@ -437,7 +446,7 @@ class MUEModelUserreg extends JModelLegacy
 			unset($item->username); $app->setUserState('mue.userreg.username', "");
 			
 			
-			// Save ContinuED user info
+			// Save user info
 			$flist = $this->getUserFields($data['userGroupID'],false);
 			foreach ($flist as $fl) {
 				$fieldname = $fl->uf_sname;
@@ -453,15 +462,17 @@ class MUEModelUserreg extends JModelLegacy
 					if ($d->uf_type!='captcha' || $d->uf_type!='password') $app->setUserState('mue.userreg.'.$fieldname, "");
 				}
 			}
-			
-			//Send Welcome Email
-			$mail = &JFactory::getMailer();
-			$mail->IsHTML(true);
-			$mail->addRecipient($emailtoaddress,$emailtoname);
-			$mail->setSender($emailfromaddress,$emailfromname);
-			$mail->setSubject($emailsubject);
-			$mail->setBody( $emailmsg );
-			$sent = $mail->Send();
+
+			if ($groupinfo->ug_send_welcome_email) {
+				//Send Welcome Email
+				$mail = &JFactory::getMailer();
+				$mail->IsHTML( true );
+				$mail->addRecipient( $emailtoaddress, $emailtoname );
+				$mail->setSender( $emailfromaddress, $emailfromname );
+				$mail->setSubject( $emailsubject );
+				$mail->setBody( $emailmsg );
+				$sent = $mail->Send();
+			}
 			
 			//Login User
 			$options = array();

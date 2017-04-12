@@ -54,6 +54,9 @@ if ($saveOrder) {
 				<th width="100">
 					<?php echo JText::_('COM_MUE_UPLAN_HEADING_PERIOD'); ?>
 				</th>
+                <th width="100">
+					<?php echo JText::_('COM_MUE_UPLAN_HEADING_TYPE'); ?>
+                </th>
 				<th width="5%">
 					<?php echo JHtml::_('searchtools.sort','JGRID_HEADING_ACCESS','ug.access', $listDirn, $listOrder); ?>
 				</th>
@@ -100,6 +103,9 @@ if ($saveOrder) {
 				<td>
 					<?php echo $item->sub_length.' '.$item->sub_period; if ($item->sub_recurring) echo ' Recurrung'; ?>
 				</td>
+                <td>
+					<?php echo $item->sub_type; ?>
+                </td>
 				<td>
 					<?php echo $item->access_level; ?>
 				</td>

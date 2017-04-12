@@ -151,6 +151,22 @@ class MUEHelper {
 		return $usersubs;
 	}
 
+	public static function userHadTrial() {
+		$user =& JFactory::getUser();
+		$userid = $user->id;
+		$db =& JFactory::getDBO();
+		$query = 'SELECT s.*, p.* FROM #__mue_usersubs as s ';
+		$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
+		$query.= 'WHERE s.usrsub_user="'.$userid.'" ';
+		$db->setQuery($query);
+		$subs = $db->loadObjectList();
+		$hadTrial=false;
+		foreach ($subs as $s) {
+			if ($s->sub_type == "trial") $hadTrial = true;
+		}
+		return $hadTrial;
+	}
+
 	public static function getActiveSub($userid=0) {
 		if (!$userid) {
 			$user =& JFactory::getUser();
@@ -179,6 +195,7 @@ class MUEHelper {
 			$qud->update('#__mue_usergroup');
 			$qud->set('userg_subexp = "'.$sub->usrsub_end.'"');
 			$qud->set('userg_lastpaidvia = "'.$sub->usrsub_type.'"');
+			$qud->set('userg_subendplanname = "'.$sub->sub_exttitle.'"');
 			if ($member_since) $qud->set('userg_subsince = "'.$member_since.'"');
 			$qud->where('userg_user = '.$userid);
 			$db->setQuery($qud);
@@ -189,13 +206,231 @@ class MUEHelper {
 		}
 	}
 
+	public static function updateUserSub($userid) {
+		$user =& JFactory::getUser($userid);
+		$date = new JDate('now');
+
+		$cfg = MUEHelper::getConfig();
+		$db =& JFactory::getDBO();
+		$query = 'SELECT s.*,p.*,DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft FROM #__mue_usersubs as s ';
+		$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
+		$query.= 'WHERE s.usrsub_status IN ("completed","accepted") && s.usrsub_end >= DATE(NOW()) && s.usrsub_user="'.$userid.'" ';
+		$query.= 'ORDER BY daysLeft DESC, s.usrsub_end DESC, s.usrsub_time DESC LIMIT 1';
+		$db->setQuery($query);
+		$sub = $db->loadObject();
+
+		//Member Since
+		$query = $db->getQuery(true);
+		$query->select('s.usrsub_start');
+		$query->from('#__mue_usersubs as s');
+		$query->where('s.usrsub_status IN ("completed","accepted","verified")');
+		$query->where('s.usrsub_user="'.$userid.'"');
+		$query->order('s.usrsub_start ASC');
+		$db->setQuery($query,0,1);
+		$member_since = $db->loadResult();
+
+		if ($sub) {
+			$qud = $db->getQuery(true);
+			$qud->update('#__mue_usergroup');
+			$qud->set('userg_subexp = "'.$sub->usrsub_end.'"');
+			$qud->set('userg_lastpaidvia = "'.$sub->usrsub_type.'"');
+			$qud->set('userg_subendplanname = "'.$sub->sub_exttitle.'"');
+			if ($member_since) $qud->set('userg_subsince = "'.$member_since.'"');
+			$qud->where('userg_user = '.$userid);
+			$db->setQuery($qud);
+			$db->query();
+		}
+
+		$db =& JFactory::getDBO();
+		$qd = 'SELECT f.* FROM #__mue_ufields as f ';
+		$qd.= ' WHERE f.published = 1 ';
+		$qd .= ' && f.uf_type IN ("mailchimp","brlist","cmlist")';
+		$qd.= ' ORDER BY f.ordering';
+		$db->setQuery( $qd );
+		$listFields = $db->loadObjectList();
+
+		$ugq = "SELECT * FROM #__mue_usergroup WHERE userg_user = ".$userid;
+		$db->setQuery($ugq);
+		$ug = $db->loadObject();
+
+		$usernotes = '';
+		foreach ($listFields as $f) {
+			$registry = new JRegistry();
+			$registry->loadString($f->params);
+			$f->params = $registry->toObject();
+
+			if ($f->uf_type == "brlist") {
+				// Update Subscription Info
+				if ($f->params->brsubstatus) {
+					$token = $cfg->brkey;
+					$bronto = new Bronto_Api();
+					$bronto->setToken($token);
+					$bronto->login();
+
+					// Get Contact
+					$contactObject = $bronto->getContactObject();
+					$contact = $contactObject->createRow();
+					$contact->email = $user->email;
+					$contact->read();
+
+					// Set Member Status
+					if ($sub) $contact->setField( $f->params->brsubstatus, $f->params->brsubtextyes );
+					else $contact->setField( $f->params->brsubstatus, $f->params->brsubtextno );
+
+					// Set Member Since
+					if ( $f->params->brsubsince ) {
+						$contact->setField( $f->params->brsubsince, $ug->userg_subsince );
+					}
+
+					// Set Member Exp
+					if ( $f->params->brsubexp ) {
+						$contact->setField( $f->params->brsubexp, $ug->userg_subexp );
+					}
+
+					// Set Active/End Member Plan
+					if ( $f->params->brsubplan ) {
+						if ( !$sub ) {
+							$contact->setField( $f->params->brsubplan, 'None' );
+						} else {
+							$contact->setField( $f->params->brsubplan, $ug->userg_subendplanname );
+						}
+					}
+
+					// Save Contact
+					$contact->save();
+
+					$usernotes .= $date->toSql(true)." EMail Contact Updated on Bronto List ID: ".$f->uf_default."\r\n";
+				}
+			}
+
+			if ($f->uf_type == "cmlist") {
+				if ($f->params->msgroup->field) {
+
+					$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
+					$cmdata=array();
+					$cmdata = array('Name'=>$user->name, 'EmailAddress'=>$user->email, 'Resubscribe'=>'true');
+					$customfields = array();
+					$newcmf=array();
+					$newcmf['Key']=$f->params->msgroup->field;
+					if (!$sub) { $newcmf['Value']=$f->params->msgroup->reg; }
+					else { $newcmf['Value']=$f->params->msgroup->sub; }
+					$customfields[]=$newcmf;
+					$cmdata['CustomFields']=$customfields;
+
+					$cmd=print_r($cmdata,true);
+					if ($cm->getSubscriberDetails($f->uf_default,$user->email)) {
+						$cmresult = $cm->updateSubscriber($f->uf_default,$user->email,$cmdata);
+						if ($cmresult) {  $usernotes .= $date->toSql(true)." EMail Subscription Updated on Campaign Monitor List #".$f->uf_default.' '.$cmd."\r\n"; }
+						else { $usernotes .= $date->toSql(true)." Could not update EMail subscription on Campaign Monitor List #".$f->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
+					}
+				}
+			}
+
+			if ($f->uf_type == "mailchimp") {
+				if ($f->params->mcrgroup) {
+
+					if (strstr($f->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$f->uf_default,2);	}
+					else { $mc_key = $cfg->mckey; $mc_list = $f->uf_default; }
+					$mc = new MailChimpHelper($mc_key,$mc_list);
+					$mcdata=array();
+
+					if (!$sub) $mcdata[$f->params->mcrgroup]=$f->params->mcreggroup;
+					else $mcdata[$f->params->mcrgroup]=$f->params->mcsubgroup;
+
+					if ($f->params->mcsubsince) {
+						if ($ug->userg_subsince != "0000-00-00")	$mcdata[$f->params->mcsubsince] = $ug->userg_subsince;
+						else $mcdata[$f->params->mcsubsince] = "";
+					}
+					if ($f->params->mcsubexp) {
+						if ($ug->userg_subexp != '0000-00-00') $mcdata[$f->params->mcsubexp] = $ug->userg_subexp;
+						else $mcdata[$f->params->mcsubexp] = "";
+					}
+					if ($f->params->mcsubpaytype) $mcdata[$f->params->mcsubpaytype] = $ug->userg_lastpaidvia;
+
+					$mcd=print_r($mcdata,true);
+					if ($mc->subStatus($user->email)) {
+						$mcresult = $mc->updateUser(array("email"=>$user->email),$mcdata,false,"html");
+						if ($mcresult) { $usernotes .= $date->toSql(true)." EMail Subscription Updated on MailChimp List #".$f->uf_default.' '.$mcd."\r\n"; }
+						else { $usernotes .= $date->toSql(true)." Could not update EMail subscription on MailChimp List #".$f->uf_default." Error: ".$mc->error."\r\n"; }
+					}
+				}
+			}
+		}
+
+		if ($cfg->subgroup <= 2) return;
+		if ($sub) {
+			$query = $db->getQuery(true);
+			$query->select($db->quoteName('user_id'));
+			$query->from($db->quoteName('#__user_usergroup_map'));
+			$query->where($db->quoteName('group_id') . ' = ' . (int) $cfg->subgroup);
+			$query->where($db->quoteName('user_id') . ' = ' . (int) $userid);
+			$db->setQuery($query);
+			$hasgroup = $db->loadResult();
+			if (!$hasgroup) {
+				$query->clear();
+				$query->insert($db->quoteName('#__user_usergroup_map'));
+				$query->columns(array($db->quoteName('user_id'), $db->quoteName('group_id')));
+				$query->values((int) $userid . ',' . $cfg->subgroup);
+				$db->setQuery($query);
+				$db->query();
+			}
+			$usernotes .= $date->toSql(true)." Added to Membership Group\r\n";
+		} else {
+			$query = $db->getQuery(true);
+
+			// Remove user from the sub group
+			$query->delete($db->quoteName('#__user_usergroup_map'));
+			$query->where($db->quoteName('user_id') . ' = ' . (int) $userid);
+			$query->where($db->quoteName('group_id') . ' = ' . (int) $cfg->subgroup);
+			$db->setQuery($query);
+			$db->query();
+			$usernotes .= $date->toSql(true)." Removed from Membership Group\r\n";
+		}
+
+		//Update update date
+		$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
+		$db->setQuery($qud);
+		$db->query();
+	}
+
 	public static function updateSubJoomlaGroup($userid=0) {
 		$cfg = MUEHelper::getConfig();
 		if (!$userid) return false;
-		$hasactsub = MUEHelper::getActiveSub($userid);
+
+		$db =& JFactory::getDBO();
+		$query = 'SELECT s.*,p.*,DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft FROM #__mue_usersubs as s ';
+		$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
+		$query.= 'WHERE s.usrsub_status IN ("completed","accepted") && s.usrsub_end >= DATE(NOW()) && s.usrsub_user="'.$userid.'" ';
+		$query.= 'ORDER BY daysLeft DESC, s.usrsub_end DESC, s.usrsub_time DESC LIMIT 1';
+		$db->setQuery($query);
+		$sub = $db->loadObject();
+
+		//Member Since
+		$query = $db->getQuery(true);
+		$query->select('s.usrsub_start');
+		$query->from('#__mue_usersubs as s');
+		$query->where('s.usrsub_status IN ("completed","accepted","verified")');
+		$query->where('s.usrsub_user="'.$userid.'"');
+		$query->order('s.usrsub_start ASC');
+		$db->setQuery($query,0,1);
+		$member_since = $db->loadResult();
+
+		if ($sub) {
+			$qud = $db->getQuery(true);
+			$qud->update('#__mue_usergroup');
+			$qud->set('userg_subexp = "'.$sub->usrsub_end.'"');
+			$qud->set('userg_lastpaidvia = "'.$sub->usrsub_type.'"');
+			$qud->set('userg_subendplanname = "'.$sub->sub_exttitle.'"');
+			if ($member_since) $qud->set('userg_subsince = "'.$member_since.'"');
+			$qud->where('userg_user = '.$userid);
+			$db->setQuery($qud);
+			$db->query();
+			return $sub;
+		}
+
 		$db =& JFactory::getDBO();
 		if ($cfg->subgroup <= 2) return;
-		if ($hasactsub) {
+		if ($sub) {
 			$query = $db->getQuery(true);
 			$query->select($db->quoteName('user_id'));
 			$query->from($db->quoteName('#__user_usergroup_map'));

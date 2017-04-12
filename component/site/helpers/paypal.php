@@ -28,12 +28,11 @@ class PayPalAPI {
 		if ($mode == "sandbox") {
 			$this->API_ENDPOINT = "https://api-3t.sandbox.paypal.com/nvp";
 			$this->PAYPAL_URL = "https://www.sandbox.paypal.com/webscr&cmd=_express-checkout&token=";
-			$this->IPN_URL = "ssl://sandbox.paypal.com";
+			$this->IPN_URL = "https://ipnpb.sandbox.paypal.com/cgi-bin/webscr";
 		} else {
 			$this->API_ENDPOINT = "https://api-3t.paypal.com/nvp";
 			$this->PAYPAL_URL = "https://www.paypal.com/webscr&cmd=_express-checkout&token=";
-			$this->IPN_URL = "ssl://www.paypal.com";
-			
+			$this->IPN_URL = "https://ipnpb.paypal.com/cgi-bin/webscr";
 		}
 	}
 	
@@ -121,9 +120,14 @@ class PayPalAPI {
 		} else {
 			if ($pinfo->sub_recurring) {
 				$nvpHeader=$this->nvpHeader();
+				if ($pinfo->discounted != -1) {
+					$cost = $pinfo->discounted;
+				} else {
+					$cost = $pinfo->sub_cost;
+				}
 				$nvpstr="&TOKEN=".$token."&PROFILESTARTDATE=".date(DATE_ATOM,strtotime($sinfo->usrsub_end))."&DESC=".JURI::base()." Subscription"."&BILLINGPERIOD=".$pinfo->sub_period."&BILLINGFREQUENCY=".$pinfo->sub_length;
-				$nvpstr.="&PROFILEREFERENCE=".urlencode ($session->get('ivn'))."&INITAMT=0.00&AMT=".$pinfo->sub_cost."&CURRENCYCODE=USD&EMAIL=".urlencode($session->get('payer_email'));
-				$nvpstr.="&L_PAYMENTREQUEST_0_ITEMCATEGORY0=Digital&L_PAYMENTREQUEST_0_NAME0=".$pinfo->sub_exttitle."&L_PAYMENTREQUEST_0_AMT0=".$pinfo->sub_cost."&L_PAYMENTREQUEST_0_QTY0=1";
+				$nvpstr.="&PROFILEREFERENCE=".urlencode ($session->get('ivn'))."&INITAMT=0.00&AMT=".$cost."&CURRENCYCODE=USD&EMAIL=".urlencode($session->get('payer_email'));
+				$nvpstr.="&L_PAYMENTREQUEST_0_ITEMCATEGORY0=Digital&L_PAYMENTREQUEST_0_NAME0=".$pinfo->sub_exttitle."&L_PAYMENTREQUEST_0_AMT0=".$cost."&L_PAYMENTREQUEST_0_QTY0=1";
 				$nvpstr = $nvpHeader.$nvpstr;
 				$resArray=$this->hash_call("CreateRecurringPaymentsProfile",$nvpstr);
 				$ack = strtoupper($resArray["ACK"]);
@@ -162,10 +166,10 @@ class PayPalAPI {
 	}
 	
 	function confirmPayment($pinfo,$usid,$ppt) {
-		$session=JFactory::getSession();
+		$session = JFactory::getSession();
 		$db  =& JFactory::getDBO();
 		$user  =& JFactory::getUser();
-		$app=Jfactory::getApplication();
+		$app = Jfactory::getApplication();
 		$iid = JRequest::getVar('Itemid');
 		
 		$nvpHeader=$this->nvpHeader();
@@ -215,15 +219,24 @@ class PayPalAPI {
 		$app=Jfactory::getApplication();
 		$iid = JRequest::getVar('Itemid');
 		$session=JFactory::getSession();
+
+		if ($pinfo->discounted != -1) {
+			$cost = $pinfo->discounted;
+		} else {
+			$cost = $pinfo->sub_cost;
+		}
 		
-		$q = 'INSERT INTO #__mue_usersubs (usrsub_user,usrsub_sub,usrsub_status,usrsub_type,usrsub_ip,usrsub_start,usrsub_end) ';
+		$q = 'INSERT INTO #__mue_usersubs (usrsub_user,usrsub_sub,usrsub_status,usrsub_type,usrsub_ip,usrsub_start,usrsub_end,usrsub_coupon,usrsub_cost) ';
 		$q .= 'VALUES ('.$user->id.','.$pinfo->sub_id.',"notyetstarted","paypal","'.$_SERVER['REMOTE_ADDR'].'",';
 		if ($start) $q .= '"'.$start.'"';
 		else $q .= 'NOW()';
 		$q .= ',DATE_ADD(';
 		if ($start) $q .= '"'.$start.'"';
 		else $q .= 'NOW()';
-		$q .=',INTERVAL '.$pinfo->sub_length.' '.strtoupper($pinfo->sub_period).'))';
+		$q .=',INTERVAL '.$pinfo->sub_length.' '.strtoupper($pinfo->sub_period).')';
+		$q .= ',"'.$db->escape($pinfo->discountcode).'"';
+		$q .= ',"'.$db->escape(number_format($cost,2)).'"';
+		$q .= ')';
 		$db->setQuery($q); $db->query();
 		$purchaseid = $db->insertid();
 		
@@ -233,7 +246,7 @@ class PayPalAPI {
 		$paymentType="Sale";
 		$L_PAYMENTREQUEST_0_NAME0 = $pinfo->sub_exttitle;
 		$L_PAYMENTREQUEST_0_DESC0 = JURI::base()." Subscription";
-		$L_PAYMENTREQUEST_0_AMT0 = $pinfo->sub_cost;
+		$L_PAYMENTREQUEST_0_AMT0 = $cost;
 		$L_PAYMENTREQUEST_0_QTY0 = 1;
 		if ($pinfo->sub_recurring) {
 			$L_BILLINGTYPE0="RecurringPayments";
@@ -301,20 +314,11 @@ class PayPalAPI {
 	
 	function ipnResponse() {
 		$db  =& JFactory::getDBO();
-		$req = 'cmd=_notify-validate';
 		$ralogtxt = "";
 		foreach ($_POST as $key => $value) {
 			$value = urlencode(stripslashes($value));
-			$req .= "&$key=$value";
 			$ralogtxt .= "$key: ".urldecode($value)."\r\n";
 		}
-		
-		// post back to PayPal system to validate
-		$header .= "POST /cgi-bin/webscr HTTP/1.0\r\n";
-		$header .= "Host: ".str_replace("ssl://","",$this->IPN_URL).":443\r\n";
-		$header .= "Content-Type: application/x-www-form-urlencoded\r\n";
-		$header .= "Content-Length: " . strlen($req) . "\r\n\r\n";
-		$fp = fsockopen ($this->IPN_URL, 443, $errno, $errstr, 30); 
 		
 		// assign posted variables to local variables
 		$item_name = $_POST['item_name'];
@@ -328,131 +332,128 @@ class PayPalAPI {
 		$payer_email = $_POST['payer_email'];
 		$pid = (int)$_POST['invoice'];
 		
-		if (!$fp) {
+		if (!$this->verifyIPN()) {
 			// HTTP ERROR
 			$ralogtxt .= "ERROR";
 		} else {
-			fputs ($fp, $header . $req);
-			while (!feof($fp)) {
-				$res = fgets ($fp, 1024);
-				if (strcmp($res, "VERIFIED") == 0) {
-					$ralogtxt .= "VERIFIED";
-					if ($txn_type == "new_case") {
-						$q1='UPDATE #__mue_usersubs SET usrsub_status="dispute" WHERE usrsub_id = "'.$pid.'"';
-						$db->setQuery($q1);
-						$db->query();
-						$qsubid = 'SELECT * FROM #__mue_usersubs WHERE usrsub_id = "'.$pid.'"';
-						$db->setQuery($qsubid); 
-						$sinfo = $db->loadObject(); 
-						break;
-					} else if ($txn_type=="recurring_payment") {
-						$ralogtxt .= "\r\nrecurring_payment";
-						$rpid = $_POST['recurring_payment_id'];
-						$qsubid = 'SELECT * FROM #__mue_usersubs WHERE usrsub_rpprofile = "'.$rpid.'"';
-						$db->setQuery($qsubid); 
-						$sinfo = $db->loadObject(); 
-						$pid = $sinfo->usrsub_id;
-						$qplan = 'SELECT * FROM #__mue_subs WHERE sub_id = "'.$sinfo->usrsub_sub.'"';
-						$db->setQuery($qplan); 
-						$pinfo = $db->loadObject();
-						switch ($payment_status) {
-							case "Completed":
-								$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="completed", usrsub_end = DATE_ADD(usrsub_end,INTERVAL '.$pinfo->sub_length.' '.strtoupper($pinfo->sub_period).') WHERE usrsub_id = "'.$pid.'"';
-								$db->setQuery($q2);
-								$ralogtxt .= $q2;
-								if (!$db->query()) $ralogtxt .= $db->error();
-								break;
-						}
-					} else if ($txn_type=="recurring_payment_profile_cancel") {
-						$ralogtxt .= "\r\nrecurring_payment";
-						$rpid = $_POST['recurring_payment_id'];
-						$qsubid = 'SELECT * FROM #__mue_usersubs WHERE usrsub_rpprofile = "'.$rpid.'"';
-						$db->setQuery($qsubid); 
-						$sinfo = $db->loadObject(); 
-						$pid = $sinfo->usrsub_id;
-						$qplan = 'SELECT * FROM #__mue_subs WHERE sub_id = "'.$sinfo->usrsub_sub.'"';
-						$db->setQuery($qplan); 
-						$pinfo = $db->loadObject();
-						$profile_status=$_POST['profile_status'];
-						$q2='UPDATE #__mue_usersubs SET usrsub_status="completed", usrsub_rpstatus = "'.$profile_status.'" WHERE usrsub_id = "'.$pid.'"';
+
+
+			$ralogtxt .= "VERIFIED";
+			if ($txn_type == "new_case") {
+				$q1='UPDATE #__mue_usersubs SET usrsub_status="dispute" WHERE usrsub_id = "'.$pid.'"';
+				$db->setQuery($q1);
+				$db->query();
+				$qsubid = 'SELECT * FROM #__mue_usersubs WHERE usrsub_id = "'.$pid.'"';
+				$db->setQuery($qsubid);
+				$sinfo = $db->loadObject();
+			} else if ($txn_type=="recurring_payment") {
+				$ralogtxt .= "\r\nrecurring_payment";
+				$rpid = $_POST['recurring_payment_id'];
+				$qsubid = 'SELECT * FROM #__mue_usersubs WHERE usrsub_rpprofile = "'.$rpid.'"';
+				$db->setQuery($qsubid);
+				$sinfo = $db->loadObject();
+				$pid = $sinfo->usrsub_id;
+				$qplan = 'SELECT * FROM #__mue_subs WHERE sub_id = "'.$sinfo->usrsub_sub.'"';
+				$db->setQuery($qplan);
+				$pinfo = $db->loadObject();
+				switch ($payment_status) {
+					case "Completed":
+						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="completed", usrsub_end = DATE_ADD(usrsub_end,INTERVAL '.$pinfo->sub_length.' '.strtoupper($pinfo->sub_period).') WHERE usrsub_id = "'.$pid.'"';
 						$db->setQuery($q2);
+						$ralogtxt .= $q2;
 						if (!$db->query()) $ralogtxt .= $db->error();
-					} else {
-						$qsubid = 'SELECT * FROM #__mue_usersubs WHERE usrsub_id = "'.$pid.'"';
-						$db->setQuery($qsubid); 
-						$sinfo = $db->loadObject(); 
-						switch ($payment_status) {
-							case "Refunded":
-								$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="refunded" WHERE usrsub_id = "'.$pid.'"';
-								$db->setQuery($q2);
-								$db->query();
-								break;
-							case "Completed":
-								$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="completed" WHERE usrsub_id = "'.$pid.'"';
-								$db->setQuery($q2);
-								$db->query();
-								break;
-							case "Canceled_Reversal":
-								$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="canceled_reversal" WHERE usrsub_id = "'.$pid.'"';
-								$db->setQuery($q2);
-								$db->query();
-								break;
-							case "Denied":
-								$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="denied" WHERE usrsub_id = "'.$pid.'"';
-								$db->setQuery($q2);
-								$db->query();
-								break;
-							case "Expired":
-								$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="expired" WHERE usrsub_id = "'.$pid.'"';
-								$db->setQuery($q2);
-								$db->query();
-								break;
-							case "Failed":
-								$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="failed" WHERE usrsub_id = "'.$pid.'"';
-								$db->setQuery($q2);
-								$db->query();
-								break;
-							case "Pending":
-								$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="pending" WHERE usrsub_id = "'.$pid.'"';
-								$db->setQuery($q2);
-								$db->query();
-								break;
-							case "Reversed":
-								$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="reversed" WHERE usrsub_id = "'.$pid.'"';
-								$db->setQuery($q2);
-								$db->query();
-								break;
-							case "Processed":
-								$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="completed" WHERE usrsub_id = "'.$pid.'"';
-								$db->setQuery($q2);
-								$db->query();
-								break;
-							case "Voided":
-								$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="voided" WHERE usrsub_id = "'.$pid.'"';
-								$db->setQuery($q2);
-								$db->query();
-								break;
-						}
-					}
-					if ($req) {
-						$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$pid.',"'.$db->escape($ralogtxt).'")';
-						$db->setQuery($ql);
+						break;
+				}
+			} else if ($txn_type=="recurring_payment_profile_cancel") {
+				$ralogtxt .= "\r\nrecurring_payment";
+				$rpid = $_POST['recurring_payment_id'];
+				$qsubid = 'SELECT * FROM #__mue_usersubs WHERE usrsub_rpprofile = "'.$rpid.'"';
+				$db->setQuery($qsubid);
+				$sinfo = $db->loadObject();
+				$pid = $sinfo->usrsub_id;
+				$qplan = 'SELECT * FROM #__mue_subs WHERE sub_id = "'.$sinfo->usrsub_sub.'"';
+				$db->setQuery($qplan);
+				$pinfo = $db->loadObject();
+				$profile_status=$_POST['profile_status'];
+				$q2='UPDATE #__mue_usersubs SET usrsub_status="completed", usrsub_rpstatus = "'.$profile_status.'" WHERE usrsub_id = "'.$pid.'"';
+				$db->setQuery($q2);
+				if (!$db->query()) $ralogtxt .= $db->error();
+			} else {
+				$qsubid = 'SELECT * FROM #__mue_usersubs WHERE usrsub_id = "'.$pid.'"';
+				$db->setQuery($qsubid);
+				$sinfo = $db->loadObject();
+				switch ($payment_status) {
+					case "Refunded":
+						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="refunded" WHERE usrsub_id = "'.$pid.'"';
+						$db->setQuery($q2);
 						$db->query();
-					}
-					return $sinfo->usrsub_user;
-					
-				} else if (strcmp($res, "INVALID") == 0) {
-					$ralogtxt .= "INVALID";
-				} 
+						break;
+					case "Completed":
+						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="completed" WHERE usrsub_id = "'.$pid.'"';
+						$db->setQuery($q2);
+						$db->query();
+						break;
+					case "Canceled_Reversal":
+						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="canceled_reversal" WHERE usrsub_id = "'.$pid.'"';
+						$db->setQuery($q2);
+						$db->query();
+						break;
+					case "Denied":
+						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="denied" WHERE usrsub_id = "'.$pid.'"';
+						$db->setQuery($q2);
+						$db->query();
+						break;
+					case "Expired":
+						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="expired" WHERE usrsub_id = "'.$pid.'"';
+						$db->setQuery($q2);
+						$db->query();
+						break;
+					case "Failed":
+						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="failed" WHERE usrsub_id = "'.$pid.'"';
+						$db->setQuery($q2);
+						$db->query();
+						break;
+					case "Pending":
+						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="pending" WHERE usrsub_id = "'.$pid.'"';
+						$db->setQuery($q2);
+						$db->query();
+						break;
+					case "Reversed":
+						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="reversed" WHERE usrsub_id = "'.$pid.'"';
+						$db->setQuery($q2);
+						$db->query();
+						break;
+					case "Processed":
+						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="completed" WHERE usrsub_id = "'.$pid.'"';
+						$db->setQuery($q2);
+						$db->query();
+						break;
+					case "Voided":
+						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="voided" WHERE usrsub_id = "'.$pid.'"';
+						$db->setQuery($q2);
+						$db->query();
+						break;
+				}
 			}
-			fclose ($fp);
-		}
-		
-		if ($req) {
+
+			$usernotes = "PayPal IPN Update Status on Sub ID #$pid to: $payment_status \r\n";
+			$qud = 'UPDATE #__mue_usergroup SET userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$sinfo->usrsub_user;
+			$db->setQuery($qud);
+			$db->query();
+
 			$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$pid.',"'.$db->escape($ralogtxt).'")';
 			$db->setQuery($ql);
 			$db->query();
+
+			return $sinfo->usrsub_user;
+					
+
 		}
+
+		$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$pid.',"'.$db->escape($ralogtxt).'")';
+		$db->setQuery($ql);
+		$db->query();
+
 		return false;
 		
 	}
@@ -593,9 +594,77 @@ class PayPalAPI {
 		}
 		return $nvpArray;
 	}
+
 	function formAutorization($auth_token,$auth_signature,$auth_timestamp)
 	{
 		$authString="token=".$auth_token.",signature=".$auth_signature.",timestamp=".$auth_timestamp ;
 		return $authString;
+	}
+
+	public function verifyIPN()
+	{
+		if ( ! count($_POST)) {
+			return false;
+		}
+		$raw_post_data = file_get_contents('php://input');
+		$raw_post_array = explode('&', $raw_post_data);
+		$myPost = array();
+		foreach ($raw_post_array as $keyval) {
+			$keyval = explode('=', $keyval);
+			if (count($keyval) == 2) {
+				// Since we do not want the plus in the datetime string to be encoded to a space, we manually encode it.
+				if ($keyval[0] === 'payment_date') {
+					if (substr_count($keyval[1], '+') === 1) {
+						$keyval[1] = str_replace('+', '%2B', $keyval[1]);
+					}
+				}
+				$myPost[$keyval[0]] = urldecode($keyval[1]);
+			}
+		}
+		// Build the body of the verification post request, adding the _notify-validate command.
+		$req = 'cmd=_notify-validate';
+		$get_magic_quotes_exists = false;
+		if (function_exists('get_magic_quotes_gpc')) {
+			$get_magic_quotes_exists = true;
+		}
+		foreach ($myPost as $key => $value) {
+			if ($get_magic_quotes_exists == true && get_magic_quotes_gpc() == 1) {
+				$value = urlencode(stripslashes($value));
+			} else {
+				$value = urlencode($value);
+			}
+			$req .= "&$key=$value";
+		}
+		// Post the data back to PayPal, using curl. Throw exceptions if errors occur.
+		$ch = curl_init($this->IPN_URL);
+		curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
+		curl_setopt($ch, CURLOPT_SSLVERSION, 6);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+		curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Connection: Close'));
+		$res = curl_exec($ch);
+		if ( ! ($res)) {
+			$errno = curl_errno($ch);
+			$errstr = curl_error($ch);
+			curl_close($ch);
+			return false;
+		}
+		$info = curl_getinfo($ch);
+		$http_code = $info['http_code'];
+		if ($http_code != 200) {
+			return false;
+		}
+		curl_close($ch);
+		// Check if PayPal verifies the IPN data, and if so, return true.
+		if ($res == "VERIFIED") {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

@@ -38,6 +38,14 @@ $params = $this->form->getFieldsets('params');
 				<div class="clr"></div>
 <?php endforeach; ?>
 		</fieldset>
+        <fieldset class="adminform">
+            <legend><?php echo JText::_( 'COM_MUE_UGROUP_EMAILTAGS' ); ?></legend>
+			<p>
+                <strong>{username}</strong> - Username<br>
+                <strong>{fullname}</strong> - Users Full Name<br>
+                <strong>{site_url}</strong> - Site user signed up at
+            </p>
+        </fieldset>
 	</div>
 		<input type="hidden" name="task" value="ugroup.edit" />
 		<?php echo JHtml::_('form.token'); ?>

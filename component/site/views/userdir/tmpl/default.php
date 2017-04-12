@@ -134,33 +134,33 @@ $cecfg = MUEHelper::getConfig();
 <?php 
 echo '<h2 class="componentheading uk-article-title">'.$cecfg->userdir_title.'</h2>';
 echo '<div id="mue-user-dir-map">';
-echo '<div id="nearbylist" style="width: 30%; height: 400px;float:left;overflow:scroll;"><div class="nearbymember">Enter in address below to search</div></div>';
+echo '<div id="nearbylist" style="width: 30%; height: 400px;float:left;overflow:scroll;"><div class="nearbymember">'.JText::_('COM_MUE_USRDIR_INSTRUCTIONS').'</div></div>';
 echo '<div id="map" style="width: 68%; height: 400px;float:right;"></div>';
 echo '<div style="clear:both;"></div>';
 echo '</div>';
 echo '<div style="height:20px;"></div>';
-echo '<form action="" method="post" name="userdirform" id="userdirform" class="">';
+echo '<form action="" method="post" name="userdirform" id="userdirform" class="uk-form uk-form-horizontal">';
 echo '<div id="mue-user-dir">';
 $first = true;
-if ($this->sfields) echo '<div class="mue-user-dir-row"><div class="mue-user-dir-label"></div><div class="mue-user-dir-hdr"><b>Search Location</b></div></div>';
-echo '<div class="mue-user-dir-row">';
-echo '<div class="mue-user-dir-label">Location</div>';
-echo '<div class="mue-user-dir-value">';
-echo '<input placeholder="Address, City, State, and/or ZIP Code" type="text" id="addressInput" class="form-control uf_field input-sm" data-rule-required="true" data-msg-required="This Field is required">';
+if ($this->sfields) echo '<div class="uk-form-row mue-user-dir-row"><div class="uk-form-label mue-user-dir-label"></div><div class="uk-form-controls uk-form-controls-text mue-user-dir-hdr"><b>Search Location</b></div></div>';
+echo '<div class="uk-form-row mue-user-dir-row">';
+echo '<div class="uk-form-label mue-user-dir-label">Location</div>';
+echo '<div class="uk-form-controls mue-user-dir-value">';
+echo '<input placeholder="Address, City, State, and/or ZIP Code" type="text" id="addressInput" class="uk-width-1-1 form-control uf_field input-sm" data-rule-required="true" data-msg-required="This Field is required">';
 echo '</div><div class="mue-user-dir-error"></div></div>';
-echo '<div class="mue-user-dir-row">';
-echo '<div class="mue-user-dir-label">Distance</div>';
-echo '<div class="mue-user-dir-value">';
-echo '<select id="radius" name="radius" class="form-control uf_field input-sm">';
+echo '<div class="uk-form-row mue-user-dir-row">';
+echo '<div class="uk-form-label mue-user-dir-label">Distance</div>';
+echo '<div class="uk-form-controls mue-user-dir-value">';
+echo '<select id="radius" name="radius" class="uk-width-1-1 form-control uf_field input-sm">';
 echo '<option value="25" selected>25 miles</option>';
 echo '<option value="100">100 miles</option>';
 echo '<option value="200">200 miles</option>';
 echo '</select>';
 echo '</div></div>';
-echo '<div class="mue-user-dir-row">';
-echo '<div class="mue-user-dir-label"># of Results</div>';
-echo '<div class="mue-user-dir-value">';
-echo '<select id="limit" name="limit" class="form-control uf_field input-sm">';
+echo '<div class="uk-form-row mue-user-dir-row">';
+echo '<div class="uk-form-label mue-user-dir-label"># of Results</div>';
+echo '<div class="uk-form-controls mue-user-dir-value">';
+echo '<select id="limit" name="limit" class="uk-width-1-1 form-control uf_field input-sm">';
 echo '<option value="10">10</option>';
 echo '<option value="20" selected>20</option>';
 echo '<option value="50">50</option>';
@@ -168,16 +168,20 @@ echo '<option value="100">100</option>';
 echo '</select>';
 echo '</div></div>';
 //Search fields
-if ($this->sfields) echo '<div class="mue-user-dir-row"><div class="mue-user-dir-label"></div><div class="mue-user-dir-hdr"><b>Search Profile</b></div></div>';
+if ($this->sfields) echo '<div class="uk-form-row mue-user-dir-row"><div class="uk-form-label mue-user-dir-label"></div><div class="uk-form-controls uk-form-controls-text mue-user-dir-hdr"><b>Search Profile</b></div></div>';
 foreach($this->sfields as $f) {
-	echo '<div class="mue-user-dir-row">';
-	echo '<div class="mue-user-dir-label">';
+	echo '<div class="uk-form-row mue-user-dir-row">';
+	echo '<div class="uk-form-label mue-user-dir-label">';
 	
 	$sname = $f->uf_sname;
 	//field title
 	if ($f->uf_type != "cbox" && $f->uf_type != "message" && $f->uf_type != "mailchimp") echo $f->uf_name;
 	echo '</div>';
-	echo '<div class="mue-user-dir-value">';
+	echo '<div class="uk-form-controls';
+    if ($f->uf_type=="cbox" || $f->uf_type == "message") {
+		echo ' uk-form-controls-text';
+	}
+	echo ' mue-user-dir-value">';
 	
 	//Message
 	if ($f->uf_type == "message") echo '<strong>'.$f->uf_name.'</strong>';
@@ -195,7 +199,7 @@ foreach($this->sfields as $f) {
 
 	//dropdown, radio
 	if ($f->uf_type=="dropdown" || $f->uf_type=="multi") {
-		echo '<select id="jform_'.$sname.'" name="jform['.$sname.']" class="form-control uf_field uf_select" size="1">';
+		echo '<select id="jform_'.$sname.'" name="jform['.$sname.']" class="uk-width-1-1 form-control uf_field uf_select" size="1">';
 		echo '<option value="" selected>- Any '.$f->uf_name.' -</option>';
 		foreach ($f->options as $o) {
 			echo '<option value="'.$o->text.'">';
@@ -206,7 +210,7 @@ foreach($this->sfields as $f) {
 
 	//multilist
 	if ($f->uf_type=="mlist") {
-		echo '<select id="jform_'.$sname.'" name="jform['.$sname.'][]" class="form-control uf_field uf_mselect input-sm" size="4" multiple="multiple">';
+		echo '<select id="jform_'.$sname.'" name="jform['.$sname.'][]" class="uk-width-1-1 form-control uf_field uf_mselect input-sm" size="4" multiple="multiple">';
 		foreach ($f->options as $o) {
 			echo '<option value="'.$o->value.'">';
 			echo ' '.$o->text.'</option>';
@@ -217,7 +221,7 @@ foreach($this->sfields as $f) {
 
 	//text field, phone #
 	if ($f->uf_type=="textbox" || $f->uf_type=="phone") {
-		echo '<input name="jform['.$sname.']" id="jform_'.$sname.'" class="form-control uf_field input-sm input-sm" type="text">';
+		echo '<input name="jform['.$sname.']" id="jform_'.$sname.'" class="uk-width-1-1 form-control uf_field input-sm input-sm" type="text">';
 	}
 
 	//text area
@@ -233,9 +237,9 @@ foreach($this->sfields as $f) {
 	echo '</div>';
 	echo '</div>';
 }
-echo '<div class="mue-user-dir-row">';
-echo '<div class="mue-user-dir-label"></div>';
-echo '<div class="mue-user-dir-submit">';
+echo '<div class="uk-form-row mue-user-dir-row">';
+echo '<div class="uk-form-label mue-user-dir-label"></div>';
+echo '<div class="uk-form-controls mue-user-dir-submit">';
 echo '<input type="submit" value="Search Directory" class="button uk-button">';
 echo '<input type="hidden" name="lat" id="lat">';
 echo '<input type="hidden" name="lng" id="lng">';

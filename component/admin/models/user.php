@@ -582,7 +582,7 @@ class MUEModelUser extends JModelAdmin
 		return $fields;
 	}
 	
-	function validate($form, $data, $group = NULL)
+	function validate($data, $group = NULL)
 	{
 		// Filter and validate the form data.
 		$return	= true; //$form->validate($data, $group);
@@ -596,14 +596,14 @@ class MUEModelUser extends JModelAdmin
 		// Check the validation results.
 		if ($return === false) {
 			// Get the validation messages from the form.
-			foreach ($form->getErrors() as $message) {
+			foreach ($data->getErrors() as $message) {
 				$this->setError(JText::_($message));
 			}
 
 			return false;
 		}
 
-		return $form;
+		return $data;
 	}
 	
 	function block(&$pks, $value = 1)

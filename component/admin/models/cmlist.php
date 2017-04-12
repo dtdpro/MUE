@@ -382,6 +382,7 @@ class MUEModelCmlist extends JModelLegacy
 		$list->list_fields = $cm->getListCustomFields($list->uf_default);
 		$list->list_webhooks = $cm->getListWebhooks($list->uf_default);
 		$list->list_msfields = array();
+		$list->list_datefields = array();
 		
 		$n=0;
 		foreach ($list->list_fields as &$v) {
@@ -392,6 +393,9 @@ class MUEModelCmlist extends JModelLegacy
 					$list->list_msfields[$n]->options[] = JHtml::_('select.option', $o,$o);
 				}
 				$n++;
+			}
+			if ($v->DataType == "Date") {
+				$list->list_datefields[] = $v;
 			}
 		}
 		

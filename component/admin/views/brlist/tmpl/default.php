@@ -42,49 +42,50 @@ JHtml::_('behavior.formvalidation');
 
 	//Membership Grouping
 	echo '<h3>Subscripition Grouping</h3>';
-	echo '<ul class="config-option-list">';
+	echo '<div class="form-horizontal">';
 	
 	//Sub Field
-	echo '<li><label for="jform_brsubstatus" id="jform_mcsubstatus-lbl">Subscriber</label>';
-	echo '<select name="jform[brsubstatus]" id="jform_brsubstatus" class="inputbox">';
+	echo '<div class="control-group"><div class="control-label"><label for="jform_brsubstatus" id="jform_mcsubstatus-lbl">Subscriber</label></div>';
+	echo '<div class="controls"><select name="jform[brsubstatus]" id="jform_brsubstatus" class="inputbox">';
 	echo '<option value="">None</option>';
     echo JHtml::_('select.options', $this->list->list_tvars, 'id', 'name', $this->list->params->brsubstatus, true);
-    echo '</select>';
-	echo '</li>';
+    echo '</select></div>';
+	echo '</div>';
 
     //Sub Text Fields
-    echo '<li><label for="jform_brsubtextyes" id="jform_brsubtextyes-lbl">Member Text</label>';
-    echo '<input type="text" name="jform[brsubtextyes]" id="jform_brsubtextyes" class="inputbox" value="'.$this->list->params->brsubtextyes.'">';
-    echo '</li>';
-    echo '<li><label for="jform_brsubtextno" id="jform_brsubtextno-lbl">Non-Member Text</label>';
-    echo '<input type="text" name="jform[brsubtextno]" id="jform_brsubtextno" class="inputbox" value="'.$this->list->params->brsubtextno.'">';
-    echo '</li>';
+    echo '<div class="control-group"><div class="control-label"><label for="jform_brsubtextyes" id="jform_brsubtextyes-lbl">Member Text</label></div>';
+    echo '<div class="controls"><input type="text" name="jform[brsubtextyes]" id="jform_brsubtextyes" class="inputbox" value="'.$this->list->params->brsubtextyes.'"></div>';
+    echo '</div>';
+
+    echo '<div class="control-group"><div class="control-label"><label for="jform_brsubtextno" id="jform_brsubtextno-lbl">Non-Member Text</label></div>';
+    echo '<div class="controls"><input type="text" name="jform[brsubtextno]" id="jform_brsubtextno" class="inputbox" value="'.$this->list->params->brsubtextno.'"></div>';
+    echo '</div>';
 	
 	//Sub Since
-	echo '<li><label for="jform_brsubsince" id="jform_brsubsince-lbl">Subscription Since</label>';
-	echo '<select name="jform[brsubsince]" id="jform_brsubsince" class="inputbox">';
+	echo '<div class="control-group"><div class="control-label"><label for="jform_brsubsince" id="jform_brsubsince-lbl">Subscription Since</label></div>';
+	echo '<div class="controls"><select name="jform[brsubsince]" id="jform_brsubsince" class="inputbox">';
 	echo '<option value="">None</option>';
 	echo JHtml::_('select.options', $this->list->list_datevars, 'id', 'name', $this->list->params->brsubsince, true);
-	echo '</select>';
-	echo '</li>';
+	echo '</select></div>';
+	echo '</div>';
 	
 	//Sub Expires
-	echo '<li><label for="jform_brsubexp" id="jform_brsubexp-lbl">Subscription Expires</label>';
-	echo '<select name="jform[brsubexp]" id="jform_brsubexp" class="inputbox">';
+	echo '<div class="control-group"><div class="control-label"><label for="jform_brsubexp" id="jform_brsubexp-lbl">Subscription Expires</label></div>';
+	echo '<div class="controls"><select name="jform[brsubexp]" id="jform_brsubexp" class="inputbox">';
 	echo '<option value="">None</option>';
 	echo JHtml::_('select.options', $this->list->list_datevars, 'id', 'name', $this->list->params->brsubexp, true);
-	echo '</select>';
-	echo '</li>';
+	echo '</select></div>';
+	echo '</div>';
 	
 	//Sub Pay Type 
-	echo '<li><label for="jform_brsubpaytype" id="jform_brsubpaytype-lbl">Subscription Pay Type</label>';
-	echo '<select name="jform[brsubpaytype]" id="jform_brsubpaytype" class="inputbox">';
+	echo '<div class="control-group"><div class="control-label"><label for="jform_brsubplan" id="jform_brsubplan-lbl">Ending Subscription Plan</label></div>';
+	echo '<div class="controls"><select name="jform[brsubplan]" id="jform_brsubplan" class="inputbox">';
 	echo '<option value="">None</option>';
-	echo JHtml::_('select.options', $this->list->list_tvars, 'id', 'name', $this->list->params->brsubpaytype, true);
-	echo '</select>';
-	echo '</li>';
+	echo JHtml::_('select.options', $this->list->list_tvars, 'id', 'name', $this->list->params->brsubplan, true);
+	echo '</select></div>';
+	echo '</div>';
 
-	echo '</ul>';
+	echo '</div>';
 	echo '<div class="clr"></div>';
 
 	//Fields

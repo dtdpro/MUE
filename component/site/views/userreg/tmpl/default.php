@@ -3,7 +3,7 @@ defined('_JEXEC') or die('Restricted access');
 if ($this->params->get('divwrapper',1)) {
 	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
 }
-$cecfg = MUEHelper::getConfig();
+$cfg = MUEHelper::getConfig();
 
 ?>
 <script type="text/javascript">
@@ -19,15 +19,15 @@ $cecfg = MUEHelper::getConfig();
 	    );
 	}
 </script>
-<h2 class="componentheading uk-article-title">User Registration</h2>
-<?php 
-echo $cecfg->REG_PAGE_CONTENT;
-echo '<div id="mue-user-reg">';
+<?php
+echo '<h2 class="componentheading uk-article-title">'.JText::_('COM_MUE_USERREG_PAGE_TITLE').'</h2>';
+echo $cfg->REG_PAGE_CONTENT;
+echo '<div id="mue-user-reg" class="uk-form uk-form-horizontal">';
 $first = true;
-echo '<div class="mue-user-reg-row mue-rowh">';
-echo '<div class="mue-user-reg-label">User Group</div>';
-echo '<div class="mue-user-reg-hdr">';
-echo '<form action="'.JRoute::_("index.php?option=com_mue&view=userreg&tmpl=raw").'" method="post" name="regpickform" id="regpickform" class="">';
+echo '<div class="uk-form-row mue-user-reg-row mue-rowh">';
+echo '<div class="uk-form-label mue-user-reg-label uk-text-bold">'.JText::_('COM_MUE_USERREG_LABEL_USER_GROUP').'</div>';
+echo '<div class="uk-form-controls mue-user-reg-hdr">';
+echo '<form action="'.JRoute::_("index.php?option=com_mue&view=userreg&tmpl=raw").'" method="post" name="regpickform" id="regpickform">';
 echo '<select name="groupid" id="groupid" class="form-control required uf_field uf_select input-sm" onchange="submitGroup()">';
 echo '<option value="">- Select Group -</option>';
 foreach ($this->groups as $g) {
@@ -43,11 +43,6 @@ echo JHtml::_('form.token');
 echo '</form>';
 echo '</div>';
 echo '</div>';
-//echo '<div class="mue-user-reg-submit">';
-//echo '</div>';
-//echo '<div class="mue-user-reg-submit">';
-//echo '<input type="submit" value="Begin Registration" class="button uk-button" border="0" name="submit">';
-//echo '</div>';
 echo '<div style="clear:both;"></div>';
 echo '<div id="mue-user-regform"></div>';
 echo '</div>';

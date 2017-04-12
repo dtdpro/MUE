@@ -13,9 +13,13 @@ class MUEModelUser extends JModelLegacy
 		$db =& JFactory::getDBO();
 		$user =& JFactory::getUser();
 		$aid = $user->getAuthorisedViewLevels();
-		$qd = 'SELECT ug.* FROM #__mue_ugroups as ug WHERE ug.access IN ('.implode(",",$aid).')';
-		$qd.= ' ORDER BY ug.ordering';
-		$db->setQuery( $qd );
+		$query = $db->getQuery(true);
+		$query->select('*');
+		$query->from('#__mue_ugroups');
+		$query->where('published = 1');
+		$query->where('access IN ('.implode(",",$aid).')');
+		$query->order('ordering');
+		$db->setQuery($query);
 		$ugroups = $db->loadObjectList();
 		return $ugroups;
 	}
@@ -419,7 +423,33 @@ class MUEModelUser extends JModelLegacy
                 }
 
                 // Update Subscription Info
+	            if ($brlist->params->brsubstatus) {
+		            // Set Member Status
+		            if ( $substatus ) {
+			            $contact->setField( $brlist->params->brsubstatus, $brlist->params->brsubtextyes );
+		            } else {
+			            $contact->setField( $brlist->params->brsubstatus, $brlist->params->brsubtextno );
+		            }
 
+		            // Set Member Since
+		            if ( $brlist->params->brsubsince ) {
+			            $contact->setField( $brlist->params->brsubsince, $uginfo->userg_subsince );
+		            }
+
+		            // Set Member Exp
+		            if ( $brlist->params->brsubexp ) {
+			            $contact->setField( $brlist->params->brsubexp, $uginfo->userg_subexp );
+		            }
+
+		            // Set Active/End Member Plan
+		            if ( $brlist->params->brsubplan ) {
+			            if ( !$substatus ) {
+			            	$contact->setField( $brlist->params->brsubplan, 'None' );
+			            } else {
+				            $contact->setField( $brlist->params->brsubplan, $uginfo->userg_subendplanname );
+			            }
+		            }
+	            }
 
                 // Update Lists
                 if ($data[$brlist->uf_sname]) {

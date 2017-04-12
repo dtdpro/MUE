@@ -75,14 +75,14 @@ class MUEModelBrlist extends JModelLegacy
 		$query = $db->getQuery(true);
 		$query->select('u.*');
 		$query->from('#__users as u');
-		$query->select('ug.userg_update as lastUpdate,ug.userg_notes,ug.userg_siteurl,ug.userg_subsince,ug.userg_subexp,ug.userg_lastpaidvia');
+		$query->select('ug.userg_update as lastUpdate,ug.userg_notes,ug.userg_siteurl,ug.userg_subsince,ug.userg_subexp,ug.userg_lastpaidvia,ug.userg_subendplanname');
 		$query->join('LEFT', '#__mue_usergroup AS ug ON u.id = ug.userg_user');
 		$query->select('g.ug_name');
 		$query->join('LEFT', '#__mue_ugroups AS g ON ug.userg_group = g.ug_id');
 		$db->setQuery($query);
 		$users=$db->loadObjectList();
 		
-		/*//User Sub Status
+		//User Sub Status
 		if ($cfg->subscribe) {
 			foreach ($users as &$i) {
 				$query = $db->getQuery(true);
@@ -102,7 +102,7 @@ class MUEModelBrlist extends JModelLegacy
 					$i->substatus=false;
 				}
 			}
-		}*/
+		}
 		
 		//User Field Data
 		foreach ($muefields as $f) {
@@ -180,6 +180,32 @@ class MUEModelBrlist extends JModelLegacy
 						else {
 							$brfields[] = array("fieldId" => $brv, "content" => $ufield[$userid]);
 						}
+					}
+				}
+			}
+
+			// Sub info
+			if ($list->params->brsubstatus && $cfg->subscribe) {
+				// Set Member Status
+				if ($u->substatus) $brfields[] = array("fieldId" => $list->params->brsubstatus, "content" => $list->params->brsubtextyes);
+				else $brfields[] = array("fieldId" => $list->params->brsubstatus, "content" => $list->params->brsubtextno);
+
+				// Set Member Since
+				if ( $list->params->brsubsince ) {
+					$brfields[] = array("fieldId" => $list->params->brsubsince, "content" => $u->userg_subsince );
+				}
+
+				// Set Member Exp
+				if ( $list->params->brsubexp ) {
+					$brfields[] = array("fieldId" => $list->params->brsubexp, "content" => $u->userg_subexp );
+				}
+
+				// Set Active/End Member Plan
+				if ( $list->params->brsubplan ) {
+					if ( !$u->substatus ) {
+						$brfields[] = array("fieldId" => $list->params->brsubplan, "content" => 'None');
+					} else {
+						$brfields[] = array("fieldId" => $list->params->brsubplan, "content" => $u->userg_subendplanname);
 					}
 				}
 			}
