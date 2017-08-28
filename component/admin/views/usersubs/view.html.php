@@ -16,6 +16,8 @@ class MUEViewUsersubs extends JViewLegacy
 		$this->state		= $this->get('State');
 		$this->plist = $this->get('Plans');
 		$this->paystatuses = $this->get('PayStatuses');
+		$this->filterForm    = $this->get('FilterForm');
+		$this->activeFilters = $this->get('ActiveFilters');
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) 
 		{

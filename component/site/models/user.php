@@ -10,8 +10,8 @@ jimport( 'joomla.application.component.model' );
 class MUEModelUser extends JModelLegacy
 {
 	function getGroups() {
-		$db =& JFactory::getDBO();
-		$user =& JFactory::getUser();
+		$db = JFactory::getDBO();
+		$user = JFactory::getUser();
 		$aid = $user->getAuthorisedViewLevels();
 		$query = $db->getQuery(true);
 		$query->select('*');
@@ -25,7 +25,7 @@ class MUEModelUser extends JModelLegacy
 	}
 	
 	function saveEmail($newemail) {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$user=JFactory::getUser();
 		$cfg = MUEHelper::getConfig();
 		$date = new JDate('now');
@@ -126,7 +126,7 @@ class MUEModelUser extends JModelLegacy
 	}
 	
 	function saveGroup($groupid) {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$user=JFactory::getUser();
 		$cfg = MUEHelper::getConfig();
 		$date = new JDate('now');
@@ -236,7 +236,7 @@ class MUEModelUser extends JModelLegacy
 	}
 	
 	function getUserCERecords() {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$user=JFactory::getUser();
 		
 		$qci=$db->getQuery(true);
@@ -278,7 +278,7 @@ class MUEModelUser extends JModelLegacy
 	}
 	
 	function getUserFields($group,$showhidden=false,$all=false,$changable=false,$type="") {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$qd = 'SELECT f.* FROM #__mue_uguf as g';
 		$qd.= ' RIGHT JOIN #__mue_ufields as f ON g.uguf_field = f.uf_id';
 		$qd.= ' WHERE f.published = 1 && g.uguf_group='.$group;
@@ -286,6 +286,7 @@ class MUEModelUser extends JModelLegacy
 		if ($changable) $qd.=" && f.uf_change = 1";
 		if ($type) $qd .= ' && f.uf_type = "'.$type.'"';
 		$qd .= ' && f.uf_type != "captcha"';
+		$qd .=" && f.uf_profile = 1";
 		$qd.= ' ORDER BY f.ordering';
 		$db->setQuery( $qd ); 
 		$ufields = $db->loadObjectList();
@@ -432,12 +433,12 @@ class MUEModelUser extends JModelLegacy
 		            }
 
 		            // Set Member Since
-		            if ( $brlist->params->brsubsince ) {
+		            if ( $brlist->params->brsubsince && $uginfo->userg_subsince != "0000-00-00" ) {
 			            $contact->setField( $brlist->params->brsubsince, $uginfo->userg_subsince );
 		            }
 
 		            // Set Member Exp
-		            if ( $brlist->params->brsubexp ) {
+		            if ( $brlist->params->brsubexp  && $uginfo->userg_subexp != '0000-00-00') {
 			            $contact->setField( $brlist->params->brsubexp, $uginfo->userg_subexp );
 		            }
 
@@ -658,7 +659,7 @@ class MUEModelUser extends JModelLegacy
 						}
 					}
 				}
-				$url = "http://maps.google.com/maps/api/geocode/json?sensor=false&address=".urlencode($address);
+				$url = "http://maps.google.com/maps/api/geocode/json?address=".urlencode($address);
 				$gdata_json = $this->curl_file_get_contents($url);
 				$gdata = json_decode($gdata_json);
 				if ($gdata->status == 'OK') {

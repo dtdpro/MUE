@@ -20,6 +20,13 @@
 			<option value="0">Opt-In</option>
 			<option value="1">Opt-Out</option>
 		</field>
+		<field name="rc_config" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_RC_CONFIG_LABEL" description="COM_MUE_CONFIG_FIELD_RC_CONFIG_DESC" default="disabled">
+			<option value="disabled">Disabled</option>
+			<option value="visible">Visible</option>
+			<option value="invisible">InVisible - Not yet implemented</option>
+		</field>
+		<field name="rc_api_key" type="text" label="COM_MUE_CONFIG_FIELD_RC_APIKEY_LABEL" description="COM_MUE_CONFIG_FIELD_RC_APIKEY_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="rc_api_secret" type="text" label="COM_MUE_CONFIG_FIELD_RC_APISECRET_LABEL" description="COM_MUE_CONFIG_FIELD_RC_APISECRET_DESC" size="70" class="inputbox" required="false" default="" />
 	</fieldset>
 	<fieldset name="reports" label="COM_MUE_CONFIG_REPORTS_LABEL" description="COM_MUE_CONFIG_REPORTS_DESC" addfieldpath="/administrator/components/com_mue/models/fields">
 		<field name="on_list_field" type="FieldInclude" class="inputbox" label="COM_MUE_CONFIG_FIELD_ONLIST_LABEL" description="COM_MUE_CONFIG_FIELD_ONLIST_DESC" />
@@ -69,12 +76,13 @@
 		<field name="subemail_email" type="text" label="COM_MUE_CONFIG_FIELD_SUBEMAIL_EMAIL_LABEL" description="COM_MUE_CONFIG_FIELD_SUBEMAIL_EMAIL_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="subemail_name" type="text" label="COM_MUE_CONFIG_FIELD_SUBEMAIL_NAME_LABEL" description="COM_MUE_CONFIG_FIELD_SUBEMAIL_NAME_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="subemail_subject" type="text" label="COM_MUE_CONFIG_FIELD_SUBEMAIL_SUBJECT_LABEL" description="COM_MUE_CONFIG_FIELD_SUBEMAIL_SUBJECT_DESC" size="70" class="inputbox" required="false" default="" />
-		<field name="subemail_content" type="textarea" label="COM_MUE_CONFIG_FIELD_SUBEMAIL_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_SUBEMAIL_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
+		<field name="subemail_content" type="textarea" label="COM_MUE_CONFIG_FIELD_SUBEMAIL_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_SUBEMAIL_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="raw" buttons="false" />
 		<field name="spacer2" type="spacer" hr="true" />
 		<field name="paypal" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_PAYPAL_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPAL_DESC" default="1">
 			<option value="0">No</option>
 			<option value="1">Yes</option>
 		</field>
+		<field name="paypal_msg" type="textarea" label="COM_MUE_CONFIG_FIELD_PAYPALMSG_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPALMSG_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
 		<field name="paypal_mode" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_PAYPALMODE_LABEL" description="COM_MUE_CONFIG_FIELD_PAYPALMODE_DESC">
 			<option value="live">Live</option>
 			<option value="sandbox">Sandbox</option>

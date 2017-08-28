@@ -4,7 +4,7 @@ if ($this->params->get('divwrapper',1)) {
 	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
 }
 echo '<h2 class="componentheading uk-article-title">'.JText::_('COM_MUE_USER_PROFILE_PAGE_TITLE').'</h2>';
-
+$i=0;
 $cfg=MUEHelper::getConfig();
 $sub=false;
 if ($cfg->subscribe){

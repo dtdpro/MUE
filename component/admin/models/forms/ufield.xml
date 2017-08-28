@@ -29,7 +29,6 @@
 		<field
 			name="uf_sname"
 			type="text"
-			extension="com_continued"
 			class="inputbox"
 			size="40"
 			label="COM_MUE_UFIELD_FIELD_SNAME_LABEL"

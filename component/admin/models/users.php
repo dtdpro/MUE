@@ -17,7 +17,7 @@ class MUEModelUsers extends JModelList
 		if ($cfg->subscribe) {
 			if (empty($config['filter_fields'])) {
 					$config['filter_fields'] = array(
-							'id', 'a.id',
+							'id', 'u.id',
 							'name', 'u.name',
 							'username', 'u.username',
 							'email', 'u.email',
@@ -39,7 +39,7 @@ class MUEModelUsers extends JModelList
 		} else {
 			if (empty($config['filter_fields'])) {
 					$config['filter_fields'] = array(
-							'id', 'a.id',
+							'id', 'u.id',
 							'name', 'u.name',
 							'username', 'u.username',
 							'email', 'u.email',
@@ -321,6 +321,90 @@ class MUEModelUsers extends JModelList
 		}
 		return true;
 	}
+
+	public function syncMemberDB() {
+		$cfg = MUEHelper::getConfig();
+
+		$af=explode(",",$cfg->userdir_mapfields);
+		$uf=explode(",",$cfg->userdir_userinfo);
+		$sf=explode(",",$cfg->userdir_searchinfo);
+
+		$db =& JFactory::getDBO();
+
+		$db->truncateTable("#__mue_userdir");
+
+		$qfid = $db->getQuery(true);
+		$qfid->select('uf_id');
+		$qfid->from("#__mue_ufields");
+		$qfid->where('uf_sname = "'.$cfg->on_userdir_field.'"');
+		$db->setQuery($qfid);
+		$fid = $db->loadResult();
+
+		$query = $db->getQuery(true);
+		$query->select('usr_user');
+		$query->from('#__mue_users');
+		$query->where('usr_field = '.$fid);
+		$query->where('usr_data = "1"');
+		$db->setQuery($query);
+		$usersInDB = $db->loadColumn();
+
+		foreach ($usersInDB as $u) {
+			if ($item = $this->getUserInfo($u)) {
+				$address      = "";
+				$dbuserinfo   = "";
+				$dbsearchinfo = "";
+				foreach ( $af as $f ) {
+					if ( $item->$f ) {
+						if ( in_array( $f, $optfs ) ) {
+							$address .= $optionsdata[ $item->$f ] . " ";
+						} else if ( in_array( $f, $moptfs ) ) {
+							foreach ( explode( " ", $item->$f ) as $mfo ) {
+								$address .= $optionsdata[ $mfo ] . " ";
+							}
+						} else {
+							$address .= $item->$f . " ";
+						}
+					}
+				}
+				foreach ( $uf as $f ) {
+					if ( $item->$f ) {
+						if ( in_array( $f, $optfs ) ) {
+							$dbuserinfo .= $optionsdata[ $item->$f ] . "<br />";
+						} else if ( in_array( $f, $moptfs ) ) {
+							foreach ( explode( " ", $item->$f ) as $mfo ) {
+								$dbuserinfo .= $optionsdata[ $mfo ] . "<br />";
+							}
+						} else {
+							$dbuserinfo .= $item->$f . "<br />";
+						}
+					}
+				}
+				foreach ( $sf as $f ) {
+					if ( $item->$f ) {
+						if ( in_array( $f, $optfs ) ) {
+							$dbsearchinfo .= $optionsdata[ $item->$f ] . " ";
+						} else if ( in_array( $f, $moptfs ) ) {
+							foreach ( explode( " ", $item->$f ) as $mfo ) {
+								$dbsearchinfo .= $optionsdata[ $mfo ] . " ";
+							}
+						} else {
+							$dbsearchinfo .= $item->$f . " ";
+						}
+					}
+				}
+				$url        = "http://maps.google.com/maps/api/geocode/json?address=" . urlencode( $address );
+				$gdata_json = $this->curl_file_get_contents( $url );
+				$gdata      = json_decode( $gdata_json );
+				if ( $gdata->status == 'OK' ) {
+					$udsql = 'INSERT INTO #__mue_userdir (ud_user,ud_lat,ud_lon,ud_userinfo,ud_searchinfo) VALUES  ("' . $item->id . '","' . $gdata->results[0]->geometry->location->lat . '","' . $gdata->results[0]->geometry->location->lng . '","' . $dbuserinfo . '","' . $dbsearchinfo . '")';
+					$db->setQuery( $udsql );
+					$db->query();
+				}
+			}
+		}
+
+		return true;
+	}
 	
 	protected function getUsers() {
 		$db =& JFactory::getDBO();
@@ -441,4 +525,55 @@ class MUEModelUsers extends JModelList
 		return $fod;
 	}
 
+	public function getUserInfo($userid) {
+		$user =& JFactory::getUser($userid);
+		if (!$user->id) return false;
+		$db =& JFactory::getDBO();
+		$query = 'SELECT ug.userg_group AS userGroupID, ug.userg_update AS lastUpdated, g.ug_name AS userGroupName FROM #__mue_usergroup as ug ';
+		$query.= 'RIGHT JOIN #__mue_ugroups AS g ON ug.userg_group = g.ug_id ';
+		$query.= 'WHERE ug.userg_user="'.$userid.'"';
+		$db->setQuery($query); $groupdata=$db->loadObject();
+		$user->userGroupID=$groupdata->userGroupID;
+		$user->userGroupName=$groupdata->userGroupName;
+		$user->lastUpdated=$groupdata->lastUpdated;
+		$qd = 'SELECT f.*,u.usr_data FROM #__mue_uguf as g';
+		$qd.= ' RIGHT JOIN #__mue_ufields as f ON g.uguf_field = f.uf_id';
+		$qd.= ' RIGHT JOIN #__mue_users as u ON u.usr_field = f.uf_id && usr_user = '.$userid;
+		$qd.= ' WHERE g.uguf_group='.$user->userGroupID;
+		$db->setQuery( $qd );
+		$udata = $db->loadObjectList();
+		foreach ($udata as $u) {
+			if (!$u->uf_cms) {
+				$fn=$u->uf_sname;
+				if ($u->uf_type == 'multi' || $u->uf_type == 'dropdown' || $u->uf_type == 'mcbox' || $u->uf_type == 'mlist') {
+					if ($u->usr_data) {
+						$ansarr=explode(" ",$u->usr_data);
+						$q = 'SELECT opt_text FROM #__mue_ufields_opts WHERE opt_id IN('.implode(",",$ansarr).')';
+						$db->setQuery($q);
+						$user->$fn = implode(", ",$db->loadColumn());
+					} else {
+						$user->$fn = "";
+					}
+				} else if ($u->uf_type == 'cbox' || $u->uf_type == 'yesno') {
+					$user->$fn = ($u->usr_data == "1") ? "Yes" : "No";
+				} else if ($u->uf_type == 'birthday') {
+					$user->$fn = date("F j",strtotime('2000-'.substr($u->usr_data,0,2)."-".substr($u->usr_data,2,2).''));
+				} else{
+					$user->$fn=$u->usr_data;
+				}
+			}
+		}
+		return $user;
+	}
+
+	private function curl_file_get_contents($URL){
+		$c = curl_init();
+		curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($c, CURLOPT_URL, $URL);
+		$contents = curl_exec($c);
+		curl_close($c);
+
+		if ($contents) return $contents;
+		else return FALSE;
+	}
 }

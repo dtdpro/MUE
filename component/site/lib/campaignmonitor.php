@@ -5,7 +5,7 @@ class CampaignMonitor {
 	public $clientid="";
 	public $error='';
 	
-	function CampaignMonitor($apikey,$clientid	) {
+	function __construct($apikey,$clientid) {
 		$this->apikey=$apikey;
 		$this->clientid=$clientid;
 	}

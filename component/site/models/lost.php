@@ -55,17 +55,21 @@ class MUEModelLost extends JModelLegacy
 		$emailmsg = str_replace("{username}",$user->username,$emailmsg);
 		$emailmsg = str_replace("{password}",$newpass,$emailmsg);
 		$emailmsg = str_replace("{site_url}",JURI::base(),$emailmsg);
-		
-		//Send Welcome Email
+
+		// Send Lost info email
 		$mail = &JFactory::getMailer();
-		$mail->IsHTML(true);
-		$sent = $mail->sendMail ($emailfromaddress, $emailfromname, $emailtoaddress, $emailsubject, $emailmsg, true);
-		
+		$mail->IsHTML( true );
+		$mail->addRecipient( $emailtoaddress, $emailtoname );
+		$mail->setSender( $emailfromaddress, $emailfromname );
+		$mail->setSubject( $emailsubject );
+		$mail->setBody( $emailmsg );
+		$sent = $mail->Send();
+
 		return true;
 		
 	}
 	
-	function gen_uuid($len=8) {
+	function gen_uuid($len=12) {
 		$hex = md5("in_the_beginning_users_had_no_passwords" . uniqid("", true));
 		$pack = pack('H*', $hex);
 		$uid = base64_encode($pack); // max 22 chars

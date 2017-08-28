@@ -22,14 +22,14 @@ class MUEModelUsersubs extends JModelList
 		$app = JFactory::getApplication('administrator');
 
 		// Load the filter state.
-		$cId = $this->getUserStateFromRequest($this->context.'.filter.plan', 'filter_plan', '');
+		/*$cId = $this->getUserStateFromRequest($this->context.'.filter.plan', 'filter_plan', '');
 		$this->setState('filter.plan', $cId);
 		$ps = $this->getUserStateFromRequest($this->context.'.filter.paystatus', 'filter_paystatus', '');
 		$this->setState('filter.paystatus', $ps);
 		$sd = $this->getUserStateFromRequest($this->context.'.filter.start', 'filter_start', date("Y-m-d",strtotime("-1 years")));
 		$this->setState('filter.start', $sd);
 		$ed = $this->getUserStateFromRequest($this->context.'.filter.end', 'filter_end', date("Y-m-d"));
-		$this->setState('filter.end', $ed);
+		$this->setState('filter.end', $ed);*/
 		$search = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
 
@@ -61,7 +61,7 @@ class MUEModelUsersubs extends JModelList
 		$query->select('p.*');
 		$query->join('LEFT', '#__mue_subs AS p ON p.sub_id = s.usrsub_sub');
 		
-		// Set Date range
+		/*// Set Date range
 		$startdate = $this->getState('filter.start');
 		$enddate = $this->getState('filter.end');
 		$query->where('date(s.usrsub_time) BETWEEN "'.$startdate.'" AND "'.$enddate.'"');
@@ -76,7 +76,7 @@ class MUEModelUsersubs extends JModelList
 		$cId = $this->getState('filter.plan');
 		if (is_numeric($cId)) {
 			$query->where('s.usrsub_sub = '.(int) $cId);
-		}
+		}*/
 		
 		// Filter by search in title
 		$search = $this->getState('filter.search');

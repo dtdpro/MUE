@@ -307,7 +307,14 @@ class Bronto_Api_Contact_Row extends Bronto_Api_Row implements Bronto_Api_Delive
             }
         }
 
-        $this->_modifiedFields['listIds'] = true;
+	    if(empty($this->_data['listIds']) === true)
+	    {
+		    $this->_data['listIds'][] = null;
+	    }
+
+	    $this->_data['listIds'] = array_values($this->_data['listIds']);
+
+	    $this->_modifiedFields['listIds'] = true;
         return $this;
     }
 

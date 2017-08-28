@@ -191,12 +191,12 @@ class MUEModelBrlist extends JModelLegacy
 				else $brfields[] = array("fieldId" => $list->params->brsubstatus, "content" => $list->params->brsubtextno);
 
 				// Set Member Since
-				if ( $list->params->brsubsince ) {
+				if ( $list->params->brsubsince && $u->userg_subsince != "0000-00-00") {
 					$brfields[] = array("fieldId" => $list->params->brsubsince, "content" => $u->userg_subsince );
 				}
 
 				// Set Member Exp
-				if ( $list->params->brsubexp ) {
+				if ( $list->params->brsubexp  && $u->userg_subexp != '0000-00-00') {
 					$brfields[] = array("fieldId" => $list->params->brsubexp, "content" => $u->userg_subexp );
 				}
 

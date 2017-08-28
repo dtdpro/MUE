@@ -122,6 +122,7 @@ class MUEModelUfield extends JModelAdmin
 		$user = JFactory::getUser();
 		$pks = (array) $pks;
 		$table = $this->getTable();
+		$otable=$this->getTable("Uopt","MUETable");
 		
 		// Include the content plugins for the on delete events.
 		JPluginHelper::importPlugin('content');
@@ -133,23 +134,27 @@ class MUEModelUfield extends JModelAdmin
 			if ($table->load($pk))
 			{
 				$table->uf_id=0;
+				$table->uf_sname=$table->uf_sname.'_copy';
 				$table->ordering=$table->getNextOrder();
 				if (!$table->store()) {
 					$this->setError($table->getError());
 					return false;
 				} else {
 					if ($table->uf_type == 'multi' || $table->uf_type == 'mcbox' || $table->uf_type == 'dropdown') {
-						$newid = $table->q_id;
+						$newid = $table->uf_id;
 						$qoq='SELECT * FROM #__mue_ufields_opts WHERE opt_field = '.$pk;
 						$this->_db->setQuery($qoq);
 						$qos = $this->_db->loadObjectList();
 						foreach($qos as $qo) {
-							$q  = 'INSERT INTO #__mue_ufields_opts (opt_field,opt_text,opt_correct,opt_expl,ordering,published) ';
-							$q .= 'VALUES ("'.$newid.'","'.$qo->opt_text.'","'.$qo->opt_correct.'","'.$qo->opt_expl.'","'.$qo->ordering.'","'.$qo->published.'")';
-							$this->_db->setQuery($q);
-							if (!$this->_db->query($q)) {
-								return false;
+							if ($otable->load($qo->opt_id)) {
+								$otable->opt_id=0;
+								$otable->opt_field=$newid;
+								if (!$otable->store()) {
+									$this->setError($otable->getError());
+									return false;
+								}
 							}
+
 						}
 					}
 				}

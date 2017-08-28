@@ -89,4 +89,27 @@ class MUEControllerUsers extends JControllerAdmin
 
 		$this->setRedirect('index.php?option=com_mue&view=users');
 	}
+
+	public function syncMemberDB()
+	{
+		// Check for request forgeries.
+		//JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+
+		// Get the model.
+		$model = $this->getModel('Users');
+
+		// Change the state of the records.
+		if (!$model->syncMemberDB())
+		{
+			$this->setMessage(JText::_('COM_MUE_USERS_SYNCMEMBERDB_FAILED'));
+		}
+		else
+		{
+			$this->setMessage(JText::_('COM_MUE_USERS_SYNCMEMBERDB_SUCCESS'));
+		}
+
+
+		$this->setRedirect('index.php?option=com_mue&view=users');
+	}
 }

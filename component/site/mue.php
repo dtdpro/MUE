@@ -22,7 +22,7 @@ JLoader::registerNamespace('Bronto_Api', JPATH_COMPONENT . '/lib/bronto/src');
 JLoader::registerNamespace('Bronto_SoapClient', JPATH_COMPONENT . '/lib/bronto/src');
 
 // Load StyleSheet for template, based on config
-$doc = &JFactory::getDocument();
+$doc = JFactory::getDocument();
 //jQuery
 if (version_compare(JVERSION, '3.0.0', '>=')) {
 	JHtml::_('jquery.framework');

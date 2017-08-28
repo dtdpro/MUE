@@ -29,9 +29,9 @@ class MUEHelper {
 
 	public static function getUserInfo($useids = false) {
 		$cfg = MUEHelper::getConfig();
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$userid = $user->id;
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT ug.userg_group AS userGroupID, ug.userg_update AS lastUpdated, g.ug_name AS userGroupName FROM #__mue_usergroup as ug ';
 		$query.= 'RIGHT JOIN #__mue_ugroups AS g ON ug.userg_group = g.ug_id ';
 		$query.= 'WHERE ug.userg_user="'.$userid.'"';
@@ -94,8 +94,14 @@ class MUEHelper {
                     $contact->read();
                     $onlist = false;
                     if ($contact->status == 'active' || $contact->status == 'onboarding') {
-                        if (in_array($u->uf_default,$contact->listIds)) $onlist = true;
-                        else $onlist = false;
+                        if (!$contact->listIds || !is_array($contact->listIds)) {
+	                        $onlist = false;
+                        } else if (in_array($u->uf_default,$contact->listIds)) {
+                        	$onlist = true;
+                        }
+                        else {
+                        	$onlist = false;
+                        }
                     } else {
                         $onlist = false;
                     }
@@ -139,9 +145,9 @@ class MUEHelper {
 	}
 
 	public static function getUserSubs() {
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$userid = $user->id;
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT s.*, p.*, DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft FROM #__mue_usersubs as s ';
 		$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
 		$query.= 'WHERE s.usrsub_status != "notyetstarted" && s.usrsub_user="'.$userid.'" ';
@@ -152,9 +158,9 @@ class MUEHelper {
 	}
 
 	public static function userHadTrial() {
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$userid = $user->id;
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT s.*, p.* FROM #__mue_usersubs as s ';
 		$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
 		$query.= 'WHERE s.usrsub_user="'.$userid.'" ';
@@ -169,10 +175,10 @@ class MUEHelper {
 
 	public static function getActiveSub($userid=0) {
 		if (!$userid) {
-			$user =& JFactory::getUser();
+			$user = JFactory::getUser();
 			$userid = $user->id;
 		}
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT s.*,p.*,DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft FROM #__mue_usersubs as s ';
 		$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
 		$query.= 'WHERE s.usrsub_status IN ("completed","accepted") && s.usrsub_end >= DATE(NOW()) && s.usrsub_user="'.$userid.'" ';
@@ -207,11 +213,11 @@ class MUEHelper {
 	}
 
 	public static function updateUserSub($userid) {
-		$user =& JFactory::getUser($userid);
+		$user = JFactory::getUser($userid);
 		$date = new JDate('now');
 
 		$cfg = MUEHelper::getConfig();
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT s.*,p.*,DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft FROM #__mue_usersubs as s ';
 		$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
 		$query.= 'WHERE s.usrsub_status IN ("completed","accepted") && s.usrsub_end >= DATE(NOW()) && s.usrsub_user="'.$userid.'" ';
@@ -241,7 +247,7 @@ class MUEHelper {
 			$db->query();
 		}
 
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$qd = 'SELECT f.* FROM #__mue_ufields as f ';
 		$qd.= ' WHERE f.published = 1 ';
 		$qd .= ' && f.uf_type IN ("mailchimp","brlist","cmlist")';
@@ -278,12 +284,12 @@ class MUEHelper {
 					else $contact->setField( $f->params->brsubstatus, $f->params->brsubtextno );
 
 					// Set Member Since
-					if ( $f->params->brsubsince ) {
+					if ( $f->params->brsubsince && $ug->userg_subsince != "0000-00-00" ) {
 						$contact->setField( $f->params->brsubsince, $ug->userg_subsince );
 					}
 
 					// Set Member Exp
-					if ( $f->params->brsubexp ) {
+					if ( $f->params->brsubexp && $ug->userg_subexp != '0000-00-00') {
 						$contact->setField( $f->params->brsubexp, $ug->userg_subexp );
 					}
 
@@ -397,7 +403,7 @@ class MUEHelper {
 		$cfg = MUEHelper::getConfig();
 		if (!$userid) return false;
 
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT s.*,p.*,DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft FROM #__mue_usersubs as s ';
 		$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
 		$query.= 'WHERE s.usrsub_status IN ("completed","accepted") && s.usrsub_end >= DATE(NOW()) && s.usrsub_user="'.$userid.'" ';
@@ -425,10 +431,10 @@ class MUEHelper {
 			$qud->where('userg_user = '.$userid);
 			$db->setQuery($qud);
 			$db->query();
-			return $sub;
+			//return $sub;
 		}
 
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		if ($cfg->subgroup <= 2) return;
 		if ($sub) {
 			$query = $db->getQuery(true);

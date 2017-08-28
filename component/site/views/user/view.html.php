@@ -48,9 +48,9 @@ class MUEViewUser extends JViewLegacy
 	
 	protected function saveEmail() {
 		JRequest::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$newemail = JRequest::getVar('newemail');
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$userid = $user->id;
 		if ($userid != 0) {
 			if (!$model->saveEmail($newemail)) {
@@ -65,13 +65,13 @@ class MUEViewUser extends JViewLegacy
 	}
 	
 	protected function changeEmail() {
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$print = JRequest::getVar('print');
 	}
 	
 	protected function saveGroup() {
 		JRequest::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$newgroup = JRequest::getVar('newgroup');
 		$user =& JFactory::getUser();
 		$userid = $user->id;
@@ -92,9 +92,9 @@ class MUEViewUser extends JViewLegacy
 	}
 	
 	protected function changeGroup() {
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$print = JRequest::getVar('print');
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$userid = $user->id;
 		if (count($model->getGroups()) == 1) {
 			$app=Jfactory::getApplication();
@@ -110,9 +110,9 @@ class MUEViewUser extends JViewLegacy
 	}
 	
 	protected function userCerts() {
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$print = JRequest::getVar('print');
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$userid = $user->id;
 		if ($userid != 0) {
 			$userrecs=$model->getUserCERecords();
@@ -122,9 +122,9 @@ class MUEViewUser extends JViewLegacy
 	}
 	
 	protected function userSubs() {
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$print = JRequest::getVar('print');
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$userid = $user->id;
 		if ($userid != 0) {
 			$usersubs=MUEHelper::getUserSubs();
@@ -134,9 +134,9 @@ class MUEViewUser extends JViewLegacy
 	}
 	
 	protected function userProfile() {
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$print = JRequest::getVar('print');
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$userid = $user->id;
 		if ($userid != 0) {
 			$userinfo=MUEHelper::getUserInfo();
@@ -149,9 +149,9 @@ class MUEViewUser extends JViewLegacy
 	}
 	
 	protected function userEdit() {
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$print = JRequest::getVar('print');
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$userid = $user->id;
 		if ($userid != 0) {
 			$userinfo=MUEHelper::getUserInfo(true);
@@ -164,9 +164,9 @@ class MUEViewUser extends JViewLegacy
 	}
 	
 	protected function saveUser() {
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$print = JRequest::getVar('print');
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$userid = $user->id;
 		if ($userid != 0) {
 			if (!$model->save()) {
@@ -181,9 +181,9 @@ class MUEViewUser extends JViewLegacy
 	}
 	
 	protected function cancelUserSub() {
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$sub = JRequest::getInt('sub');
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$userid = $user->id;
 		$muecfg = MUEHelper::getConfig();
 		include_once 'components/com_mue/helpers/paypal.php';

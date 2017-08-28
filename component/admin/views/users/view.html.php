@@ -58,6 +58,7 @@ class MUEViewUsers extends JViewLegacy
 		$tbar =& JToolBar::getInstance('toolbar');
 		$tbar->appendButton('Link','export','Export CSV','index.php?option=com_mue&view=users&format=csv');
 		if ($cfg->subscribe) JToolBarHelper::custom('users.syncsubs', 'refresh.png', 'refresh_f2.png', 'COM_MUE_TOOLBAR_SYNCSUB', false);
+		if ($cfg->userdir) JToolBarHelper::custom('users.syncmemberdb', 'refresh.png', 'refresh_f2.png', 'COM_MUE_TOOLBAR_SYNCMEMBERDB', false);
 		JToolBarHelper::divider();
 		
 		JHtml::_('bootstrap.modal', 'collapseModal');
@@ -87,7 +88,7 @@ class MUEViewUsers extends JViewLegacy
 				'u.lastvisitDate' => JText::_('COM_USERS_HEADING_LAST_VISIT_DATE'),
 				'u.registerDate' => JText::_('COM_USERS_HEADING_REGISTRATION_DATE'),
 				'ug.userg_update' => JText::_('COM_MUE_USER_HEADING_UPDATE'),
-				'a.id' => JText::_('JGRID_HEADING_ID')
+				'u.id' => JText::_('JGRID_HEADING_ID')
 		);
 	}
 }

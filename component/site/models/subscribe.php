@@ -20,6 +20,7 @@ class MUEModelSubscribe extends JModelLegacy
 		$query .= ' && c.sub_id = '.$pid;
 		$db->setQuery( $query );
 		$plan = $db->loadObject();
+		$plan->discounted = -1;
 		if ($discountcode) {
 			if ($codeinfo = $this->getDiscountCodeInfo($discountcode)) {
 				if (in_array($plan->sub_id,explode(",",$codeinfo->cu_plans))) {
@@ -31,6 +32,8 @@ class MUEModelSubscribe extends JModelLegacy
 				} else {
 					$plan->discounted = -1;
 				}
+			} else {
+				$plan->discounted = -1;
 			}
 		} else {
 			$plan->discounted = -1;
@@ -56,6 +59,7 @@ class MUEModelSubscribe extends JModelLegacy
 		if ( $discountcode ) $codeinfo = $this->getDiscountCodeInfo( $discountcode );
 		else $codeinfo = false;
 		foreach ($plans as &$p) {
+			$p->discounted = -1;
 			if ( $discountcode ) {
 				if ( $codeinfo ) {
 					if ( in_array( $p->sub_id, explode( ",", $codeinfo->cu_plans ) ) ) {
@@ -67,6 +71,8 @@ class MUEModelSubscribe extends JModelLegacy
 					} else {
 						$p->discounted = -1;
 					}
+				} else {
+					$p->discounted = -1;
 				}
 			} else {
 				$p->discounted = -1;
@@ -81,7 +87,7 @@ class MUEModelSubscribe extends JModelLegacy
 		$query->select('*');
 		$query->from('#__mue_coupons');
 		$query->where('published = 1');
-		$query->where('cu_code = "'.$db->escape($discountcode).'"');
+		$query->where('cu_code = "' . $db->escape($discountcode) . '"');
 		$query->where('((cu_start <= NOW() && cu_end >= NOW()) || cu_start = "0000-00-00")');
 		$db->setQuery($query);
 		return $db->loadObject();
@@ -104,6 +110,7 @@ class MUEModelSubscribe extends JModelLegacy
 	}
 
 	function freeOfCharge($pinfo,$start) {
+		$cfg=MUEHelper::getConfig();
 		JRequest::checkToken() or jexit( 'Invalid Token' );
 		$db =& JFactory::getDBO();
 		$user =& JFactory::getUser();
@@ -118,6 +125,21 @@ class MUEModelSubscribe extends JModelLegacy
 		if (!$db->query()) return false;
 		$newid = $db->insertid();
 		MUEHelper::getActiveSub();
+		$query = $db->getQuery(true);
+		$query->select($db->quoteName('user_id'));
+		$query->from($db->quoteName('#__user_usergroup_map'));
+		$query->where($db->quoteName('group_id') . ' = ' . (int) $cfg->subgroup);
+		$query->where($db->quoteName('user_id') . ' = ' . (int) $user->id);
+		$db->setQuery($query);
+		$hasgroup = $db->loadResult();
+		if (!$hasgroup) {
+			$query->clear();
+			$query->insert($db->quoteName('#__user_usergroup_map'));
+			$query->columns(array($db->quoteName('user_id'), $db->quoteName('group_id')));
+			$query->values((int) $user->id . ',' . $cfg->subgroup);
+			$db->setQuery($query);
+			$db->query();
+		}
 		return $newid;
 	}
 	
@@ -209,12 +231,12 @@ class MUEModelSubscribe extends JModelLegacy
 				$contact->setField($f->params->brsubstatus,$f->params->brsubtextyes);
 
 				// Set Member Since
-				if ( $f->params->brsubsince ) {
+				if ( $f->params->brsubsince && $uginfo->userg_subsince != "0000-00-00") {
 					$contact->setField( $f->params->brsubsince, $uginfo->userg_subsince );
 				}
 
 				// Set Member Exp
-				if ( $f->params->brsubexp ) {
+				if ( $f->params->brsubexp  && $uginfo->userg_subexp != '0000-00-00') {
 					$contact->setField( $f->params->brsubexp, $uginfo->userg_subexp );
 				}
 

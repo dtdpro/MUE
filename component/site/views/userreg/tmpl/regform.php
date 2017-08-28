@@ -8,6 +8,7 @@ if (($this->retry || $this->show_header) && $this->params->get('divwrapper',1)) 
 <script type="text/javascript">
 	jQuery(document).ready(function() {
 		jQuery("#regform").validate({
+            ignore: [],
 			errorClass:"uf_error uk-form-danger",
 			validClass:"uf_valid uk-form-success",
             errorElement: "div",
@@ -18,6 +19,10 @@ if (($this->retry || $this->show_header) && $this->params->get('divwrapper',1)) 
 	    });
 
 	});
+
+	function reCapChecked() {
+        jQuery('#reCapChecked').val("checked");
+    }
 
 
 </script>
@@ -96,7 +101,7 @@ foreach($this->userfields as $f) {
 	
 	//password
 	if ($f->uf_type=="password") {
-		echo JHtml::_('muefields.password',$f);
+		echo JHtml::_('muefields.password',$f,true);
 	}
 	
 	//text area
@@ -134,7 +139,17 @@ foreach($this->userfields as $f) {
 
 	echo '</div>';
 	echo '</div>';
-} 
+}
+if ($cfg->rc_config == "visible" ) {
+	echo '<div class="uk-form-row mue-user-reg-row">';
+	echo '<div class="uk-form-label mue-user-reg-label">';
+	echo '</div>';
+	echo '<div class="uk-form-controls mue-user-reg-value">';
+	echo '<input type="hidden" id="reCapChecked" name="reCapChecked" value="" data-rule-required="true" data-msg-required="reCaptcha Required">';
+	echo '<div class="g-recaptcha" data-callback="reCapChecked" data-sitekey="'.$cfg->rc_api_key.'"></div>';
+	echo '</div></div>';
+
+}
 echo '<div class="uk-form-row mue-user-reg-row">';
 echo '<div class="uk-form-label mue-user-reg-label">';
 echo '</div>';

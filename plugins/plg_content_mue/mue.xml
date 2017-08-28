@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension version="3.5" type="plugin" group="content" method="upgrade">
+	<name>Content - MUE</name>
+	<author>DtD Productions</author>
+	<creationDate>2017.04.20</creationDate>
+	<copyright>(C) 2008-2017 </copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL v2.0</license>
+	<authorEmail>mike@dtdpro.com</authorEmail>
+	<authorUrl>www.dtdpro.com</authorUrl>
+	<version>1.0.1</version>
+	<description>This plugin will ouput the current user information form MUE, using the MUE fieldname. Guests will see nothing for MUE fields and guest or 0 for user id if not logged in. {mgetuid} - User ID, {mgetuser} - User Name, {mgetuname} - Users Name, {mgetueml} - Users email, {muedata} - all MUE data, {mussubsince} - Sub since, {mussubexp} - MUE Sub exp, {mussubdaysleft} - MUS SUb Days Left, {mue_filedname) - MUE Field with fieldname.</description>
+	<files>
+		<filename plugin="mue">mue.php</filename>
+	</files>
+</extension>

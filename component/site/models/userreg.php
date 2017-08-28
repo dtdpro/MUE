@@ -129,7 +129,34 @@ class MUEModelUserreg extends JModelLegacy
 			$ginfo=MUEHelper::getGroupInfo($data['userGroupID']);
 			$item->user_group = $ginfo->ug_name;
 			$item->site_url = JURI::base();
-			
+
+			// reCAPTCHA
+			if ($cfg->rc_config == "visible" || $cfg->rc_config == "invisible") {
+				$rc_url = 'https://www.google.com/recaptcha/api/siteverify';
+				$rc_data = array(
+					'secret' => $cfg->rc_api_secret,
+					'response' => $_POST["g-recaptcha-response"]
+				);
+				$rc_options = array(
+					'http' => array (
+						'method' => 'POST',
+						'content' => http_build_query($rc_data)
+					)
+				);
+				$rc_context  = stream_context_create($rc_options);
+				$rc_verify = file_get_contents($rc_url, false, $rc_context);
+				$rc_captcha_success=json_decode($rc_verify);
+				if ($rc_captcha_success->success==false) {
+					$this->setError('reCAPTCHA Response Required');
+					return false;
+				} else if ($rc_captcha_success->success==true) {
+
+				} else {
+					$this->setError('reCAPTCHA Error');
+					return false;
+				}
+			}
+
 			if ($capfield) {
 				include_once 'components/com_mue/lib/securimage/securimage.php';
 				$securimage = new Securimage();
@@ -351,7 +378,7 @@ class MUEModelUserreg extends JModelLegacy
 			//User Directory
 			$udf=$cfg->on_userdir_field;
 			if ($cfg->userdir && $item->$udf) {
-			$af=explode(",",$cfg->userdir_mapfields);
+				$af=explode(",",$cfg->userdir_mapfields);
 				$uf=explode(",",$cfg->userdir_userinfo);
 				$sf=explode(",",$cfg->userdir_searchinfo);
 				$address="";

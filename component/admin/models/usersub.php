@@ -336,12 +336,12 @@ class MUEModelUsersub extends JModelAdmin
 				else $contact->setField( $f->params->brsubstatus, $f->params->brsubtextno );
 
 				// Set Member Since
-				if ( $f->params->brsubsince ) {
+				if ( $f->params->brsubsince && $uginfo->userg_subsince != "0000-00-00" ) {
 					$contact->setField( $f->params->brsubsince, $uginfo->userg_subsince );
 				}
 
 				// Set Member Exp
-				if ( $f->params->brsubexp ) {
+				if ( $f->params->brsubexp  && $uginfo->userg_subexp != '0000-00-00') {
 					$contact->setField( $f->params->brsubexp, $uginfo->userg_subexp );
 				}
 

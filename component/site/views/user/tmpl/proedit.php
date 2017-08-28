@@ -26,6 +26,7 @@ echo '<h2 class="componentheading uk-article-title">'.JText::_('COM_MUE_USER_PRO
 echo '<div id="mue-user-edit">';
 echo '<form action="" method="post" name="regform" id="regform" class="uk-form uk-form-horizontal">';
 if (!$this->one_group) echo '<div class="uk-form-row mue-user-edit-row mue-rowh"><div class="uk-form-label mue-user-edit-label uk-text-bold">'.JText::_('COM_MUE_USER_PROEDIT_LABEL_USER_GROUP').'</div><div class="uk-form-controls uk-form-controls-text mue-user-edit-hdr">'.$this->userinfo->userGroupName.'</div></div>';
+$ri=0;
 foreach($this->userfields as $f) {
 	$sname = $f->uf_sname;
 	if ($f->uf_change) {

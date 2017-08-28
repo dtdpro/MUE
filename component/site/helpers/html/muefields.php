@@ -147,12 +147,16 @@ abstract class JHtmlMUEFields
 		return $html;
 	}
 	
-	public static function password($field)
+	public static function password($field,$require=false)
 	{
 		$sname = $field->uf_sname;
 		$html = "";
 		
 		$html .= '<input name="jform['.$sname.']" id="jform_'.$sname.'" class="form-control uf_field input-sm uk-width-1-1" size="20" type="password" ';
+		if ($require) {
+			$html .= ' data-rule-required="true"';
+			$html .= ' data-msg-required="This Field is required"';
+		}
 		$html .= 'data-rule-minlength="8"';
 		if ($field->uf_match) $html .= ' data-rule-equalTo="#jform_'.$field->uf_match.'"';
 		$html .= ' data-msg-minlength="Minimum length 8 characters"';

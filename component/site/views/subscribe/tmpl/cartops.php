@@ -43,6 +43,7 @@ if (!$free) {
 
 	if ( $config->paypal ) {
 		echo '<td align="center" valign="middle" width="' . $colwid . '">';
+		echo $config->paypal_msg;
 		echo '<form action="" method="post" name="ppform" id="ppform">';
 		echo '<input type="image" name="submit" src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" />';
 		echo '<input type="hidden" name="layout" value="ppsubpay" />';

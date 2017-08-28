@@ -18,6 +18,7 @@ $cfg = MUEHelper::getConfig();
 	      }
 	    );
 	}
+
 </script>
 <?php
 echo '<h2 class="componentheading uk-article-title">'.JText::_('COM_MUE_USERREG_PAGE_TITLE').'</h2>';

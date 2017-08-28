@@ -9,6 +9,12 @@ class MUEViewUserreg extends JViewLegacy
 	
 	public function display($tpl = null)
 	{
+
+		$config=MUEHelper::getConfig();
+		if ($config->rc_config == "visible" || $config->rc_config == "invisible") {
+			$doc = &JFactory::getDocument();
+			$doc->addScript('https://www.google.com/recaptcha/api.js');
+		}
 		$layout = $this->getLayout();
 		$this->return = base64_decode(JRequest::getVar('return', '', 'POST', 'BASE64'));
 		$this->params	= JFactory::getApplication()->getParams('com_mue');
