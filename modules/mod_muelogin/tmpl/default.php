@@ -112,10 +112,4 @@ JHtml::_('behavior.keepalive');
 		<?php echo JHtml::_('form.token'); ?>
 	</form>
 	
-	<script>
-		jQuery(function($){
-			$('form.login input[placeholder]').placeholder();
-		});
-	</script>
-	
 <?php endif; ?>
