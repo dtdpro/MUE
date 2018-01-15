@@ -101,6 +101,7 @@ class MUEModelCouponcodes extends JModelList
 				$plantext[] = $plist[$p];
 			}
 			$i->cu_plans = implode(", ",$plantext);
+			$i->use_count = $this->getUseCount($i->cu_code);
 		}
 
 		return $this->cache[$store];
@@ -120,5 +121,17 @@ class MUEModelCouponcodes extends JModelList
 			$plist[$p->sub_id] = $p->sub_inttitle;
 		}
 		return $plist;
+	}
+
+	public function getUseCount($couponcode)
+	{
+		$db = JFactory::getDBO();
+		$query = $db->getQuery(true);
+		$query->select('*');
+		$query->from('#__mue_usersubs');
+		$query->where('usrsub_coupon = "'.$couponcode.'"');
+		$db->setQuery($query);
+		$subs = $db->loadObjectList();
+		return count($subs);
 	}
 }

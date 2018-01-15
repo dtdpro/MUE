@@ -81,6 +81,9 @@ $sortFields = $this->getSortFields();
                 <th>
 					<?php echo JText::_('COM_MUE_COUPONCODE_HEADING_PLANS'); ?>
                 </th>
+                <th>
+					<?php echo JText::_('COM_MUE_COUPONCODE_HEADING_USECOUNT'); ?>
+                </th>
                 <th width="1%">
 					<?php echo JText::_('COM_MUE_COUPONCODE_HEADING_ID'); ?>
 				</th>	
@@ -103,6 +106,7 @@ $sortFields = $this->getSortFields();
 				<td><?php echo $item->cu_start; ?></td>
 				<td><?php echo $item->cu_end; ?></td>
                 <td><?php echo $item->cu_plans; ?></td>
+                <td><?php echo $item->use_count; ?></td>
 				<td><?php echo $item->cu_id; ?></td>
 			</tr>
 		<?php endforeach; ?>

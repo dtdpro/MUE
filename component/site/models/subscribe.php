@@ -56,7 +56,9 @@ class MUEModelSubscribe extends JModelLegacy
 		$query->order('ordering');
 		$db->setQuery( $query );
 		$plans = $db->loadObjectList();
-		if ( $discountcode ) $codeinfo = $this->getDiscountCodeInfo( $discountcode );
+		if ( $discountcode ) {
+			$codeinfo = $this->getDiscountCodeInfo( $discountcode );
+		}
 		else $codeinfo = false;
 		foreach ($plans as &$p) {
 			$p->discounted = -1;
@@ -114,7 +116,11 @@ class MUEModelSubscribe extends JModelLegacy
 		JRequest::checkToken() or jexit( 'Invalid Token' );
 		$db =& JFactory::getDBO();
 		$user =& JFactory::getUser();
-		$q = 'INSERT INTO #__mue_usersubs (usrsub_user,usrsub_sub,usrsub_type,usrsub_ip,usrsub_status,usrsub_start,usrsub_end) VALUES ('.$user->id.','.$pinfo->sub_id.',"trial","'.$_SERVER['REMOTE_ADDR'].'","completed",';
+		if ($pinfo->discounted > -1) {
+			$q = 'INSERT INTO #__mue_usersubs (usrsub_user,usrsub_sub,usrsub_type,usrsub_ip,usrsub_status,usrsub_coupon,usrsub_start,usrsub_end) VALUES (' . $user->id . ',' . $pinfo->sub_id . ',"redeem","' . $_SERVER['REMOTE_ADDR'] . '","completed","'.$pinfo->discountcode.'",';
+		} else {
+			$q = 'INSERT INTO #__mue_usersubs (usrsub_user,usrsub_sub,usrsub_type,usrsub_ip,usrsub_status,usrsub_start,usrsub_end) VALUES (' . $user->id . ',' . $pinfo->sub_id . ',"trial","' . $_SERVER['REMOTE_ADDR'] . '","completed",';
+		}
 		if ($start) $q .= '"'.$start.'"';
 		else $q .= 'NOW()';
 		$q .= ',DATE_ADD(';

@@ -20,6 +20,7 @@
 			<option value="google">Google Checkout</option>
 			<option value="migrate">Migrated</option>
 			<option value="check">Check</option>
+			<option value="trial">Trial</option>
 		</field>
 		<field 
 			name="usrsub_sub" 
