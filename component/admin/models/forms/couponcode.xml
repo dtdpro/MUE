@@ -74,6 +74,26 @@
 			multiple="true"
 			required="false"
 		/>
+		<field
+				name="cu_singleuse"
+				type="radio"
+				label="COM_MUE_COUPONCODE_FIELD_SINGLEUSE_LABEL"
+				description="COM_MUE_COUPONCODE_FIELD_SINGLEUSE_DESC"
+				size="1"
+				class="btn-group"
+				required="true"
+				default="0">
+			<option	value="1">Yes</option>
+			<option	value="0">No</option>
+		</field>
+		<field
+				name="cu_limit"
+				type="text"
+				class="inputbox"
+				label="COM_MUE_COUPONCODE_FIELD_LIMIT_LABEL"
+				description="COM_MUE_COUPONCODE_FIELD_LIMIT_DESC"
+				default="0"
+		/>
 	</fieldset>
 </form>
 

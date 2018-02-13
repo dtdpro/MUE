@@ -23,7 +23,11 @@ class MUEModelSubscribe extends JModelLegacy
 		$plan->discounted = -1;
 		if ($discountcode) {
 			if ($codeinfo = $this->getDiscountCodeInfo($discountcode)) {
-				if (in_array($plan->sub_id,explode(",",$codeinfo->cu_plans))) {
+				if ($codeinfo->cu_singleuse && $this->checkCouponUseByUser($user,$discountcode)) {
+					$plan->discounted = -1;
+				} else if ($codeinfo->cu_limit > 0 && $this->couponUseLimitMet($codeinfo->cu_limit,$discountcode)) {
+					$plan->discounted = -1;
+				} else if (in_array($plan->sub_id,explode(",",$codeinfo->cu_plans))) {
 					if ($codeinfo->cu_type == "amount") {
 						$plan->discounted = number_format(($plan->sub_cost - $codeinfo->cu_value),2);
 					} else if ($codeinfo->cu_type == "percent") {
@@ -45,6 +49,7 @@ class MUEModelSubscribe extends JModelLegacy
 	function getPlans($discountcode = "")
 	{
 		$hadTrial = MUEHelper::userHadTrial();
+		$app=Jfactory::getApplication();
 		$db =& JFactory::getDBO();
 		$user =& JFactory::getUser();
 		$query = $db->getQuery(true);
@@ -60,11 +65,18 @@ class MUEModelSubscribe extends JModelLegacy
 			$codeinfo = $this->getDiscountCodeInfo( $discountcode );
 		}
 		else $codeinfo = false;
+		$failreason = "";
 		foreach ($plans as &$p) {
 			$p->discounted = -1;
 			if ( $discountcode ) {
 				if ( $codeinfo ) {
-					if ( in_array( $p->sub_id, explode( ",", $codeinfo->cu_plans ) ) ) {
+					if ($codeinfo->cu_singleuse && $this->checkCouponUseByUser($user,$discountcode)) {
+						$p->discounted = -1;
+						$failreason="Coupon Code has already been used";
+					} else if ($codeinfo->cu_limit > 0 && $this->couponUseLimitMet($codeinfo->cu_limit,$discountcode)) {
+						$p->discounted = -1;
+						$failreason="Coupon Code use limit has been met";
+					} else if ( in_array( $p->sub_id, explode( ",", $codeinfo->cu_plans ) ) ) {
 						if ( $codeinfo->cu_type == "amount" ) {
 							$p->discounted = number_format( ( $p->sub_cost - $codeinfo->cu_value ), 2);
 						} else if ( $codeinfo->cu_type == "percent" ) {
@@ -75,11 +87,14 @@ class MUEModelSubscribe extends JModelLegacy
 					}
 				} else {
 					$p->discounted = -1;
+					$failreason="Coupon Code invalid";
 				}
 			} else {
 				$p->discounted = -1;
 			}
 		}
+
+		$app->setUserState('com_mue.failreason',$failreason);
 		return $plans;
 	}
 
@@ -320,6 +335,28 @@ class MUEModelSubscribe extends JModelLegacy
 		$query.= 'WHERE ug.userg_user="'.$user.'"';
 		$db->setQuery($query);
 		return $db->loadObject();
+	}
+
+	public function checkCouponUseByUser($user,$code) {
+		$db		= $this->getDbo();
+		$query = 'SELECT * FROM #__mue_usersubs ';
+		$query.= 'WHERE usrsub_user="'.$user->id.'"';
+		$query .= ' && usrsub_coupon = "'.$db->escape($code).'"';
+		$db->setQuery($query);
+		$uses = $db->loadObject();
+		return count($uses);
+
+	}
+
+	public function couponUseLimitMet($limit,$code) {
+		$db		= $this->getDbo();
+		$query = 'SELECT * FROM #__mue_usersubs ';
+		$query.= 'WHERE usrsub_coupon = "'.$db->escape($code).'"';
+		$db->setQuery($query);
+		$uses = $db->loadObject();
+		if ($uses < $limit) return false;
+		else return true;
+
 	}
 	
 }

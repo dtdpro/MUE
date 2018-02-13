@@ -85,7 +85,12 @@ class MUEViewSubscribe extends JViewLegacy
 	
 	function subPlans() {
 		$model =& $this->getModel();
+		$app=Jfactory::getApplication();
 		$this->plans=$model->getPlans($this->discountcode);
+		if ($failreason = $app->getUserState('com_mue.failreason',"")) {
+			$app->setUserState('com_mue.failreason',"");
+			$app->enqueueMessage($failreason,'error');
+		}
 	}
 	
 	function cartForm() {

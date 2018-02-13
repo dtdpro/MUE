@@ -1,0 +1,1 @@
+ALTER TABLE `#__mue_coupons` ADD `cu_singleuse` BOOLEAN NOT NULL DEFAULT FALSE AFTER `cu_plans`;

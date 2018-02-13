@@ -91,11 +91,12 @@ class MUEModelUsersub extends JModelAdmin
 				$db->query();
 			}
 		}
+		$saved = parent::save($data);
 		$subStatus = $this->updateUserSub((int) $data['usrsub_user']);
 		if (!$this->updateMCSub(JFactory::getUser($data['usrsub_user']),$subStatus)) return false;
 		if (!$this->updateCMSub(JFactory::getUser($data['usrsub_user']),$subStatus)) return false;
 		if (!$this->updateBRSub(JFactory::getUser($data['usrsub_user']),$subStatus)) return false;
-		return parent::save($data);
+		return $saved;
 	}
 
 	public function delete(&$pks) {
