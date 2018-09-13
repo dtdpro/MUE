@@ -46,6 +46,9 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 				<th width="75">
 					<?php echo JText::_( 'COM_MUE_USERSUB_HEADING_TYPE' ); ?>
 				</th>
+                <th width="75">
+					<?php echo JText::_( 'COM_MUE_USERSUB_HEADING_COUPONCODE' ); ?>
+                </th>
 				<th width="100">
 					<?php echo JText::_( 'COM_MUE_USERSUB_HEADING_TRANSINFO' ); ?>
 				</th>
@@ -103,6 +106,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 					}
 					?>
 				</td>
+                <td><?php echo $item->usrsub_coupon; ?></td>
 				<td>
 					<?php echo $item->usrsub_rpprofile.'<br />'.$item->usrsub_transid; ?>
 				</td>
