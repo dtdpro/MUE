@@ -8,15 +8,8 @@ $cfg = MUEHelper::getConfig();
 ?>
 <script type="text/javascript">
 	function submitGroup() {
-		var $form = jQuery( this ),
-	        url = $form.attr( 'action' );
-	    /* Send the data using post and put the results in a div */
-	    jQuery.post( url, jQuery("#regpickform").serialize(),
-	      function( data ) {
-	          
-	          jQuery( "#mue-user-regform" ).empty().append( data );
-	      }
-	    );
+		var form = jQuery("#regpickform" );
+	    form.submit();
 	}
 
 </script>
@@ -28,7 +21,7 @@ $first = true;
 echo '<div class="uk-form-row mue-user-reg-row mue-rowh">';
 echo '<div class="uk-form-label mue-user-reg-label uk-text-bold">'.JText::_('COM_MUE_USERREG_LABEL_USER_GROUP').'</div>';
 echo '<div class="uk-form-controls mue-user-reg-hdr">';
-echo '<form action="'.JRoute::_("index.php?option=com_mue&view=userreg&tmpl=raw").'" method="post" name="regpickform" id="regpickform">';
+echo '<form action="'.JRoute::_("index.php?option=com_mue&view=userreg").'" method="post" name="regpickform" id="regpickform">';
 echo '<select name="groupid" id="groupid" class="form-control required uf_field uf_select input-sm" onchange="submitGroup()">';
 echo '<option value="">- Select Group -</option>';
 foreach ($this->groups as $g) {

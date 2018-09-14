@@ -27,20 +27,15 @@ if (($this->retry || $this->show_header) && $this->params->get('divwrapper',1)) 
 
 </script>
 <?php
-if ($this->show_header) {
-	echo '<h2 class="componentheading uk-article-title">'.JText::_('COM_MUE_USERREG_PAGE_TITLE').'</h2>';
-	if ($cfg->show_progbar && $cfg->subscribe) {
-		echo '<div class="uk-progress"><div class="uk-progress-bar" style="width: 0%;"></div></div>';
-	}
-	echo $cfg->REG_PAGE_CONTENT;
-	echo '<div id="mue-user-reg">';
-    echo '<form action="" method="post" name="regform" id="regform" class="uk-form uk-form-horizontal">';
-} else if ($this->retry){
-	echo '<h2 class="componentheading uk-article-title">'.JText::_('COM_MUE_USERREG_PAGE_TITLE').'</h2>';
-	echo $cfg->REG_PAGE_CONTENT;
-	echo '<div id="mue-user-reg">';
-	echo '<form action="" method="post" name="regform" id="regform" class="uk-form uk-form-horizontal">';
-	echo '<div class="uk-form-row mue-user-reg-row mue-rowh"><div class="uk-form-label mue-user-reg-label uk-text-bold">'.JText::_('COM_MUE_USERREG_LABEL_USER_GROUP').'</div><div class="uk-form-controls uk-form-controls-text mue-user-reg-hdr">'.$this->groupinfo[0]->ug_name.'</div></div>';
+echo '<h2 class="componentheading uk-article-title">'.JText::_('COM_MUE_USERREG_PAGE_TITLE').'</h2>';
+if ($cfg->show_progbar && $cfg->subscribe) {
+    echo '<div class="uk-progress"><div class="uk-progress-bar" style="width: 0%;"></div></div>';
+}
+echo $cfg->REG_PAGE_CONTENT;
+echo '<div id="mue-user-reg">';
+echo '<form action="" method="post" name="regform" id="regform" class="uk-form uk-form-horizontal">';
+if (!$this->single_group) {
+    echo '<div class="uk-form-row mue-user-reg-row mue-rowh"><div class="uk-form-label mue-user-reg-label uk-text-bold">'.JText::_('COM_MUE_USERREG_LABEL_USER_GROUP').'</div><div class="uk-form-controls uk-form-controls-text mue-user-reg-hdr">'.$this->groupinfo[0]->ug_name.'</div></div>';
 }
 foreach($this->userfields as $f) {
 	if ($ri==1) $ri=0;
@@ -148,7 +143,6 @@ if ($cfg->rc_config == "visible" ) {
 	echo '<input type="hidden" id="reCapChecked" name="reCapChecked" value="" data-rule-required="true" data-msg-required="reCaptcha Required">';
 	echo '<div class="g-recaptcha" data-callback="reCapChecked" data-sitekey="'.$cfg->rc_api_key.'"></div>';
 	echo '</div></div>';
-
 }
 echo '<div class="uk-form-row mue-user-reg-row">';
 echo '<div class="uk-form-label mue-user-reg-label">';

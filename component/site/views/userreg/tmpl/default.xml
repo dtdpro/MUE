@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metadata>
-	<layout title="User Registration">
-		<message>User Registration</message>
+	<layout title="User Registration - Step 1/2">
+		<message>User group selection and registration entry point.</message>
 	</layout>
 
 </metadata>

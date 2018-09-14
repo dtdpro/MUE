@@ -8,6 +8,7 @@ function MUEBuildRoute(&$query)
 	static $items;
 	static $default;
 	static $userreg;
+	static $regform;
 	static $profile;
 	static $cerecords;
 	static $chgemail;
@@ -34,58 +35,86 @@ function MUEBuildRoute(&$query)
 
 		// Build an array of serialized query strings to menu item id mappings.
 		for ($i = 0, $n = count($items); $i < $n; $i++) {
-			// Check to see if we have found the registration menu item.
-			if (empty($userreg) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'userreg')) {
-				$userreg = $items[$i]->id;
-			}
 
-			// Check to see if we have found the log in/out menu item.
-			if (empty($login) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'login') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'login')) {
-				$login = $items[$i]->id;
-			}
-			if (empty($logout) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'login') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'logout')) {
-				$logout = $items[$i]->id;
-			}
-			
-			// Check to see if we have found the profile,profile edit, and records menu item.
-			if (empty($profile) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'user') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'profile')) {
-				$profile = $items[$i]->id;
-			}
-			if (empty($subs) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'user') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'subs')) {
-				$subs = $items[$i]->id;
-			}
-			if (empty($proedit) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'user') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'proedit')) {
-				$proedit = $items[$i]->id;
-			}
-			if (empty($cerecords) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'user') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'cerecords')) {
-				$cerecords = $items[$i]->id;
-			}
-			if (empty($chgemail) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'user') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'chgemail')) {
-				$chgemail = $items[$i]->id;
-			}
-			if (empty($chggroup) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'user') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'chggroup')) {
-				$chggroup = $items[$i]->id;
-			}
-			
-			// Check to see if we have found the lost info menu item.
-			if (empty($lost) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'lost')) {
-				$lost = $items[$i]->id;
-			}
-					
-			// Check to see if we have found the user directory menu item.
-			if (empty($userdir) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'userdir')) {
-				$userdir = $items[$i]->id;
-			}		
+			if (!empty($items[$i]->query['view'])) {
 
-			// Check to see if we have found the subscribe/pay by check info menu item.
-			if (empty($subscribe) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'subscribe') && (empty($items[$i]->query['layout']) || ($items[$i]->query['layout'] == 'default'))) {
-				$subscribe = $items[$i]->id;
-			}
-			if (empty($check) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'subscribe') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'check')) {
-				$check = $items[$i]->id;
-			}
-			if (empty($ppconfirm) && !empty($items[$i]->query['view']) && ($items[$i]->query['view'] == 'subscribe') && !empty($items[$i]->query['layout']) && ($items[$i]->query['layout'] == 'ppconfirm')) {
-				$ppconfirm = $items[$i]->id;
+				$layout = $items[ $i ]->query['layout'];
+				$view = $items[ $i ]->query['view'];
+
+				// Check to see if we have found the registration menu item.
+				if ( $view == 'userreg' ) {
+					switch($layout) {
+						case "regform":
+							if (empty( $regform )) $regform = $items[ $i ]->id;
+							break;
+						case "default":
+						default:
+							if (empty( $userreg )) $userreg = $items[ $i ]->id;
+							break;
+					}
+				}
+
+				// Check to see if we have found the log in/out menu item.
+				if ( $view == 'login' ) {
+					switch($layout) {
+						case "login":
+							if (empty( $login )) $login = $items[ $i ]->id;
+							break;
+						case "logout":
+							if (empty( $logout )) $logout = $items[ $i ]->id;
+							break;
+					}
+				}
+
+				// Check to see if we have found the profile,profile edit, and records menu item.
+				if ( $view == 'user' ) {
+					switch($layout) {
+						case "profile":
+							if (empty( $profile )) $profile = $items[ $i ]->id;
+							break;
+						case "subs":
+							if (empty( $subs )) $subs = $items[ $i ]->id;
+							break;
+						case "proedit":
+							if (empty( $proedit )) $proedit = $items[ $i ]->id;
+							break;
+						case "cerecords":
+							if (empty( $cerecords )) $cerecords = $items[ $i ]->id;
+							break;
+						case "chgemail":
+							if (empty( $chgemail )) $chgemail = $items[ $i ]->id;
+							break;
+						case "chggroup":
+							if (empty( $chggroup )) $chggroup = $items[ $i ]->id;
+							break;
+					}
+				}
+
+				// Check to see if we have found the lost info menu item.
+				if ( $view == 'lost' && empty( $lost ) ) {
+					$lost = $items[ $i ]->id;
+				}
+
+				// Check to see if we have found the user directory menu item.
+				if ( $view == 'userdir' && empty( $userdir ) ) {
+					$userdir = $items[ $i ]->id;
+				}
+
+				// Check to see if we have found the subscribe/pay by check info menu item.
+				if ( $view == 'subscribe' ) {
+					switch($layout) {
+						case "check":
+							if (empty( $check )) $check = $items[ $i ]->id;
+							break;
+						case "ppconfirm":
+							if (empty( $ppconfirm )) $ppconfirm = $items[ $i ]->id;
+							break;
+						case "default":
+						default:
+							if (empty( $subscribe )) $subscribe = $items[ $i ]->id;
+							break;
+					}
+				}
 			}
 		}
 	}
@@ -93,10 +122,25 @@ function MUEBuildRoute(&$query)
 	if (!empty($query['view'])) {
 		switch ($query['view']) {
 			case 'userreg':
-				if ($query['Itemid'] = $userreg) {
-					unset ($query['view']);
-				} else {
-					$query['Itemid'] = $default;
+				switch ($query['layout']) {
+					case 'regform':
+						if ($query['Itemid'] = $regform) {
+							unset ($query['view']);
+							unset ($query['layout']);
+						} else {
+							$query['Itemid'] = $default;
+						}
+						break;
+
+					case 'default':
+					default:
+						if ($query['Itemid'] = $userreg) {
+							unset ($query['view']);
+							unset ($query['layout']);
+						} else {
+							$query['Itemid'] = $default;
+						}
+						break;
 				}
 				break;
 

@@ -43,7 +43,7 @@ class MUEViewUserreg extends JViewLegacy
 		if (count($groups) == 1) {
 			$app->setUserState('mue.userreg.groupid',$groups[0]->ug_id);
 			$app->setUserState('mue.userreg.return',$this->return);
-			$app->redirect('index.php?option=com_mue&view=userreg&layout=regform&onegroup=1');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=userreg&layout=regform'));
 		}
 	}
 	
@@ -52,7 +52,7 @@ class MUEViewUserreg extends JViewLegacy
 		$app=Jfactory::getApplication();
 		$app->setUserState('mue.userreg.groupid',JRequest::getInt('groupid')); 
 		$app->setUserState('mue.userreg.return',$this->return); 
-		$app->redirect('index.php?option=com_mue&view=userreg&layout=regform&tmpl=raw');
+		$app->redirect(JRoute::_('index.php?option=com_mue&view=userreg&layout=regform'));
 		
 	}
 	
@@ -65,16 +65,16 @@ class MUEViewUserreg extends JViewLegacy
 			$groupinfo = $model->getUserGroups($groupid);
 			$userfields=$model->getUserFields($groupid);
 			if (count($model->getUserGroups()) == 1) {
-				$this->show_header = true;
+				$this->single_group = true;
 			} else {
-				$this->show_header = false;
+				$this->single_group = false;
 			}
 			$this->assignRef('groupinfo',$groupinfo);
 			$this->assignRef('groupid',$groupid);
 			$this->assignRef('userfields',$userfields);
 			$this->assignRef('retry',JRequest::getInt('retry'));
 		} else {
-			$app->redirect('index.php?option=com_mue&view=userreg');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=userreg'));
 		}
 	}
 	
@@ -86,11 +86,11 @@ class MUEViewUserreg extends JViewLegacy
 		$groupid = $data['userGroupID'];
 		if (!$model->save()) {
 			$app->setUserState('mue.userreg.groupid',$groupid); 
-			$app->redirect('index.php?option=com_mue&view=userreg&layout=regform&retry=1&groupid='.$groupid,$model->getError(),'error');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=userreg&layout=regform&retry=1&groupid='.$groupid),$model->getError(),'error');
 		} else {
 			$redir = $this->return;
-			if (!$redir) $redir='index.php?option=com_mue&view=user&layout=profile';
-			if ($muecfg->subscribe) $redir='index.php?option=com_mue&view=subscribe';
+			if (!$redir) $redir=JRoute::_('index.php?option=com_mue&view=user&layout=profile');
+			if ($muecfg->subscribe) $redir=JRoute::_('index.php?option=com_mue&view=subscribe');
 			$app->redirect($redir);
 		}		
 	}
