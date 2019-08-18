@@ -1,10 +1,10 @@
 <?php
 /**
  * MUE Content plugin for Joomla! 3.5+
- * Version: 1.0
+ * Version: 1.0.2
  * @license http://www.gnu.org/licenses/gpl.html GNU/GPL v2.0.
  * @by DtD Productions
- * @Copyright (C) 2008-2017
+ * @Copyright (C) 2008-2018
  */
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
@@ -44,18 +44,18 @@ class  plgContentMue extends JPlugin
 		$article->text = str_replace('{mgetueml}',$email,$article->text);
 
 
-		// {mussubsince} - Sub since, {mussubexp} - MUE Sub exp, {mussubdaysleft} - MUS SUb Days Left, {mue_filedname) - MUE Field with fieldname
-		$article->text = str_replace('{mussubsince}',$userinfo['userg_subsince'],$article->text);
-		$article->text = str_replace('{mussubexp}',$userinfo['userg_subexp'],$article->text);
-		$article->text = str_replace('{mussubdaysleft}',$userinfo['daysLeft'],$article->text);
-		foreach ($userinfo as $uk => $ud) {
-			$article->text = str_replace('{mue_'.$uk.'}',$ud,$article->text);
+		if ($uid) {
+			// {mussubsince} - Sub since, {mussubexp} - MUE Sub exp, {mussubdaysleft} - MUS SUb Days Left, {mue_filedname) - MUE Field with fieldname
+			$article->text = str_replace( '{mussubsince}', $userinfo['userg_subsince'], $article->text );
+			$article->text = str_replace( '{mussubexp}', $userinfo['userg_subexp'], $article->text );
+			$article->text = str_replace( '{mussubdaysleft}', $userinfo['daysLeft'], $article->text );
+			foreach ( $userinfo as $uk => $ud ) {
+				$article->text = str_replace( '{mue_' . $uk . '}', $ud, $article->text );
+			}
+
+			// {muedata}
+			$article->text = str_replace('{muedata}',print_r($userinfo,true),$article->text);
 		}
-
-
-
-		// {muedata}
-		$article->text = str_replace('{muedata}',print_r($userinfo,true),$article->text);
 	}
 
 	public function getUserInfo($joomla_user) {
@@ -76,7 +76,8 @@ class  plgContentMue extends JPlugin
 		$qsub.= 'ORDER BY daysLeft DESC, s.usrsub_end DESC, s.usrsub_time DESC LIMIT 1';
 		$db->setQuery($qsub);
 		$sub = $db->loadObject();
-		$user['daysLeft'] = $sub->daysLeft;
+		if ($sub) $user['daysLeft'] = $sub->daysLeft;
+		else $user['daysLeft'] = 0;
 
 		$qd = 'SELECT f.*,u.usr_data FROM #__mue_uguf as g';
 		$qd.= ' RIGHT JOIN #__mue_ufields as f ON g.uguf_field = f.uf_id';

@@ -10,8 +10,8 @@ class MUEModelUserreg extends JModelLegacy
 {
 
 	function getUserGroups($id=0) {
-		$db =& JFactory::getDBO();
-		$user =& JFactory::getUser();
+		$db = JFactory::getDBO();
+		$user = JFactory::getUser();
 		$aid = $user->getAuthorisedViewLevels();
 		$query = $db->getQuery(true);
 		$query->select('*');
@@ -27,7 +27,7 @@ class MUEModelUserreg extends JModelLegacy
 	
 	function getUserFields($group,$all=true) {
 		$app=Jfactory::getApplication();
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$qd = 'SELECT f.* FROM #__mue_uguf as g';
 		$qd.= ' RIGHT JOIN #__mue_ufields as f ON g.uguf_field = f.uf_id';
 		$qd.= ' WHERE f.published = 1 && g.uguf_group='.$group;
@@ -68,6 +68,15 @@ class MUEModelUserreg extends JModelLegacy
 			}
 		}
 		return $ufields;
+	}
+
+	function getPresetFields() {
+		$app=Jfactory::getApplication();
+		$preset_fields = JRequest::getVar('mue_pre', array(), 'get', 'array');
+		foreach ($preset_fields as $pre_field=>$prevalue) {
+			$app->setUserState('mue.userreg.'.$pre_field, $prevalue);
+		}
+
 	}
 	
 	public function save()
@@ -425,7 +434,7 @@ class MUEModelUserreg extends JModelLegacy
 						}
 					}
 				}
-				$url = "http://maps.google.com/maps/api/geocode/json?sensor=false&address=".urlencode($address);
+				$url = "https://maps.googleapis.com/maps/api/geocode/json?address=".urlencode($address).'&key='.$cfg->gm_api_key;
 				$gdata_json = $this->curl_file_get_contents($url);
 				$gdata = json_decode($gdata_json);
 				if ($gdata->status == 'OK') {

@@ -263,7 +263,7 @@ class MUEModelUsers extends JModelList
 	}
 	
 	protected function getSubStatus($items) {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		foreach ($items as &$i) {
 			//Days Left
 			$query = $db->getQuery(true);
@@ -392,7 +392,7 @@ class MUEModelUsers extends JModelList
 						}
 					}
 				}
-				$url        = "http://maps.google.com/maps/api/geocode/json?address=" . urlencode( $address );
+				$url = "https://maps.googleapis.com/maps/api/geocode/json?address=".urlencode($address).'&key='.$cfg->gm_api_key;
 				$gdata_json = $this->curl_file_get_contents( $url );
 				$gdata      = json_decode( $gdata_json );
 				if ( $gdata->status == 'OK' ) {
@@ -416,7 +416,7 @@ class MUEModelUsers extends JModelList
 	
 	protected function getJoomlaGroups($items) {
 		foreach ($items as &$i) {
-			$db =& JFactory::getDBO();
+			$db = JFactory::getDBO();
 			$query = $db->getQuery(true);
 			$query->select('g2.title')
 				->from('#__user_usergroup_map AS map')

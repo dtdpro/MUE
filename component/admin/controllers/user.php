@@ -145,7 +145,7 @@ class MUEControllerUser extends JControllerForm
 		}
 
 		// Test whether the data is valid.
-		$validData = $model->validate($data);
+		$validData = $model->validate(null, $data);
 
 		// Check for validation errors.
 		if ($validData === false) {

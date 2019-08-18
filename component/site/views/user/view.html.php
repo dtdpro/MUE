@@ -73,7 +73,7 @@ class MUEViewUser extends JViewLegacy
 		JRequest::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 		$model = $this->getModel();
 		$newgroup = JRequest::getVar('newgroup');
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$userid = $user->id;
 		if (count($model->getGroups()) == 1) {
 			$app=Jfactory::getApplication();
@@ -142,6 +142,7 @@ class MUEViewUser extends JViewLegacy
 			$userinfo=MUEHelper::getUserInfo();
 			$userfields=$model->getUserFields($userinfo->userGroupID);
 			if (count($model->getGroups()) == 1) $this->one_group = true;
+			else $this->one_group=false;
 			$this->assignRef('userinfo',$userinfo);
 			$this->assignRef('userfields',$userfields);
 		}
@@ -157,6 +158,7 @@ class MUEViewUser extends JViewLegacy
 			$userinfo=MUEHelper::getUserInfo(true);
 			$userfields=$model->getUserFields($userinfo->userGroupID,false,true);
 			if (count($model->getGroups()) == 1) $this->one_group = true;
+			else $this->one_group=false;
 			$this->assignRef('userinfo',$userinfo);
 			$this->assignRef('userfields',$userfields);
 		}

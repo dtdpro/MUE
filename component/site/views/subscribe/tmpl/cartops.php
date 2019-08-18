@@ -7,11 +7,17 @@ $procount++;
 if ($this->pinfo->sub_cost == 0 || $this->pinfo->discounted == 0) {
 	$free=true;
 	$procount++;
+	if ( $config->show_continue ) {
+		$procount++;
+	}
 } else {
 	if ( $config->paypal ) {
 		$procount++;
 	}
 	if ( $config->paybycheck ) {
+		$procount++;
+	}
+	if ( $config->show_continue ) {
 		$procount++;
 	}
 }
@@ -20,7 +26,7 @@ if ($procount == 2) $colwid="50%";
 if ($procount == 1) $colwid="100%";
 
 $formtoken=JHTML::_( 'form.token' );
-echo '<table width="70%" border="0" align="center">';
+echo '<table width="100%" border="0" align="center">';
 echo '<tr>';
 
 echo '<td align="center" valign="middle" width="' . $colwid . '">';
@@ -38,6 +44,7 @@ echo '<input type="hidden" name="layout" value="addcode" />';
 echo '</form>';
 echo '</div>';
 echo '</td>';
+
 if (!$free) {
 //Couponcode
 
@@ -74,4 +81,13 @@ if (!$free) {
 	echo '</td>';
 
 }
+
+if ($config->show_continue) {
+	if ($this->return) $continuelink = $this->return;
+	else $continuelink = JRoute::_('index.php?option=com_mue&view=user&layout=profile');
+	echo '<td align="center" valign="middle" width="' . $colwid . '">';
+	echo '<a href="'.$continuelink.'"  class="button uk-button">'.JText::_('COM_MUE_SUBSCRIBE_LABEL_CONTINUE').'</a>';
+	echo '</td>';
+}
+
 echo '</tr></table>';

@@ -6,7 +6,7 @@ if ($this->params->get('divwrapper',1)) {
 $config = MUEHelper::getConfig();
 
 $session=JFactory::getSession();
-$user =& JFactory::getUser();
+$user = JFactory::getUser();
 echo '<h2 class="componentheading uk-article-title">'.JText::_('COM_MUE_SUBSCRIBE_PPCONFIRM_PAGE_TITLE').'</h2>';
 if ($config->show_progbar) {
 	if ( true ) {

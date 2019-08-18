@@ -71,7 +71,9 @@ if ($this->usersubs) {
 		}
 		echo '</td><td>';
 		if ($sub->usrsub_type == "paypal" || $sub->usrsub_type=="google" || $sub->usrsub_type=="check" || $sub->usrsub_type=="trial") {
-			echo "$".number_format($sub->usrsub_cost,2);
+			if ($sub->usrsub_type == "paypal" || $sub->usrsub_type=="google" || $sub->usrsub_type=="check") {
+				echo "$".number_format($sub->usrsub_cost,2);
+			}
 			if ($sub->sub_recurring) echo '/'.$sub->sub_length.' '.$sub->sub_period.'(s)';
 		}
 		echo '</td></tr>';

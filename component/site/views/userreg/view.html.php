@@ -12,11 +12,12 @@ class MUEViewUserreg extends JViewLegacy
 
 		$config=MUEHelper::getConfig();
 		if ($config->rc_config == "visible" || $config->rc_config == "invisible") {
-			$doc = &JFactory::getDocument();
+			$doc = JFactory::getDocument();
 			$doc->addScript('https://www.google.com/recaptcha/api.js');
 		}
 		$layout = $this->getLayout();
-		$this->return = base64_decode(JRequest::getVar('return', '', 'POST', 'BASE64'));
+		//$this->return = base64_decode(JRequest::getVar('return', '', 'POST', 'BASE64'));
+		$this->return = base64_decode(JRequest::getVar('return', null));
 		$this->params	= JFactory::getApplication()->getParams('com_mue');
 		switch($layout) {
 			case "default": 
@@ -37,9 +38,10 @@ class MUEViewUserreg extends JViewLegacy
 	
 	protected function pickGroup() {
 		$app=Jfactory::getApplication();
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$groups=$model->getUserGroups();
-		$this->assignRef('groups',$groups);
+		$model->getPresetFields();
+		$this->groups=$groups;
 		if (count($groups) == 1) {
 			$app->setUserState('mue.userreg.groupid',$groups[0]->ug_id);
 			$app->setUserState('mue.userreg.return',$this->return);
@@ -57,7 +59,7 @@ class MUEViewUserreg extends JViewLegacy
 	}
 	
 	protected function showForm() {
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$app=Jfactory::getApplication();
 		$groupid = $app->getUserState('mue.userreg.groupid');
 		if (!$this->return) $this->return = $app->getUserState('mue.userreg.return');
@@ -69,17 +71,17 @@ class MUEViewUserreg extends JViewLegacy
 			} else {
 				$this->single_group = false;
 			}
-			$this->assignRef('groupinfo',$groupinfo);
-			$this->assignRef('groupid',$groupid);
-			$this->assignRef('userfields',$userfields);
-			$this->assignRef('retry',JRequest::getInt('retry'));
+			$this->groupinfo=$groupinfo;
+			$this->groupid=$groupid;
+			$this->userfields=$userfields;
+			$this->retry=JRequest::getInt('retry');
 		} else {
 			$app->redirect(JRoute::_('index.php?option=com_mue&view=userreg'));
 		}
 	}
 	
 	protected function addUser() {
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$app=Jfactory::getApplication();
 		$muecfg = MUEHelper::getConfig();
 		$data = JRequest::getVar('jform', array(), 'post', 'array');
@@ -90,7 +92,10 @@ class MUEViewUserreg extends JViewLegacy
 		} else {
 			$redir = $this->return;
 			if (!$redir) $redir=JRoute::_('index.php?option=com_mue&view=user&layout=profile');
-			if ($muecfg->subscribe) $redir=JRoute::_('index.php?option=com_mue&view=subscribe');
+			if ($muecfg->subscribe) {
+				$redir=JRoute::_('index.php?option=com_mue&view=subscribe');
+				$app->setUserState('mue.userreg.return',$this->return);
+			}
 			$app->redirect($redir);
 		}		
 	}

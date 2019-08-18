@@ -36,10 +36,10 @@ function MUEBuildRoute(&$query)
 		// Build an array of serialized query strings to menu item id mappings.
 		for ($i = 0, $n = count($items); $i < $n; $i++) {
 
-			if (!empty($items[$i]->query['view'])) {
+			if (isset($items[ $i ]->query['layout'])) $layout = $items[ $i ]->query['layout']; else $layout = "";
+			if (isset($items[ $i ]->query['view'])) $view = $items[ $i ]->query['view']; else $view = '';
 
-				$layout = $items[ $i ]->query['layout'];
-				$view = $items[ $i ]->query['view'];
+			if ($view) {
 
 				// Check to see if we have found the registration menu item.
 				if ( $view == 'userreg' ) {
@@ -122,25 +122,33 @@ function MUEBuildRoute(&$query)
 	if (!empty($query['view'])) {
 		switch ($query['view']) {
 			case 'userreg':
-				switch ($query['layout']) {
-					case 'regform':
-						if ($query['Itemid'] = $regform) {
-							unset ($query['view']);
-							unset ($query['layout']);
-						} else {
-							$query['Itemid'] = $default;
-						}
-						break;
+				if ( isset( $query['layout'] ) ) {
+					switch ( $query['layout'] ) {
+						case 'regform':
+							if ( $query['Itemid'] = $regform ) {
+								unset ( $query['view'] );
+								unset ( $query['layout'] );
+							} else {
+								$query['Itemid'] = $default;
+							}
+							break;
 
-					case 'default':
-					default:
-						if ($query['Itemid'] = $userreg) {
-							unset ($query['view']);
-							unset ($query['layout']);
-						} else {
-							$query['Itemid'] = $default;
-						}
-						break;
+						case 'default':
+						default:
+							if ( $query['Itemid'] = $userreg ) {
+								unset ( $query['view'] );
+								unset ( $query['layout'] );
+							} else {
+								$query['Itemid'] = $default;
+							}
+							break;
+					}
+				} else {
+					if ( $query['Itemid'] = $userreg ) {
+						unset ( $query['view'] );
+					} else {
+						$query['Itemid'] = $default;
+					}
 				}
 				break;
 
@@ -241,32 +249,40 @@ function MUEBuildRoute(&$query)
 				break;
 				
 			case 'subscribe':
-				switch ($query['layout']) {
-					case 'check':
-						if ($query['Itemid'] = $check) {
-							unset ($query['view']);
-							unset ($query['layout']);
-						} else {
-							$query['Itemid'] = $default;
-						}
-						break;
-					case 'ppconfirm':
-						if ($query['Itemid'] = $ppconfirm) {
-							unset ($query['view']);
-							unset ($query['layout']);
-						} else {
-							$query['Itemid'] = $default;
-						}
-						break;
-					case 'default':
-					default:
-						if ($query['Itemid'] = $subscribe) {
-							unset ($query['view']);
-							//unset ($query['layout']);
-						} else {
-							$query['Itemid'] = $default;
-						}
-						break;
+				if ( isset( $query['layout'] ) ) {
+					switch ( $query['layout'] ) {
+						case 'check':
+							if ( $query['Itemid'] = $check ) {
+								unset ( $query['view'] );
+								unset ( $query['layout'] );
+							} else {
+								$query['Itemid'] = $default;
+							}
+							break;
+						case 'ppconfirm':
+							if ( $query['Itemid'] = $ppconfirm ) {
+								unset ( $query['view'] );
+								unset ( $query['layout'] );
+							} else {
+								$query['Itemid'] = $default;
+							}
+							break;
+						case 'default':
+						default:
+							if ( $query['Itemid'] = $subscribe ) {
+								unset ( $query['view'] );
+								//unset ($query['layout']);
+							} else {
+								$query['Itemid'] = $default;
+							}
+							break;
+					}
+				} else {
+					if ( $query['Itemid'] = $subscribe ) {
+						unset ( $query['view'] );
+					} else {
+						$query['Itemid'] = $default;
+					}
 				}
 				break;
 				

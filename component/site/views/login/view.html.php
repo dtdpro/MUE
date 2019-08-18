@@ -53,7 +53,7 @@ class MUEViewLogin extends JViewLegacy
 	
 	protected function logInUser() {
 		
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$app=Jfactory::getApplication();
 		
 		$redir = base64_decode(JRequest::getVar('return', '', 'POST', 'BASE64'));

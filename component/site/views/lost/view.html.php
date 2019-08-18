@@ -36,7 +36,7 @@ class MUEViewLost extends JViewLegacy
 	
 
 	protected function sendInfo() {
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$app=Jfactory::getApplication();
 		if ($model->sendInfo()) {
 			$app->redirect('index.php?option=com_mue&view=lost',"Information Sent to provided email address");

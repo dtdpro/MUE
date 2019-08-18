@@ -122,7 +122,7 @@ JFactory::getDocument()->addScriptDeclaration('
 					<?php echo $item->email; ?>
 				</td>
 				<td class="center small">
-					<?php echo $this->usergroups[$item->userg_group]; ?>
+					<?php if (isset($item->userg_group)) echo $this->usergroups[$item->userg_group]; ?>
 				</td>
 				<td class="center small">
 					<?php echo implode('<br />',$item->jgroups); ?>

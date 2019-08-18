@@ -12,8 +12,8 @@ class MUEModelSubscribe extends JModelLegacy
 	
 	function getPlanInfo($pid,$discountcode = "")
 	{
-		$db =& JFactory::getDBO();
-		$user =& JFactory::getUser();
+		$db = JFactory::getDBO();
+		$user = JFactory::getUser();
 		$query  = 'SELECT c.*';
 		$query .= 'FROM #__mue_subs as c ';
 		$query .= 'WHERE c.published = 1 && c.access IN ('.implode(",",$user->getAuthorisedViewLevels()).') ';
@@ -50,8 +50,8 @@ class MUEModelSubscribe extends JModelLegacy
 	{
 		$hadTrial = MUEHelper::userHadTrial();
 		$app=Jfactory::getApplication();
-		$db =& JFactory::getDBO();
-		$user =& JFactory::getUser();
+		$db = JFactory::getDBO();
+		$user = JFactory::getUser();
 		$query = $db->getQuery(true);
 		$query->select('*');
 		$query->from('#__mue_subs');
@@ -99,7 +99,7 @@ class MUEModelSubscribe extends JModelLegacy
 	}
 
 	function getDiscountCodeInfo($discountcode) {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);
 		$query->select('*');
 		$query->from('#__mue_coupons');
@@ -112,8 +112,8 @@ class MUEModelSubscribe extends JModelLegacy
 	
 	function payByCheck($pinfo,$start) {
 		JRequest::checkToken() or jexit( 'Invalid Token' );
-		$db =& JFactory::getDBO();
-		$user =& JFactory::getUser();
+		$db = JFactory::getDBO();
+		$user = JFactory::getUser();
 		$q = 'INSERT INTO #__mue_usersubs (usrsub_user,usrsub_sub,usrsub_type,usrsub_ip,usrsub_status,usrsub_start,usrsub_end) VALUES ('.$user->id.','.$pinfo->sub_id.',"check","'.$_SERVER['REMOTE_ADDR'].'","pending",';
 		if ($start) $q .= '"'.$start.'"';
 		else $q .= 'NOW()';
@@ -129,8 +129,8 @@ class MUEModelSubscribe extends JModelLegacy
 	function freeOfCharge($pinfo,$start) {
 		$cfg=MUEHelper::getConfig();
 		JRequest::checkToken() or jexit( 'Invalid Token' );
-		$db =& JFactory::getDBO();
-		$user =& JFactory::getUser();
+		$db = JFactory::getDBO();
+		$user = JFactory::getUser();
 		if ($pinfo->discounted > -1) {
 			$q = 'INSERT INTO #__mue_usersubs (usrsub_user,usrsub_sub,usrsub_type,usrsub_ip,usrsub_status,usrsub_coupon,usrsub_start,usrsub_end) VALUES (' . $user->id . ',' . $pinfo->sub_id . ',"redeem","' . $_SERVER['REMOTE_ADDR'] . '","completed","'.$pinfo->discountcode.'",';
 		} else {
@@ -166,7 +166,7 @@ class MUEModelSubscribe extends JModelLegacy
 	
 	function sendSubedEmail($pinfo) {
 		$config=MUEHelper::getConfig();
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		
 		//Confirm Email
 		$emailmsg = $config->subemail_content;
@@ -185,8 +185,8 @@ class MUEModelSubscribe extends JModelLegacy
 	
 	function updateProfile() {
 		$cfg=MUEHelper::getConfig();
-		$user =& JFactory::getUser();
-		$db =& JFactory::getDBO();
+		$user = JFactory::getUser();
+		$db = JFactory::getDBO();
 		$date = new JDate('now');
 		$usernotes = "\r\n".$date->toSql(true)." User Subcription Added\r\n";
 		$uginfo = $this->getUserGroupInfo($user->id);
@@ -282,7 +282,7 @@ class MUEModelSubscribe extends JModelLegacy
 	}
 	
 	function getMCFields() {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$qd = 'SELECT f.* FROM #__mue_ufields as f ';
 		$qd.= ' WHERE f.published = 1 ';
 		$qd .= ' && f.uf_type = "mailchimp"';
@@ -298,7 +298,7 @@ class MUEModelSubscribe extends JModelLegacy
 	}
 
 	function getCMFields() {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$qd = 'SELECT f.* FROM #__mue_ufields as f ';
 		$qd.= ' WHERE f.published = 1 ';
 		$qd .= ' && f.uf_type = "cmlist"';
@@ -314,7 +314,7 @@ class MUEModelSubscribe extends JModelLegacy
 	}
 
 	function getBrontoFields() {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$qd = 'SELECT f.* FROM #__mue_ufields as f ';
 		$qd.= ' WHERE f.published = 1 ';
 		$qd .= ' && f.uf_type = "brlist"';
@@ -350,10 +350,10 @@ class MUEModelSubscribe extends JModelLegacy
 
 	public function couponUseLimitMet($limit,$code) {
 		$db		= $this->getDbo();
-		$query = 'SELECT * FROM #__mue_usersubs ';
+		$query = 'SELECT count(*) FROM #__mue_usersubs ';
 		$query.= 'WHERE usrsub_coupon = "'.$db->escape($code).'"';
 		$db->setQuery($query);
-		$uses = $db->loadObject();
+		$uses = $db->loadColumn()[0];
 		if ($uses < $limit) return false;
 		else return true;
 

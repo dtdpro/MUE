@@ -119,7 +119,7 @@ JHtml::_('behavior.formvalidation');
 			
 		</fieldset>
 
-			<p>Note: If mailing lists are changed to yes, a list based confirmation WILL be sent to the user, change will not be reflected until user confirms</p>
+			<p>Note: Bronto mailing list subscription cannot be changed by admins. MailChimp and Campaign monitor may send confirmation email when subscribed.</p>
 	</div>
 	<div class="width-50 fltlft span6">
 		<fieldset class="adminform">

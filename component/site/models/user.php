@@ -334,6 +334,7 @@ class MUEModelUser extends JModelLegacy
 		try
 		{
 			//setup item and bind data
+			$item = new stdClass();
 			$fids = array();
 			$optfs = array();
 			$moptfs = array();
@@ -409,7 +410,6 @@ class MUEModelUser extends JModelLegacy
                                 $contact->setField($brv,$optionsdata[$item->$mue]);
                             }
                             else if (in_array($mue,$moptfs)) {
-                                $mcdata[$mcv] = "";
                                 $fv = '';
                                 foreach (explode(" ",$item->$mue) as $mfo) {
                                     $fv .= $optionsdata[$mfo]." ";
@@ -538,7 +538,7 @@ class MUEModelUser extends JModelLegacy
 					$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
 					$cmresult = $cm->removeSubscriber($cmlist->uf_default,$item->email);
 					if ($cmresult) { $item->$cmf=0; $usernotes .= $date->toSql(true)." EMail Unsubscribed from Campaign Monitor List #".$cmlist->uf_default."\r\n"; }
-					else { $item->$cmf=0; $usernotes .= $date->toSql(true)." Could not unsubscribe EMail from Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
+					else { $item->$cmf=0; $usernotes .= $date->toSql(true)." Could not unsubscribe EMail from Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error."\r\n"; }
 				}
 			}
 			
@@ -659,7 +659,8 @@ class MUEModelUser extends JModelLegacy
 						}
 					}
 				}
-				$url = "http://maps.google.com/maps/api/geocode/json?address=".urlencode($address);
+				$url = "https://maps.googleapis.com/maps/api/geocode/json?address=".urlencode($address).'&key='.$cfg->gm_api_key;
+				//$gdata_json = file_get_contents($url);
 				$gdata_json = $this->curl_file_get_contents($url);
 				$gdata = json_decode($gdata_json);
 				if ($gdata->status == 'OK') {

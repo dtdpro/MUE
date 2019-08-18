@@ -20,8 +20,8 @@ class MUEModelLogin extends JModelLegacy
 	}
 	
 	function getUserGroups() {
-		$db =& JFactory::getDBO();
-		$user =& JFactory::getUser();
+		$db = JFactory::getDBO();
+		$user = JFactory::getUser();
 		$aid = $user->getAuthorisedViewLevels();
 		$qd = 'SELECT ug.* FROM #__mue_ugroups as ug WHERE ug.access IN ('.implode(",",$aid).')';
 		$qd.= ' ORDER BY ug.ordering';

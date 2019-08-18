@@ -99,7 +99,7 @@ JHtml::_('behavior.formvalidation');
         $fid = $v->id;
 			echo '<tr><td>'.$v->name.'</td>';
 			echo '<td>'.$v->type.'<input type="hidden" name="jform[brfieldtypes]['.$v->id.']" value="'.$v->type.'"></td><td>';
-			if ($v->id != $this->list->params->mcrgroup && $v->id != $this->list->params->mcsubsince && $v->id != $this->list->params->mcsubexp && $v->id != $this->list->params->mcsubpaytype) {
+			if ($v->id != $this->list->params->brsubstatus && $v->id != $this->list->params->brsubsince && $v->id != $this->list->params->brsubexp && $v->id != $this->list->params->brsubplan) {
 				echo '<select name="jform[brvars]['.$v->id.']" id="jform_'.$v->id.'" class="inputbox">';
 				echo '<option value="">None</option>';
 				echo JHtml::_('select.options', $this->ufields, 'value', 'text', $this->list->params->brvars->$fid, true);
@@ -113,7 +113,7 @@ JHtml::_('behavior.formvalidation');
 	echo '</tbody></table>';
 	echo '<div class="clr"></div>';
 	
-	//Ops
+	/*//Ops
 	echo JHtml::_('bootstrap.endTab');
 	echo JHtml::_('bootstrap.addTab', 'myTab', 'brlist-ops', "Operations");
 
@@ -122,7 +122,8 @@ JHtml::_('behavior.formvalidation');
 	
 
 
-	echo JHtml::_('bootstrap.endTab');
+	echo JHtml::_('bootstrap.endTab');*/
+
 	echo JHtml::_('bootstrap.endTabSet');
 
 	

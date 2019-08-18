@@ -5,7 +5,7 @@ if ($this->params->get('divwrapper',1)) {
 }
 $config = MUEHelper::getConfig();
 
-$user =& JFactory::getUser();
+$user = JFactory::getUser();
 $first=true;
 ?>
 <script type="text/javascript">
@@ -65,8 +65,16 @@ if (!$user->id) {
 	echo '</div>';
 	echo '<div class="mue-plan-pick-submit" id="mue-processors">';
 
+	echo '<table width="100%" border="0" align="center">';
+	echo '<tr>';
+	$procount=1;
+    if ($config->show_continue) { $procount++; }
+	if ($procount == 2) $colwid="50%";
+	if ($procount == 1) $colwid="100%";
+
+
 	//Couponcode
-	echo '<td align="center" valign="middle" width="'.$colwid.'">';
+	echo '<td align="center" valign="middle" width="' . $colwid . '">';
 	echo '<div class="mue-subscribe-coupon">';
 	echo '<form action="" method="post" name="addcode" id="addcode" class="box style uk-fomr uk-form-stacked">';
 	echo '<div class="uk-form-row">';
@@ -82,6 +90,15 @@ if (!$user->id) {
 	echo '</div>';
 	echo '</td>';
 
+	if ($config->show_continue) {
+		if ($this->return) $continuelink = $this->return;
+		else $continuelink = JRoute::_('index.php?option=com_mue&view=user&layout=profile');
+		echo '<td align="center" valign="middle" width="' . $colwid . '">';
+		echo '<a href="'.$continuelink.'"  class="button uk-button">'.JText::_('COM_MUE_SUBSCRIBE_LABEL_CONTINUE').'</a>';
+		echo '</td>';
+	}
+
+	echo '</tr></table>';
 	echo '</div>';
 	echo '<div style="clear:both;"></div>';
 	echo '</div>';

@@ -37,14 +37,14 @@ class PayPalAPI {
 	}
 	
 	function cancelPayment($pinfo,$usid) {
-		$db  =& JFactory::getDBO();
+		$db  = JFactory::getDBO();
 		$q2='UPDATE #__mue_usersubs SET usrsub_status="canceled" WHERE usrsub_id = "'.$usid.'"';
 		$db->setQuery($q2);
 		$db->query();
 	}
 	
 	function cancelSub($sub) {
-		$db  =& JFactory::getDBO();
+		$db  = JFactory::getDBO();
 		$q2='SELECT * FROM #__mue_usersubs WHERE usrsub_id = "'.$sub.'"';
 		$db->setQuery($q2);
 		$db->query();
@@ -72,8 +72,8 @@ class PayPalAPI {
 	
 	function verifyPayment($pinfo,$usid) {
 		$session=JFactory::getSession();
-		$db  =& JFactory::getDBO();
-		$user  =& JFactory::getUser();
+		$db  = JFactory::getDBO();
+		$user  = JFactory::getUser();
 		$app=Jfactory::getApplication();
 		$iid = JRequest::getVar('Itemid');
 		$config = MUEHelper::getConfig();
@@ -167,8 +167,8 @@ class PayPalAPI {
 	
 	function confirmPayment($pinfo,$usid,$ppt) {
 		$session = JFactory::getSession();
-		$db  =& JFactory::getDBO();
-		$user  =& JFactory::getUser();
+		$db  = JFactory::getDBO();
+		$user  = JFactory::getUser();
 		$app = Jfactory::getApplication();
 		$iid = JRequest::getVar('Itemid');
 		
@@ -214,8 +214,8 @@ class PayPalAPI {
 	function submitPayment($pinfo,$start) {
 		
 		JRequest::checkToken() or jexit( 'Invalid Token' );
-		$db  =& JFactory::getDBO();
-		$user  =& JFactory::getUser();
+		$db  = JFactory::getDBO();
+		$user  = JFactory::getUser();
 		$app=Jfactory::getApplication();
 		$iid = JRequest::getVar('Itemid');
 		$session=JFactory::getSession();
@@ -313,7 +313,7 @@ class PayPalAPI {
 	}
 	
 	function ipnResponse() {
-		$db  =& JFactory::getDBO();
+		$db  = JFactory::getDBO();
 		$ralogtxt = "";
 		foreach ($_POST as $key => $value) {
 			$value = urlencode(stripslashes($value));

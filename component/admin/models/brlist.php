@@ -34,7 +34,7 @@ class MUEModelBrlist extends JModelLegacy
 		}
 		return $fields;
 	}
-
+	/*
 	function syncList($field) {
 		if (!$field) { $this->setError("Field ID Not Provided"); return false; }
 		
@@ -228,7 +228,7 @@ class MUEModelBrlist extends JModelLegacy
 				
 		
 	}
-	
+	*/
 	function getList()
 	{
 		// Initialise variables.
@@ -270,6 +270,7 @@ class MUEModelBrlist extends JModelLegacy
 		foreach ($brfields->iterate() as $v) {
 			if ($v->type == 'select' || $v->type == 'radio') {
 				$list->list_msvars[$n] = (object)$v;
+				$list->list_msvars[$n]->options=array();
 				foreach ($v['options'] as $o) {
 					$list->list_msvars[$n]->options[] = JHtml::_('select.option', $o->value,$o->label);
 				}

@@ -17,8 +17,8 @@ include_once 'lib/mailchimp.php';
 require_once('helpers'.DS.'mue.php');
 require_once('helpers'.DS.'paypal.php');
 
-$app =& JFactory::getApplication('site');
-$db  =& JFactory::getDBO();
+$app = JFactory::getApplication('site');
+$db  = JFactory::getDBO();
 $cfg=MUEHelper::getConfig();
 $paypal = new PayPalAPI($cfg->paypal_mode,$cfg->paypal_username,$cfg->paypal_password,$cfg->paypal_signature);
 if ($userid = $paypal->ipnResponse()) {

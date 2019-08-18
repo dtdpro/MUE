@@ -2,7 +2,7 @@
 defined('_JEXEC') or die('Restricted access');
 $cfg = MUEHelper::getConfig();
 JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
-if (($this->retry || $this->show_header) && $this->params->get('divwrapper',1)) echo '<div id="system" class="uk-article">';
+if (($this->retry) && $this->params->get('divwrapper',1)) echo '<div id="system" class="uk-article">';
 ?>
 
 <script type="text/javascript">
@@ -28,18 +28,25 @@ if (($this->retry || $this->show_header) && $this->params->get('divwrapper',1)) 
 </script>
 <?php
 echo '<h2 class="componentheading uk-article-title">'.JText::_('COM_MUE_USERREG_PAGE_TITLE').'</h2>';
+
+// show progress bar if it and subscription are enabled
 if ($cfg->show_progbar && $cfg->subscribe) {
     echo '<div class="uk-progress"><div class="uk-progress-bar" style="width: 0%;"></div></div>';
 }
 echo $cfg->REG_PAGE_CONTENT;
 echo '<div id="mue-user-reg">';
 echo '<form action="" method="post" name="regform" id="regform" class="uk-form uk-form-horizontal">';
+
+// Show selected group if more than one group exists
 if (!$this->single_group) {
     echo '<div class="uk-form-row mue-user-reg-row mue-rowh"><div class="uk-form-label mue-user-reg-label uk-text-bold">'.JText::_('COM_MUE_USERREG_LABEL_USER_GROUP').'</div><div class="uk-form-controls uk-form-controls-text mue-user-reg-hdr">'.$this->groupinfo[0]->ug_name.'</div></div>';
 }
+
+// Preset row coloring
+$ri=1;
+
+// Display Fields
 foreach($this->userfields as $f) {
-	if ($ri==1) $ri=0;
-	else $ri=1;
 	echo '<div class="uk-form-row mue-user-reg-row mue-row'.($ri % 2).'">';
 	echo '<div class="uk-form-label mue-user-reg-label uk-text-bold">';
 	if ($f->uf_req) echo "*";
@@ -134,7 +141,11 @@ foreach($this->userfields as $f) {
 
 	echo '</div>';
 	echo '</div>';
+
+	if ($ri==1) $ri=0;
+	else $ri=1;
 }
+
 if ($cfg->rc_config == "visible" ) {
 	echo '<div class="uk-form-row mue-user-reg-row">';
 	echo '<div class="uk-form-label mue-user-reg-label">';
@@ -144,12 +155,16 @@ if ($cfg->rc_config == "visible" ) {
 	echo '<div class="g-recaptcha" data-callback="reCapChecked" data-sitekey="'.$cfg->rc_api_key.'"></div>';
 	echo '</div></div>';
 }
+
+// Submit Button
 echo '<div class="uk-form-row mue-user-reg-row">';
 echo '<div class="uk-form-label mue-user-reg-label">';
 echo '</div>';
 echo '<div class="uk-form-controls mue-user-reg-submit">';
 echo '<input name="saveprofile" id="savereg" value="'.JText::_('COM_MUE_USERREG_BUTTON_SUBMIT').'" type="submit" class="button uk-button">';
 echo '</div></div>';
+
+
 echo '<input type="hidden" name="option" value="com_mue">';
 echo '<input type="hidden" name="view" value="userreg">';
 echo '<input type="hidden" name="layout" value="reguser">';
@@ -158,7 +173,8 @@ echo '<input type="hidden" name="return" value="'.base64_encode($this->return).'
 echo JHtml::_('form.token');
 echo '</form>';
 echo '<div style="clear:both;"></div>';
-if ($this->retry || $this->show_header) {
+
+if ($this->retry) {
 	echo '</div>';
 	if ($this->params->get('divwrapper',1)) echo '</div>';
 }

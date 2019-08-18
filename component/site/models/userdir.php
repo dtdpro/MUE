@@ -7,7 +7,7 @@ jimport('joomla.event.dispatcher');
 class MUEModelUserdir extends JModelLegacy
 {
 	function getSearchFields() {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$qd = 'SELECT f.* FROM #__mue_ufields as f';
 		$qd.= ' WHERE f.published = 1';
 		$qd.=" && f.uf_hidden = 0";

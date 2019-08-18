@@ -7,9 +7,9 @@ define('JPATH_BASE', dirname(__FILE__) . '/../../..' );
 require_once ( JPATH_BASE .'/includes/defines.php' );
 require_once ( JPATH_BASE .'/includes/framework.php' );
 
-$mainframe =& JFactory::getApplication('site');
-$db  =& JFactory::getDBO();
-$user = &JFactory::getUser();
+$mainframe = JFactory::getApplication('site');
+$db  = JFactory::getDBO();
+$user = JFactory::getUser();
 
 $code = JRequest::getVar('discountcode'); 
 

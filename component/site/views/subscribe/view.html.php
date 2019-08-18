@@ -32,9 +32,9 @@ class MUEViewSubscribe extends JViewLegacy
 		$app=Jfactory::getApplication();
 		$this->params	= $app->getParams('com_mue');
 		$this->discountcode = $app->getUserState('com_mue.discountcode',"");
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$planid = JRequest::getVar( 'plan' );
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$hadTrial = MUEHelper::userHadTrial();
 		$this->subCount = count(MUEHelper::getUserSubs());
 		if ($planid) {
@@ -44,6 +44,7 @@ class MUEViewSubscribe extends JViewLegacy
 			}
 		}
 
+		if ($app->getUserState('mue.userreg.return')) $this->return = $app->getUserState('mue.userreg.return');
 		
 		switch ($layout) {
 			case "ppsubpay":
@@ -84,7 +85,7 @@ class MUEViewSubscribe extends JViewLegacy
 	}
 	
 	function subPlans() {
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$app=Jfactory::getApplication();
 		$this->plans=$model->getPlans($this->discountcode);
 		if ($failreason = $app->getUserState('com_mue.failreason',"")) {
@@ -94,7 +95,6 @@ class MUEViewSubscribe extends JViewLegacy
 	}
 	
 	function cartForm() {
-
 	}
 	
 	function checkInfo() {
@@ -102,7 +102,7 @@ class MUEViewSubscribe extends JViewLegacy
 	}
 	
 	function ppSubmitPayment() {	
-		$user =& JFactory::getUser();	
+		$user = JFactory::getUser();
 		$app=Jfactory::getApplication();
 		$muecfg = MUEHelper::getConfig();
 		$sub = MUEHelper::getActiveSub();
@@ -119,7 +119,7 @@ class MUEViewSubscribe extends JViewLegacy
 	}
 	
 	function ppConfirmPayment() {	
-		$user =& JFactory::getUser();	
+		$user = JFactory::getUser();
 		$app=Jfactory::getApplication();
 		$muecfg = MUEHelper::getConfig();
 		$this->usid = JRequest::getVar( 'purchaseid' );
@@ -135,10 +135,10 @@ class MUEViewSubscribe extends JViewLegacy
 	}
 	
 	function ppVerifyPayment() {	
-		$user =& JFactory::getUser();	
+		$user = JFactory::getUser();
 		$app=Jfactory::getApplication();
 		$muecfg = MUEHelper::getConfig();
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$this->usid = JRequest::getVar( 'purchaseid' );
 		if (!$user->id ) {
 			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
@@ -156,7 +156,7 @@ class MUEViewSubscribe extends JViewLegacy
 	}
 	
 	function ppCancelPayment() {	
-		$user =& JFactory::getUser();	
+		$user = JFactory::getUser();
 		$app=Jfactory::getApplication();
 		$muecfg = MUEHelper::getConfig();
 		$this->usid = JRequest::getVar( 'purchaseid' );
@@ -170,10 +170,10 @@ class MUEViewSubscribe extends JViewLegacy
 	}
 
 	function freeOfCharge() {
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$app=Jfactory::getApplication();
 		$muecfg = MUEHelper::getConfig();
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$sub = MUEHelper::getActiveSub();
 		if ($sub) $end = $sub->usrsub_end;
 		if (!$user->id ) {
@@ -193,10 +193,10 @@ class MUEViewSubscribe extends JViewLegacy
 	}
 	
 	function payByCheck() {
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$app=Jfactory::getApplication();
 		$muecfg = MUEHelper::getConfig();
-		$model =& $this->getModel();
+		$model = $this->getModel();
 		$sub = MUEHelper::getActiveSub();
 		if ($sub) $end = $sub->usrsub_end;
 		if (!$user->id ) {

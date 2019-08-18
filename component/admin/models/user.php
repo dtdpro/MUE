@@ -62,7 +62,7 @@ class MUEModelUser extends JModelAdmin
 		//get data for user fields
 		$q =  'SELECT u.*,f.uf_sname,f.uf_type,f.uf_default FROM #__mue_users as u ';
 		$q .= 'RIGHT JOIN #__mue_ufields as f ON u.usr_field = f.uf_id ';
-		$q .= 'WHERE usr_user = '.$pk;
+		$q .= 'WHERE usr_user = '.$pk.' && f.published=1 && f.uf_type NOT IN ("message","captcha","brlist")';
 		$this->_db->setQuery($q); 
 		$data=$this->_db->loadObjectList();
 		
@@ -100,8 +100,15 @@ class MUEModelUser extends JModelAdmin
 				$contact->read();
 				$onlist = false;
 				if ($contact->status == 'active' || $contact->status == 'onboarding') {
-					if (in_array($d->uf_default,$contact->listIds)) $onlist = "1";
-					else $onlist = "0";
+					if (isset($contact->listIds)) {
+						if ( in_array( $d->uf_default, $contact->listIds ) ) {
+							$onlist = "1";
+						} else {
+							$onlist = "0";
+						}
+					} else {
+						$onlist = "0";
+					}
 				} else {
 					$onlist = "0";
 				}
@@ -134,6 +141,7 @@ class MUEModelUser extends JModelAdmin
 		$db		= $this->getDbo();
 		$date = new JDate('now');
 		$cfg = MUEHelper::getConfig();
+		$item=null;
 		
 		JPluginHelper::importPlugin('user');
 		
@@ -300,18 +308,18 @@ class MUEModelUser extends JModelAdmin
 				if ($oldemail != $user->email) $contact->email = $user->email;
 				
 				$unsubed=false;
-			
-				// Update Status to unconfirmed, but only if we are unsubscribed, transactional
+
+				/*// Update Status to unconfirmed, but only if we are unsubscribed, transactional
 				if ($data[$brlist->uf_sname]) {
 					if ($contact->status == 'transactional' || $contact->status == 'unsub') {
 						if ($contact->status == 'unsub') $unsubed=true;
 						$contact->status = "unconfirmed";
 						$contact->save();
 					}
-				}
+				}*/
 			
 				// Update fields
-				if ($brlist->params->brvars && $data[$brlist->uf_sname]) {
+				if ($brlist->params->brvars) {
 					$othervars=$brlist->params->brvars;
 					foreach ($othervars as $brv=>$mue) {
 						if ($mue) {
@@ -322,7 +330,6 @@ class MUEModelUser extends JModelAdmin
 								$contact->setField($brv,$optionsdata[$item->$mue]);
 							}
 							else if (in_array($mue,$moptfs)) {
-								$mcdata[$mcv] = "";
 								$fv = '';
 								foreach (explode(" ",$item->$mue) as $mfo) {
 									$fv .= $optionsdata[$mfo]." ";
@@ -339,7 +346,7 @@ class MUEModelUser extends JModelAdmin
 				// Update Subscription Info
 			
 			
-				// Update Lists
+				/*// Update Lists
 				if ($data[$brlist->uf_sname]) {
 					if ($unsubed) { //Remove all previous list
 						$currentLists = $contact->getLists();
@@ -351,10 +358,10 @@ class MUEModelUser extends JModelAdmin
 					$contact->addToList($brlist->uf_default);
 				} else {
 					$contact->removeFromList($brlist->uf_default);
-				}
+				}*/
 			
 				// Save
-				$contact->save(true);
+				$contact->save();
 			}
 			
 			// Update MailChimp Lists
@@ -475,7 +482,7 @@ class MUEModelUser extends JModelAdmin
 					$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
 					$cmresult = $cm->removeSubscriber($cmlist->uf_default,$oldemail);
 					if ($cmresult) { $usernotes .= $date->toSql(true)." EMail Unsubscribed from Campaign Monitor List #".$cmlist->uf_default."\r\n"; }
-					else { $usernotes .= $date->toSql(true)." Could not unsubscribe EMail from Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error."\r\n".$cmd."\r\n"; }
+					else { $usernotes .= $date->toSql(true)." Could not unsubscribe EMail from Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error."\r\n"; }
 				}
 
 			} 
@@ -557,7 +564,7 @@ class MUEModelUser extends JModelAdmin
 	public function getFields($all = true, $type = "") {
 		$q  = 'SELECT * FROM #__mue_ufields WHERE published > 0';
 		if ($type) $q .= ' && uf_type = "'.$type.'"';
-		else $q .= ' && uf_type NOT IN ("message","captcha")';
+		else $q .= ' && uf_type NOT IN ("message","captcha","brlist")';
 		$q .= ' ORDER BY ordering';
 		$this->_db->setQuery($q);
 		$fields=$this->_db->loadObjectList();
@@ -582,7 +589,7 @@ class MUEModelUser extends JModelAdmin
 		return $fields;
 	}
 	
-	function validate($data, $group = NULL)
+	function validate($form, $data, $group = null)
 	{
 		// Filter and validate the form data.
 		$return	= true; //$form->validate($data, $group);

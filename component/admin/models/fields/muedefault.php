@@ -63,8 +63,6 @@ class JFormFieldMUEDefault extends JFormField
 
     protected function getBRList()
     {
-        $app =& JFactory::getApplication('site');
-        $db  =& JFactory::getDBO();
         $cfg=MUEHelper::getConfig();
 
         if (!$cfg->brkey) return $this->getTextField();
@@ -86,7 +84,6 @@ class JFormFieldMUEDefault extends JFormField
         // Initialize variables.
         $html = array();
         $attr = '';
-        $db = JFactory::getDBO();
         // Initialize some field attributes.
         $attr .= $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
         $attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
@@ -106,8 +103,6 @@ class JFormFieldMUEDefault extends JFormField
 		require_once(JPATH_ROOT.'/administrator/components/com_mue/helpers/mue.php');
 		require_once(JPATH_ROOT.'/components/com_mue/lib/campaignmonitor.php');
 		
-		$app =& JFactory::getApplication('site');
-		$db  =& JFactory::getDBO();
 		$cfg=MUEHelper::getConfig();
 		if (!$cfg->cmkey) return $this->getTextField();
 		$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
@@ -116,7 +111,6 @@ class JFormFieldMUEDefault extends JFormField
 		// Initialize variables.
 		$html = array();
 		$attr = '';
-		$db = JFactory::getDBO();
 		// Initialize some field attributes.
 		$attr .= $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
 		$attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
@@ -138,8 +132,6 @@ class JFormFieldMUEDefault extends JFormField
 		require_once(JPATH_ROOT.'/administrator/components/com_mue/helpers/mue.php');
 		require_once(JPATH_ROOT.'/components/com_mue/lib/mailchimp.php');
 		
-		$app =& JFactory::getApplication('site');
-		$db  =& JFactory::getDBO();
 		$cfg=MUEHelper::getConfig();
 		if (!$cfg->mckey) return $this->getTextField();
 		$keys = explode(",",$cfg->mckey);
@@ -148,7 +140,6 @@ class JFormFieldMUEDefault extends JFormField
 		// Initialize variables.
 		$html = array();
 		$attr = '';
-		$db = JFactory::getDBO();
 		// Initialize some field attributes.
 		$attr .= $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
 		$attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
@@ -178,7 +169,6 @@ class JFormFieldMUEDefault extends JFormField
 		// Initialize variables.
 		$html = array();
 		$attr = '';
-		$db = JFactory::getDBO();
 		// Initialize some field attributes.
 		$attr .= $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
 		$attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';

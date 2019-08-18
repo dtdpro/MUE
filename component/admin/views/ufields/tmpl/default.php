@@ -193,7 +193,7 @@ if ($saveOrder) {
 				<?php 
 					if ($item->uf_type=='mlist' || $item->uf_type=='multi' || $item->uf_type=='mcbox' || $item->uf_type=='dropdown') {
 						echo '<a href="'.JRoute::_('index.php?option=com_mue&view=uopts&filter_field='.$item->uf_id).'">Options'; 
-						$db =& JFactory::getDBO();
+						$db = JFactory::getDBO();
 						$query = 'SELECT count(*) FROM #__mue_ufields_opts WHERE opt_field="'.$item->uf_id.'"';
 						$db->setQuery( $query );
 						echo ' ['.$db->loadResult().']</a>'; 
