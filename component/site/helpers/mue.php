@@ -87,23 +87,27 @@ class MUEHelper {
                     $token = $cfg->brkey;
                     $bronto = new Bronto_Api();
                     $bronto->setToken($token);
-                    $bronto->login();
-                    $contactObject = $bronto->getContactObject();
-                    $contact = $contactObject->createRow();
-                    $contact->email = $user->email;
-                    $contact->read();
-                    $onlist = false;
-                    if ($contact->status == 'active' || $contact->status == 'onboarding') {
-                        if (!$contact->listIds || !is_array($contact->listIds)) {
-	                        $onlist = false;
-                        } else if (in_array($u->uf_default,$contact->listIds)) {
-                        	$onlist = true;
-                        }
-                        else {
-                        	$onlist = false;
-                        }
-                    } else {
-                        $onlist = false;
+                    try {
+                    	$bronto->login();
+	                    $contactObject = $bronto->getContactObject();
+	                    $contact = $contactObject->createRow();
+	                    $contact->email = $user->email;
+	                    $contact->read();
+	                    $onlist = false;
+	                    if ($contact->status == 'active' || $contact->status == 'onboarding') {
+		                    if (!$contact->listIds || !is_array($contact->listIds)) {
+			                    $onlist = false;
+		                    } else if (in_array($u->uf_default,$contact->listIds)) {
+			                    $onlist = true;
+		                    }
+		                    else {
+			                    $onlist = false;
+		                    }
+	                    } else {
+		                    $onlist = false;
+	                    }
+                    } catch (Exception $e) {
+	                    $onlist = false;
                     }
                     if ($useids && $u->uf_change) $user->$fn=$onlist;
                     else $user->$fn = ($onlist) ? "Yes" : "No";

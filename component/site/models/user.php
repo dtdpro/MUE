@@ -55,28 +55,32 @@ class MUEModelUser extends JModelLegacy
         // Bronto Mail Integration
         $brlists = $this->getUserFields(1,false,false,false,"brlist");
         foreach ($brlists as $brlist) {
-            // Get contact and status
-            $token = $cfg->brkey;
-            $bronto = new Bronto_Api();
-            $bronto->setToken($token);
-            $bronto->login();
-            $contactObject = $bronto->getContactObject();
-            $oldcontact = $contactObject->createRow();
-            $oldcontact->email = $oldemail;
-            $oldcontact->read();
-            $contactid = $oldcontact->id;            
+        	try {
+	            // Get contact and status
+	            $token = $cfg->brkey;
+	            $bronto = new Bronto_Api();
+	            $bronto->setToken($token);
+	            $bronto->login();
+	            $contactObject = $bronto->getContactObject();
+	            $oldcontact = $contactObject->createRow();
+	            $oldcontact->email = $oldemail;
+	            $oldcontact->read();
+	            $contactid = $oldcontact->id;
 
-            $contact = $contactObject->createRow();
-            $contact->id = $contactid;
-            $contact->read();
+	            $contact = $contactObject->createRow();
+	            $contact->id = $contactid;
+	            $contact->read();
 
-            if ($contact->status != 'unsub') {
-                $contact->email = $newemail;
+	            if ($contact->status != 'unsub') {
+	                $contact->email = $newemail;
 
-                // Save
-                $contact->save(true);
-            }
+	                // Save
+	                $contact->save(true);
+	            }
 
+	        } catch (Exception $e) {
+
+	        }
         }
         
 		//MC Update
@@ -143,31 +147,34 @@ class MUEModelUser extends JModelLegacy
         // Bronto Mail Integration
         $brlists = $this->getUserFields($groupid,false,false,false,"brlist");
         foreach ($brlists as $brlist) {
-            // Get contact and status
-            $token = $cfg->brkey;
-            $bronto = new Bronto_Api();
-            $bronto->setToken($token);
-            $bronto->login();
-            $contactObject = $bronto->getContactObject();
-            $contact = $contactObject->createRow();
-            $contact->email = $user->email;
-            $contact->read();
+        	try {
+		        // Get contact and status
+		        $token  = $cfg->brkey;
+		        $bronto = new Bronto_Api();
+		        $bronto->setToken( $token );
+		        $bronto->login();
+		        $contactObject  = $bronto->getContactObject();
+		        $contact        = $contactObject->createRow();
+		        $contact->email = $user->email;
+		        $contact->read();
 
-            if ($contact->status != 'unsub') {
-                // Update field
-                if ($brlist->params->brvars) {
-                    $othervars = $brlist->params->brvars;
-                    foreach ($othervars as $brv => $mue) {
-                        if ($mue == "user_group") {
-                            $contact->setField($brv, $ginfo->ug_name);
-                        }
-                    }
-                }
+		        if ( $contact->status != 'unsub' ) {
+			        // Update field
+			        if ( $brlist->params->brvars ) {
+				        $othervars = $brlist->params->brvars;
+				        foreach ( $othervars as $brv => $mue ) {
+					        if ( $mue == "user_group" ) {
+						        $contact->setField( $brv, $ginfo->ug_name );
+					        }
+				        }
+			        }
 
-                // Save
-                $contact->save(true);
-            }
+			        // Save
+			        $contact->save( true );
+		        }
+	        } catch (Exception $e) {
 
+	        }
         }
 		
 		//MC Update
@@ -378,96 +385,101 @@ class MUEModelUser extends JModelLegacy
 
             // Bronto Mail Integration
             foreach ($brlists as $brlist) {
-                // Get contact and status
-                $token = $cfg->brkey;
-                $bronto = new Bronto_Api();
-                $bronto->setToken($token);
-                $bronto->login();
-                $contactObject = $bronto->getContactObject();
-                $contact = $contactObject->createRow();
-                $contact->email = $user->email;
-                $contact->read();
-				$unsubed=false;
+            	try {
+	                // Get contact and status
+	                $token = $cfg->brkey;
+	                $bronto = new Bronto_Api();
+	                $bronto->setToken($token);
+	                $bronto->login();
+	                $contactObject = $bronto->getContactObject();
+	                $contact = $contactObject->createRow();
+	                $contact->email = $user->email;
+	                $contact->read();
+					$unsubed=false;
 
-                // Update Status, but only if we are unsubscribed, transactional, or unconfirmed
-                if ($data[$brlist->uf_sname]) {
-                    if ($contact->status == 'transactional' || $contact->status == 'unconfirmed' || $contact->status == 'unsub') {
-                    	if ($contact->status == 'unsub') $unsubed=true;
-                    	$contact->status = "onboarding";
-                    	$contact->save();
-                    }
-                }
+	                // Update Status, but only if we are unsubscribed, transactional, or unconfirmed
+	                if ($data[$brlist->uf_sname]) {
+	                    if ($contact->status == 'transactional' || $contact->status == 'unconfirmed' || $contact->status == 'unsub') {
+	                        if ($contact->status == 'unsub') $unsubed=true;
+	                        $contact->status = "onboarding";
+	                        $contact->save();
+	                    }
+	                }
 
-                // Update fields
-                if ($brlist->params->brvars && $data[$brlist->uf_sname]) {
-                    $othervars=$brlist->params->brvars;
-                    foreach ($othervars as $brv=>$mue) {
-                        if ($mue) {
-                            if ($brlist->params->brfieldtypes->$brv == "checkbox") {
-                                if ($item->$mue == "1") $contact->setField($brv,'true');
-                                else $contact->setField($brv,'false');
-                            } else if (in_array($mue,$optfs)) {
-                                $contact->setField($brv,$optionsdata[$item->$mue]);
-                            }
-                            else if (in_array($mue,$moptfs)) {
-                                $fv = '';
-                                foreach (explode(" ",$item->$mue) as $mfo) {
-                                    $fv .= $optionsdata[$mfo]." ";
-                                }
-                                $contact->setField($brv,$fv);
-                            }
-                            else {
-                                $contact->setField($brv,$item->$mue);
-                            }
-                        }
-                    }
-                }
+	                // Update fields
+	                if ($brlist->params->brvars && $data[$brlist->uf_sname]) {
+	                    $othervars=$brlist->params->brvars;
+	                    foreach ($othervars as $brv=>$mue) {
+	                        if ($mue) {
+	                            if ($brlist->params->brfieldtypes->$brv == "checkbox") {
+	                                if ($item->$mue == "1") $contact->setField($brv,'true');
+	                                else $contact->setField($brv,'false');
+	                            } else if (in_array($mue,$optfs)) {
+	                                $contact->setField($brv,$optionsdata[$item->$mue]);
+	                            }
+	                            else if (in_array($mue,$moptfs)) {
+	                                $fv = '';
+	                                foreach (explode(" ",$item->$mue) as $mfo) {
+	                                    $fv .= $optionsdata[$mfo]." ";
+	                                }
+	                                $contact->setField($brv,$fv);
+	                            }
+	                            else {
+	                                $contact->setField($brv,$item->$mue);
+	                            }
+	                        }
+	                    }
+	                }
 
-                // Update Subscription Info
-	            if ($brlist->params->brsubstatus) {
-		            // Set Member Status
-		            if ( $substatus ) {
-			            $contact->setField( $brlist->params->brsubstatus, $brlist->params->brsubtextyes );
-		            } else {
-			            $contact->setField( $brlist->params->brsubstatus, $brlist->params->brsubtextno );
-		            }
-
-		            // Set Member Since
-		            if ( $brlist->params->brsubsince && $uginfo->userg_subsince != "0000-00-00" ) {
-			            $contact->setField( $brlist->params->brsubsince, $uginfo->userg_subsince );
-		            }
-
-		            // Set Member Exp
-		            if ( $brlist->params->brsubexp  && $uginfo->userg_subexp != '0000-00-00') {
-			            $contact->setField( $brlist->params->brsubexp, $uginfo->userg_subexp );
-		            }
-
-		            // Set Active/End Member Plan
-		            if ( $brlist->params->brsubplan ) {
-			            if ( !$substatus ) {
-			            	$contact->setField( $brlist->params->brsubplan, 'None' );
+	                // Update Subscription Info
+		            if ($brlist->params->brsubstatus) {
+			            // Set Member Status
+			            if ( $substatus ) {
+				            $contact->setField( $brlist->params->brsubstatus, $brlist->params->brsubtextyes );
 			            } else {
-				            $contact->setField( $brlist->params->brsubplan, $uginfo->userg_subendplanname );
+				            $contact->setField( $brlist->params->brsubstatus, $brlist->params->brsubtextno );
+			            }
+
+			            // Set Member Since
+			            if ( $brlist->params->brsubsince && $uginfo->userg_subsince != "0000-00-00" ) {
+				            $contact->setField( $brlist->params->brsubsince, $uginfo->userg_subsince );
+			            }
+
+			            // Set Member Exp
+			            if ( $brlist->params->brsubexp  && $uginfo->userg_subexp != '0000-00-00') {
+				            $contact->setField( $brlist->params->brsubexp, $uginfo->userg_subexp );
+			            }
+
+			            // Set Active/End Member Plan
+			            if ( $brlist->params->brsubplan ) {
+				            if ( !$substatus ) {
+				                $contact->setField( $brlist->params->brsubplan, 'None' );
+				            } else {
+					            $contact->setField( $brlist->params->brsubplan, $uginfo->userg_subendplanname );
+				            }
 			            }
 		            }
+
+	                // Update Lists
+	                if ($data[$brlist->uf_sname]) {
+	                    if ($unsubed) { //Remove all previous list
+	                        $currentLists = $contact->getLists();
+	                        foreach ($currentLists as $l) {
+	                            $contact->removeFromList($l);
+	                        }
+							$contact->save(true);
+	                    }
+	                    $contact->addToList($brlist->uf_default);
+	                } else {
+	                    $contact->removeFromList($brlist->uf_default);
+	                }
+
+	                // Save
+	                $contact->save(true);
+
+	            } catch (Exception $e) {
+
 	            }
-
-                // Update Lists
-                if ($data[$brlist->uf_sname]) {
-                    if ($unsubed) { //Remove all previous list
-                        $currentLists = $contact->getLists();
-                        foreach ($currentLists as $l) {
-                            $contact->removeFromList($l);
-                        }
-						$contact->save(true);
-                    }
-                    $contact->addToList($brlist->uf_default);
-                } else {
-                    $contact->removeFromList($brlist->uf_default);
-                }
-
-                // Save
-                $contact->save(true);
             }
 
 			//Campaign Monitor Integration

@@ -41,11 +41,19 @@
 			<option value="1">Yes</option>
 		</field>
 		<field name="gm_api_key" type="text" label="COM_MUE_CONFIG_FIELD_GM_APIKEY_LABEL" description="COM_MUE_CONFIG_FIELD_GM_APIKEY_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="gm_jsapi_key" type="text" label="COM_MUE_CONFIG_FIELD_GM_JSAPIKEY_LABEL" description="COM_MUE_CONFIG_FIELD_GM_JSAPIKEY_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="userdir_title" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_TITLE_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_TITLE_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="on_userdir_field" type="FieldOnList" class="inputbox" label="COM_MUE_CONFIG_FIELD_ONUSERDIR_LABEL" description="COM_MUE_CONFIG_FIELD_ONUSERDIR_DESC" />
 		<field name="userdir_mapfields" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_MAPFIELDS_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_MAPFIELDS_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="userdir_userinfo" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_USERINFO_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_USERINFO_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="userdir_searchinfo" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_SEARCHINFO_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_SEARCHINFO_DESC" size="70" class="inputbox" required="false" default="" />
+	</fieldset>
+	<fieldset name="pmsettings" label="Private Messaging" description="Private Messaging settings" addfieldpath="/administrator/components/com_mue/models/fields">
+		<field name="pmgroup" type="accesslevel" id="pmgroup" class="inputbox" label="PM Access Level" description="Access level requirement to use private messaging"  />
+		<field name="pmemail_email" type="text" label="PM Notification From Email" description="" size="70" class="inputbox" required="false" default="" />
+		<field name="pmemail_name" type="text" label="PM Notification From Name" description="" size="70" class="inputbox" required="false" default="" />
+		<field name="pmemail_subject" type="text" label="PM Notification From Subject" description="" size="70" class="inputbox" required="false" default="" />
+		<field name="pmemail_content" type="textarea" label="PM Notification From Content" description="" rows="4" cols="70" class="inputbox" required="false" filter="raw" buttons="false" />
 	</fieldset>
 	<fieldset name="integrations" label="COM_MUE_CONFIG_INTEGRATIONS_LABEL" description="COM_MUE_CONFIG_INTEGRATIONS_DESC">
 		<field name="spacer_apis0" type="spacer" label="COM_MUE_CONFIG_MAILCHIMP_LABEL" />

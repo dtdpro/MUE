@@ -236,38 +236,43 @@ class MUEModelSubscribe extends JModelLegacy
 
 		// Bronto List Update
 		foreach ($this->getBrontoFields() as $f) {
-			if ($f->params->brsubstatus) {
-				$token = $cfg->brkey;
-				$bronto = new Bronto_Api();
-				$bronto->setToken($token);
-				$bronto->login();
+			try {
+				if ($f->params->brsubstatus) {
+					$token = $cfg->brkey;
+					$bronto = new Bronto_Api();
+					$bronto->setToken($token);
+					$bronto->login();
 
-				// Get Contact
-				$contactObject = $bronto->getContactObject();
-				$contact = $contactObject->createRow();
-				$contact->email = $user->email;
-				$contact->read();
+					// Get Contact
+					$contactObject = $bronto->getContactObject();
+					$contact = $contactObject->createRow();
+					$contact->email = $user->email;
+					$contact->read();
 
-				// Set Member Status
-				$contact->setField($f->params->brsubstatus,$f->params->brsubtextyes);
+					// Set Member Status
+					$contact->setField($f->params->brsubstatus,$f->params->brsubtextyes);
 
-				// Set Member Since
-				if ( $f->params->brsubsince && $uginfo->userg_subsince != "0000-00-00") {
-					$contact->setField( $f->params->brsubsince, $uginfo->userg_subsince );
+					// Set Member Since
+					if ( $f->params->brsubsince && $uginfo->userg_subsince != "0000-00-00") {
+						$contact->setField( $f->params->brsubsince, $uginfo->userg_subsince );
+					}
+
+					// Set Member Exp
+					if ( $f->params->brsubexp  && $uginfo->userg_subexp != '0000-00-00') {
+						$contact->setField( $f->params->brsubexp, $uginfo->userg_subexp );
+					}
+
+					// Set Active/End Member Plan
+					if ( $f->params->brsubplan ) {
+						$contact->setField( $f->params->brsubplan, $uginfo->userg_subendplanname );
+					}
+
+					// Save
+					$contact->save(true);
 				}
 
-				// Set Member Exp
-				if ( $f->params->brsubexp  && $uginfo->userg_subexp != '0000-00-00') {
-					$contact->setField( $f->params->brsubexp, $uginfo->userg_subexp );
-				}
+			} catch (Exception $e) {
 
-				// Set Active/End Member Plan
-				if ( $f->params->brsubplan ) {
-					$contact->setField( $f->params->brsubplan, $uginfo->userg_subendplanname );
-				}
-
-				// Save
-				$contact->save(true);
 			}
 		}
 

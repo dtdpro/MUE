@@ -15,6 +15,18 @@ if (($this->retry) && $this->params->get('divwrapper',1)) echo '<div id="system"
             errorPlacement: function(error, element) {
                 error.appendTo( element.parent("div"));
                 error.addClass("uk-alert uk-alert-danger uk-form-controls-text");
+            },
+            submitHandler: function (form) {
+                if (typeof ga === 'function') {
+                    ga('send', 'event', 'MUE', 'Registration', 'Registration Submission');
+                }
+                if (typeof gtag === 'function') {
+                    gtag('event', 'Registration', {
+                        'event_category': 'MUE',
+                        'event_label': 'Registration Submission'
+                    });
+                }
+                $(form).submit();
             }
 	    });
 

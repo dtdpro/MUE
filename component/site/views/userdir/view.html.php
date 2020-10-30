@@ -9,7 +9,7 @@ class MUEViewUserdir extends JViewLegacy
 	{
 		$doc = JFactory::getDocument();
 		$config=MUEHelper::getConfig();
-		$doc->addScript('https://maps.googleapis.com/maps/api/js?key='.$config->gm_api_key.'&sensor=false');
+		$doc->addScript('https://maps.googleapis.com/maps/api/js?key='.$config->gm_jsapi_key.'&sensor=false');
 		$numsubs=count(MUEHelper::getUserSubs());
 		$this->params	= JFactory::getApplication()->getParams('com_mue');
 		$canview=true;
@@ -26,7 +26,7 @@ class MUEViewUserdir extends JViewLegacy
 		$app=Jfactory::getApplication();
 		if (!$canview) $app->redirect('index.php?option=com_mue&view=user&layout=profile',"Subscription Requried");
 		else {
-			$model =& $this->getModel();
+			$model = $this->getModel();
 			$this->sfields = $model->getSearchFields();
 			parent::display($tpl);
 		}

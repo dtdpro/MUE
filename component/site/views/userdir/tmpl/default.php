@@ -69,13 +69,14 @@ $cecfg = MUEHelper::getConfig();
 				if (markerNodes.length > 0) {
 					for (var i = 0; i < markerNodes.length; i++) {
 						var name = markerNodes[i].getAttribute("name");
+                        var udid = markerNodes[i].getAttribute("udid");
 						var userinfo = markerNodes[i].getAttribute("userinfo");
 						var distance = parseFloat(markerNodes[i].getAttribute("distance"));
 						var latlng = new google.maps.LatLng(
 						parseFloat(markerNodes[i].getAttribute("lat")),
 						parseFloat(markerNodes[i].getAttribute("lng")));
 						
-						createOption(name, distance, i);
+						createOption(name, distance, i, udid);
 						createMarker(latlng, name, userinfo);
 						bounds.extend(latlng);
 					}
@@ -108,10 +109,11 @@ $cecfg = MUEHelper::getConfig();
 		markers.push(marker);
 	}
 
-	function createOption(name, distance, num) {
+	function createOption(name, distance, num, udid) {
 		var option = '<div class="nearbymember">';
 		option += '<a href="#" onclick="google.maps.event.trigger(markers['+num+'], \'click\');">';
 		option += name + "</a><br />" + distance.toFixed(1) + " miles";
+        option += '<br /><a href="<?php echo JURI::base( true ); ?>/index.php?option=com_mue&view=pm&layout=createud&udid='+udid+'" class="uk-button uk-button-mini" target="_blank">Send Message</a>';
 		option += "</div>";
 		jQuery( "#nearbylist" ).append(option);
 	}

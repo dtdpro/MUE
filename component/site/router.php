@@ -22,6 +22,7 @@ function MUEBuildRoute(&$query)
 	static $subscribe;
 	static $check;
 	static $ppconfirm;
+	static $messages;
 
 	// Initialise variables.
 	$segments = array();
@@ -115,6 +116,11 @@ function MUEBuildRoute(&$query)
 							break;
 					}
 				}
+
+				// Check to see if we have found the subscribe/pay by check info menu item.
+				if ( $view == 'pm' ) {
+					if (empty( $messages )) $messages = $items[ $i ]->id;
+				}
 			}
 		}
 	}
@@ -167,6 +173,26 @@ function MUEBuildRoute(&$query)
 						if ($query['Itemid'] = $logout) {
 							unset ($query['view']);
 							unset ($query['layout']);
+						} else {
+							$query['Itemid'] = $default;
+						}
+						break;
+				}
+				break;
+
+			case 'pm':
+				switch ($query['layout']) {
+					case 'messages':
+						if ($query['Itemid'] = $messages) {
+							unset ($query['view']);
+							unset ($query['layout']);
+						} else {
+							$query['Itemid'] = $default;
+						}
+						break;
+					default:
+						if ($query['Itemid'] = $messages) {
+							unset ($query['view']);
 						} else {
 							$query['Itemid'] = $default;
 						}

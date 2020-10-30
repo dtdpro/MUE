@@ -55,6 +55,9 @@ class  plgContentMue extends JPlugin
 
 			// {muedata}
 			$article->text = str_replace('{muedata}',print_r($userinfo,true),$article->text);
+
+			// new message count
+			$article->text = str_replace('{muenewmessages}',$this->getNewMessageCount($user),$article->text);
 		}
 	}
 
@@ -107,6 +110,18 @@ class  plgContentMue extends JPlugin
 			}
 		}
 		return $user;
+	}
+
+	function getNewMessageCount($user) {
+		$db = JFactory::getDBO();
+		$query = $db->getQuery(true);
+		$query->select('m.msg_id');
+		$query->from('#__mue_messages AS m');
+		$query->where('m.msg_to = '.$user->id);
+		$query->where('m.msg_status = "new"');
+		$db->setQuery($query);
+		$messages = $db->loadColumn();
+		return count($messages);
 	}
 
 

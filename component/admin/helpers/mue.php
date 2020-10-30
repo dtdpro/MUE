@@ -19,6 +19,7 @@ abstract class MUEHelper
 		JHtmlSidebar::addEntry(JText::_('COM_MUE_SUBMENU_USERS'), 'index.php?option=com_mue&view=users', $submenu == 'users');
 		JHtmlSidebar::addEntry(JText::_('COM_MUE_SUBMENU_USERSUBS'), 'index.php?option=com_mue&view=usersubs', $submenu == 'usersubs');
 		JHtmlSidebar::addEntry(JText::_('COM_MUE_SUBMENU_COUPONS'), 'index.php?option=com_mue&view=couponcodes', $submenu == 'couponcodes');
+		JHtmlSidebar::addEntry(JText::_('COM_MUE_SUBMENU_PMS'), 'index.php?option=com_mue&view=pms', $submenu == 'pms');
 	}
 	
 	public static function getStateOptions()

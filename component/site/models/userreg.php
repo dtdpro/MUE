@@ -205,76 +205,80 @@ class MUEModelUserreg extends JModelLegacy
 			
 			// Bronto Mail Integration
 			foreach ($brlists as $brlist) {
-				// Get contact and status
-				$token  = $cfg->brkey;
-				$bronto = new Bronto_Api();
-				$bronto->setToken( $token );
-				$bronto->login();
-				$contactObject  = $bronto->getContactObject();
-				$contact        = $contactObject->createRow();
-				$contact->email = $item->email;
-				$contact->read();
-				$unsubed = false;
+				try {
+					// Get contact and status
+					$token  = $cfg->brkey;
+					$bronto = new Bronto_Api();
+					$bronto->setToken( $token );
+					$bronto->login();
+					$contactObject  = $bronto->getContactObject();
+					$contact        = $contactObject->createRow();
+					$contact->email = $item->email;
+					$contact->read();
+					$unsubed = false;
 
-				if ($data[$brlist->uf_sname]) {
-					if ( $contact->status == 'transactional' || $contact->status == 'unconfirmed' || $contact->status == 'unsub' ) {
-						if ( $contact->status == 'unsub' ) {
-							$unsubed = true;
+					if ($data[$brlist->uf_sname]) {
+						if ( $contact->status == 'transactional' || $contact->status == 'unconfirmed' || $contact->status == 'unsub' ) {
+							if ( $contact->status == 'unsub' ) {
+								$unsubed = true;
+							}
+							$contact->status = "onboarding";
+							$contact->save();
 						}
-						$contact->status = "onboarding";
-						$contact->save();
 					}
-				}
 
 
-				// Update fields
-				if ( $brlist->params->brvars && $data[ $brlist->uf_sname ] ) {
-					$othervars = $brlist->params->brvars;
-					foreach ( $othervars as $brv => $mue ) {
-						if ( $mue ) {
-							if ( $brlist->params->brfieldtypes->$brv == "checkbox" ) {
-								if ( $item->$mue == "1" ) {
-									$contact->setField( $brv, 'true' );
+					// Update fields
+					if ( $brlist->params->brvars && $data[ $brlist->uf_sname ] ) {
+						$othervars = $brlist->params->brvars;
+						foreach ( $othervars as $brv => $mue ) {
+							if ( $mue ) {
+								if ( $brlist->params->brfieldtypes->$brv == "checkbox" ) {
+									if ( $item->$mue == "1" ) {
+										$contact->setField( $brv, 'true' );
+									} else {
+										$contact->setField( $brv, 'false' );
+									}
+								} else if ( in_array( $mue, $optfs ) ) {
+									$contact->setField( $brv, $optionsdata[ $item->$mue ] );
+								} else if ( in_array( $mue, $moptfs ) ) {
+									$mcdata[ $mcv ] = "";
+									$fv             = '';
+									foreach ( explode( " ", $item->$mue ) as $mfo ) {
+										$fv .= $optionsdata[ $mfo ] . " ";
+									}
+									$contact->setField( $brv, $fv );
 								} else {
-									$contact->setField( $brv, 'false' );
+									$contact->setField( $brv, $item->$mue );
 								}
-							} else if ( in_array( $mue, $optfs ) ) {
-								$contact->setField( $brv, $optionsdata[ $item->$mue ] );
-							} else if ( in_array( $mue, $moptfs ) ) {
-								$mcdata[ $mcv ] = "";
-								$fv             = '';
-								foreach ( explode( " ", $item->$mue ) as $mfo ) {
-									$fv .= $optionsdata[ $mfo ] . " ";
-								}
-								$contact->setField( $brv, $fv );
-							} else {
-								$contact->setField( $brv, $item->$mue );
 							}
 						}
 					}
-				}
 
-				// Update Subscription Info
-				if ( $brlist->params->brsubstatus ) {
-					// Set Member Status
-					$contact->setField( $brlist->params->brsubstatus, $brlist->params->brsubtextno );
-				}
-
-				// Update Lists
-				if ( $data[ $brlist->uf_sname ] ) {
-					if ( $unsubed ) { //Remove all previous list
-						$currentLists = $contact->getLists();
-						foreach ( $currentLists as $l ) {
-							$contact->removeFromList( $l );
-						}
-						$contact->save( true );
+					// Update Subscription Info
+					if ( $brlist->params->brsubstatus ) {
+						// Set Member Status
+						$contact->setField( $brlist->params->brsubstatus, $brlist->params->brsubtextno );
 					}
-					$contact->addToList( $brlist->uf_default );
+
+					// Update Lists
+					if ( $data[ $brlist->uf_sname ] ) {
+						if ( $unsubed ) { //Remove all previous list
+							$currentLists = $contact->getLists();
+							foreach ( $currentLists as $l ) {
+								$contact->removeFromList( $l );
+							}
+							$contact->save( true );
+						}
+						$contact->addToList( $brlist->uf_default );
+					}
+
+					// Save
+					$contact->save( true );
+
+				} catch (Exception $e) {
+
 				}
-
-				// Save
-				$contact->save( true );
-
 			}
 						
 			//Campaign Monitor Integration

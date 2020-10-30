@@ -8,9 +8,9 @@ require_once ( JPATH_BASE .'/includes/defines.php' );
 require_once ( JPATH_BASE .'/includes/framework.php' );
 require_once ('mue.php');
 
-$mainframe =& JFactory::getApplication('site');
-$db  =& JFactory::getDBO();
-$user = &JFactory::getUser();
+$mainframe = JFactory::getApplication('site');
+$db  = JFactory::getDBO();
+$user = JFactory::getUser();
 $config=MUEHelper::getConfig();
 $numsubs=count(MUEHelper::getUserSubs());
 $canview=true;		
@@ -70,6 +70,7 @@ if ($user->id && $canview) {
 		$newnode->setAttribute("lng", $row->ud_lon);
 		$newnode->setAttribute("distance", $row->distance);
 		$newnode->setAttribute("userinfo", $row->ud_userinfo);
+		$newnode->setAttribute("udid", $row->ud_id);
 	}}
 	echo $dom->saveXML();
 }
