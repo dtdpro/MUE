@@ -25,12 +25,12 @@ class MUEViewUsersubs extends JViewLegacy
 			return false;
 		}
 
+		// Set the toolbar
+		$this->addToolBar();
+
         // Set the submenu
         MUEHelper::addSubmenu(JRequest::getVar('view'));
         $this->sidebar = JHtmlSidebar::render();
-
-        // Set the toolbar
-		$this->addToolBar();
 
 		// Display the template
 		parent::display($tpl);
@@ -50,7 +50,22 @@ class MUEViewUsersubs extends JViewLegacy
 		JToolBarHelper::editList('usersub.edit', 'JTOOLBAR_EDIT');
 		JToolBarHelper::deleteList('', 'usersubs.delete', 'JTOOLBAR_DELETE');
 		JToolBarHelper::divider();
-		
+		$tbar = JToolBar::getInstance('toolbar');
+		$tbar->appendButton('Link','export','Export CSV','index.php?option=com_mue&view=usersubs&format=csv');
+
+		JHtmlSidebar::setAction('index.php?option=com_mue&view=usersubs');
+
+		/*JHtmlSidebar::addFilter(JText::_("- Subscription Type -"),'filter_subtype',JHtml::_('select.options', [
+			['value'=>"paypal",'text'=>"PayPal"],
+			['value'=>"redeem",'text'=>"Reddemed Code"],
+			['value'=>"admin",'text'=>"Admin Add"],
+			['value'=>"google",'text'=>"Google Checkout"],
+			['value'=>"migrate",'text'=>"Migrated"],
+			['value'=>"check",'text'=>"Check"],
+			['value'=>"trial",'text'=>"Trial/Free"]
+		], 'value', 'text', $state->get('filter.subtype'), true));*/
+
+
 	}
 	/**
 	 * Method to set up the document properties

@@ -8,6 +8,120 @@
 			hint="JSEARCH_FILTER"
 			class="js-stools-search-string"
 		/>
+		<field
+				name="subtype"
+				type="list"
+				class="inputbox"
+				default=""
+				label="COM_MUE_USERSUB_FIELD_TYPE_LABEL"
+				description="COM_MUE_USERSUB_FIELD_TYPE_DESC"
+				onchange="this.form.submit();"
+				required="false">
+			<option value="">- Select Sub Type -</option>
+			<option value="paypal">PayPal</option>
+			<option value="redeem">Reddemed Code</option>
+			<option value="admin">Admin Add</option>
+			<option value="google">Google Checkout</option>
+			<option value="migrate">Migrated</option>
+			<option value="check">Check</option>
+			<option value="trial">Trial/Free</option>
+		</field>
+		<field
+				name="startmonth"
+				type="list"
+				class="inputbox"
+				default=""
+				label="Start Month"
+				description="Start Month"
+				onchange="this.form.submit();"
+				required="false">
+			<option value="">- Select Start Month -</option>
+			<option value="1">January</option>
+			<option value="2">February</option>
+			<option value="3">March</option>
+			<option value="4">April</option>
+			<option value="5">May</option>
+			<option value="6">June</option>
+			<option value="7">July</option>
+			<option value="8">August</option>
+			<option value="9">September</option>
+			<option value="10">October</option>
+			<option value="11">November</option>
+			<option value="12">December</option>
+		</field>
+		<field
+				name="startyear"
+				type="list"
+				class="inputbox"
+				default=""
+				label="Start Year"
+				description="Start Year"
+				onchange="this.form.submit();"
+				required="false">
+			<option value="">- Select Start Year -</option>
+			<option value="2012">2012</option>
+			<option value="2013">2013</option>
+			<option value="2014">2014</option>
+			<option value="2015">2015</option>
+			<option value="2016">2016</option>
+			<option value="2017">2017</option>
+			<option value="2018">2018</option>
+			<option value="2019">2019</option>
+			<option value="2020">2020</option>
+			<option value="2021">2021</option>
+			<option value="2022">2022</option>
+			<option value="2023">2023</option>
+			<option value="2024">2024</option>
+			<option value="2025">2025</option>
+		</field>
+		<field
+				name="endmonth"
+				type="list"
+				class="inputbox"
+				default=""
+				label="End Month"
+				description="End Month"
+				onchange="this.form.submit();"
+				required="false">
+			<option value="">- Select End Month -</option>
+			<option value="1">January</option>
+			<option value="2">February</option>
+			<option value="3">March</option>
+			<option value="4">April</option>
+			<option value="5">May</option>
+			<option value="6">June</option>
+			<option value="7">July</option>
+			<option value="8">August</option>
+			<option value="9">September</option>
+			<option value="10">October</option>
+			<option value="11">November</option>
+			<option value="12">December</option>
+		</field>
+		<field
+				name="endyear"
+				type="list"
+				class="inputbox"
+				default=""
+				label="End Year"
+				description="End Year"
+				onchange="this.form.submit();"
+				required="false">
+			<option value="">- Select End Year -</option>
+			<option value="2012">2012</option>
+			<option value="2013">2013</option>
+			<option value="2014">2014</option>
+			<option value="2015">2015</option>
+			<option value="2016">2016</option>
+			<option value="2017">2017</option>
+			<option value="2018">2018</option>
+			<option value="2019">2019</option>
+			<option value="2020">2020</option>
+			<option value="2021">2021</option>
+			<option value="2022">2022</option>
+			<option value="2023">2023</option>
+			<option value="2024">2024</option>
+			<option value="2025">2025</option>
+		</field>
 
     </fields>
 	<fields name="list">

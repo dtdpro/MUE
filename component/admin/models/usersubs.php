@@ -12,7 +12,11 @@ class MUEModelUsersubs extends JModelList
 	
 	public function __construct($config = array())
 	{
-		
+		if (empty($config['filter_fields'])) {
+			$config['filter_fields'] = array(
+				'subtype','startmonth','startyear','endmonth','endyear'
+			);
+		}
 		parent::__construct($config);
 	}
 	
@@ -21,17 +25,23 @@ class MUEModelUsersubs extends JModelList
 		// Initialise variables.
 		$app = JFactory::getApplication('administrator');
 
-		// Load the filter state.
-		/*$cId = $this->getUserStateFromRequest($this->context.'.filter.plan', 'filter_plan', '');
-		$this->setState('filter.plan', $cId);
-		$ps = $this->getUserStateFromRequest($this->context.'.filter.paystatus', 'filter_paystatus', '');
-		$this->setState('filter.paystatus', $ps);
-		$sd = $this->getUserStateFromRequest($this->context.'.filter.start', 'filter_start', date("Y-m-d",strtotime("-1 years")));
-		$this->setState('filter.start', $sd);
-		$ed = $this->getUserStateFromRequest($this->context.'.filter.end', 'filter_end', date("Y-m-d"));
-		$this->setState('filter.end', $ed);*/
 		$search = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
+
+		$subtype = $this->getUserStateFromRequest($this->context.'.filter.subtype', 'filter_subtype');
+		$this->setState('filter.subtype', $subtype);
+
+		$startyear = $this->getUserStateFromRequest($this->context.'.filter.startmonth', 'filter_startmonth');
+		$this->setState('filter.startmonth', $startyear);
+
+		$startyear = $this->getUserStateFromRequest($this->context.'.filter.startyear', 'filter_startyear');
+		$this->setState('filter.startyear', $startyear);
+
+		$endmonth = $this->getUserStateFromRequest($this->context.'.filter.endmonth', 'filter_endmonth');
+		$this->setState('filter.endmonth', $endmonth);
+
+		$endyear = $this->getUserStateFromRequest($this->context.'.filter.endyear', 'filter_endyear');
+		$this->setState('filter.endyear', $endyear);
 
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_mue');
@@ -61,28 +71,41 @@ class MUEModelUsersubs extends JModelList
 		$query->select('p.*');
 		$query->join('LEFT', '#__mue_subs AS p ON p.sub_id = s.usrsub_sub');
 		
-		/*// Set Date range
-		$startdate = $this->getState('filter.start');
-		$enddate = $this->getState('filter.end');
-		$query->where('date(s.usrsub_time) BETWEEN "'.$startdate.'" AND "'.$enddate.'"');
-		
-		// Filter by plan.
-		$ps = $this->getState('filter.paystatus');
-		if ($ps) {
-			$query->where('s.usrsub_status = "'.$ps.'"');
-		}
-		
-		// Filter by pay status.
-		$cId = $this->getState('filter.plan');
-		if (is_numeric($cId)) {
-			$query->where('s.usrsub_sub = '.(int) $cId);
-		}*/
-		
 		// Filter by search in title
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
-			$search = $db->Quote('%'.$db->escape($search, true).'%');
-			$query->where('(u.username LIKE '.$search.' OR u.name LIKE '.$search.' OR u.email LIKE '.$search.')');
+			$search = $db->Quote( '%' . $db->escape( $search, true ) . '%' );
+			$query->where( '(u.username LIKE ' . $search . ' OR u.name LIKE ' . $search . ' OR u.email LIKE ' . $search . ')' );
+		}
+
+		// Filter by sub type
+		$stype = $this->getState('filter.subtype');
+		if ($stype) {
+			$query->where('s.usrsub_type = "'.$db->escape($stype).'"');
+		}
+
+		// Filter by start year
+		$startyear = $this->getState('filter.startyear');
+		if ($startyear) {
+			$query->where("YEAR(s.usrsub_start) = ".$db->escape($startyear));
+		}
+
+		// Filter by start month
+		$startmonth = $this->getState('filter.startmonth');
+		if ($startmonth) {
+			$query->where("MONTH(s.usrsub_start) = ".$db->escape($startmonth));
+		}
+
+		// Filter by end year
+		$endyear = $this->getState('filter.endyear');
+		if ($endyear) {
+			$query->where("YEAR(s.usrsub_end) = ".$db->escape($endyear));
+		}
+
+		// Filter by end month
+		$endmonth = $this->getState('filter.endmonth');
+		if ($endmonth) {
+			$query->where("MONTH(s.usrsub_end) = ".$db->escape($endmonth));
 		}
 		
 		$orderCol	= $this->state->get('list.ordering');
@@ -91,6 +114,16 @@ class MUEModelUsersubs extends JModelList
 		$query->order($db->escape($orderCol.' '.$orderDirn));
 				
 		return $query;
+	}
+
+	public function getItemsCSV() {
+		$cfg = MUEHelper::getConfig();
+
+		$query=$this->getListQuery();
+		$db = JFactory::getDBO();
+		$db->setQuery($query);
+		$items = $db->loadObjectList();
+		return $items;
 	}
 	
 	public function getPlans() {

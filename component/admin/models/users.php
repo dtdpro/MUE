@@ -290,7 +290,7 @@ class MUEModelUsers extends JModelList
 	}
 	
 	public function syncSubs() {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$items = $this->getUsers();
 		$items = $this->getSubStatus($items);
 		foreach ($items as $i) {
@@ -329,7 +329,7 @@ class MUEModelUsers extends JModelList
 		$uf=explode(",",$cfg->userdir_userinfo);
 		$sf=explode(",",$cfg->userdir_searchinfo);
 
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 
 		$db->truncateTable("#__mue_userdir");
 
@@ -407,7 +407,7 @@ class MUEModelUsers extends JModelList
 	}
 	
 	protected function getUsers() {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);
 		$query->select('id')->from('#__users');
 		$db->setQuery($query);
@@ -468,7 +468,7 @@ class MUEModelUsers extends JModelList
 	}
 	
 	public function getFields() {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$q2 = $db->getQuery(true);
 		$q2->select('*');
 		$q2->from('#__mue_ufields');
@@ -482,7 +482,7 @@ class MUEModelUsers extends JModelList
 	}
 	
 	public function getUserData($fdata) {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		foreach ($fdata as $f) {
 			if (!$f->uf_cms) { 
 				$sname = $f->uf_sname;
@@ -506,7 +506,7 @@ class MUEModelUsers extends JModelList
 	}
 	
 	public function getAnswers($fdata) {
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$fids = Array();
 		foreach ($fdata as $f) {
 			if (!$f->uf_cms) $fids[]=$f->uf_id;
@@ -526,9 +526,9 @@ class MUEModelUsers extends JModelList
 	}
 
 	public function getUserInfo($userid) {
-		$user =& JFactory::getUser($userid);
+		$user = JFactory::getUser($userid);
 		if (!$user->id) return false;
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT ug.userg_group AS userGroupID, ug.userg_update AS lastUpdated, g.ug_name AS userGroupName FROM #__mue_usergroup as ug ';
 		$query.= 'RIGHT JOIN #__mue_ugroups AS g ON ug.userg_group = g.ug_id ';
 		$query.= 'WHERE ug.userg_user="'.$userid.'"';
