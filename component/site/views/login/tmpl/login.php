@@ -35,47 +35,49 @@ if (($this->params->get('logindescription_show') == 1 && str_replace(' ', '', $t
 
 //Login Form
 echo '<div id="mue-login-login">';
-echo '<form action="" method="post" name="loginform" id="loginform" target="_top">';
-echo '<div class="mue-login-login-row">';
-echo '<div class="mue-login-login-label"></div>';
-echo '<div class="mue-login-login-hdr">';
+echo '<form action="" method="post" name="loginform" id="loginform" target="_top" class="uk-form uk-form-horizontal">';
+echo '<div class="mue-login-login-row uk-form-row uk-margin-top">';
+echo '<div class="mue-login-login-label uk-form-label uk-text-bold"></div>';
+echo '<div class="mue-login-login-hdr uk-form-controls">';
 echo JText::_('COM_MUE_LOGIN_LOGIN_INSTRUCTIONS');
 echo '</div>';
 echo '</div>';
 
 //Username
-echo '<div class="mue-login-login-row">';
-echo '<div class="mue-login-login-label">'.JText::_('COM_MUE_LOGIN_LOGIN_USERNAME_LABEL').'</div>';
-echo '<div class="mue-login-login-value">';
-echo '<input name="login_user" id="login_user" type="text" class="uf_login" value=""';
+echo '<div class="mue-login-login-row uk-form-row uk-margin-top">';
+echo '<div class="mue-login-login-label uk-form-label uk-text-bold">'.JText::_('COM_MUE_LOGIN_LOGIN_USERNAME_LABEL').'</div>';
+echo '<div class="mue-login-login-value uk-form-controls">';
+echo '<input name="login_user" id="login_user" type="text" class="uf_login uk-width-1-1 uk-input" value=""';
 echo ' data-rule-required="true" data-msg-required="Required">';
 echo '</div>';
 echo '<div class="mue-login-login-error"></div>';
 echo '</div>';
 
 //Password
-echo '<div class="mue-login-login-row">';
-echo '<div class="mue-login-login-label">'.JText::_('COM_MUE_LOGIN_LOGIN_PASSWORD_LABEL').'</div>';
-echo '<div class="mue-login-login-value">';
-echo '<input name="login_pass" id="login_pass" type="password" class="uf_login" value=""';
+echo '<div class="mue-login-login-row uk-form-row uk-margin-top">';
+echo '<div class="mue-login-login-label uk-form-label uk-text-bold">'.JText::_('COM_MUE_LOGIN_LOGIN_PASSWORD_LABEL').'</div>';
+echo '<div class="mue-login-login-value uk-form-controls">';
+echo '<input name="login_pass" id="login_pass" type="password" class="uf_login uk-width-1-1 uk-input" value=""';
 echo ' data-rule-required="true" data-msg-required="Required">';
 echo '</div>';
 echo '<div class="mue-login-login-error"></div>';
 echo '</div>';
 
 //Submit Button
-echo '<div class="mue-login-login-row">';
-echo '<div class="mue-login-login-label"></div>';
-echo '<div class="mue-login-login-submit">';
+echo '<div class="mue-login-login-row uk-form-row uk-margin-top">';
+echo '<div class="mue-login-login-label uk-form-label uk-text-bold"></div>';
+echo '<div class="mue-login-login-submit uk-form-controls">';
 echo '<input type="submit" value="'.JText::_('COM_MUE_LOGIN_LOGIN_BUTTON_LOGIN').'" class="button uk-button" border="0" name="submit">';
 echo '</div>';
 echo '</div>';
 
 //Lost Password/Register
-echo '<div class="mue-login-login-row">';
-echo '<div class="mue-login-login-label"></div>';
-echo '<div class="mue-login-login-footer">';
-echo '<a href="'.JRoute::_("index.php?option=com_mue&view=lost").'">'.JText::_('COM_MUE_LOGIN_LOGIN_LINK_LOSTINFO').'</a><br />';
+echo '<div class="mue-login-login-row uk-form-row uk-margin-top">';
+echo '<div class="mue-login-login-label uk-form-label uk-text-bold"></div>';
+echo '<div class="mue-login-login-footer uk-form-controls">';
+
+echo '<a href="'.JRoute::_('index.php?option=com_users&view=reset').'">'.JText::_('COM_MUE_LOGIN_RESET').'</a><br />';
+echo '<a href="'.JRoute::_('index.php?option=com_users&view=remind').'">'.JText::_('COM_MUE_LOGIN_REMIND').'</a><br />';
 $usersConfig = JComponentHelper::getParams('com_users');
 if ($usersConfig->get('allowUserRegistration')) {
 	echo '<a href="'.JRoute::_("index.php?option=com_mue&view=userreg&return=".base64_encode($this->redirurl)).'">'.JText::_('COM_MUE_LOGIN_LOGIN_LINK_REGISTER').'</a>';

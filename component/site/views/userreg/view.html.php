@@ -32,6 +32,12 @@ class MUEViewUserreg extends JViewLegacy
 			case "reguser": 
 				$this->addUser();
 				break;
+			case "useractivate":
+				$this->activateUser();
+				break;
+			case "adminactivate":
+				$this->adminActivateUser();
+				break;
 		}
 		parent::display($tpl);
 	}
@@ -86,18 +92,58 @@ class MUEViewUserreg extends JViewLegacy
 		$muecfg = MUEHelper::getConfig();
 		$data = JRequest::getVar('jform', array(), 'post', 'array');
 		$groupid = $data['userGroupID'];
-		if (!$model->save()) {
+		if (!$status = $model->save()) {
 			$app->setUserState('mue.userreg.groupid',$groupid); 
 			$app->redirect(JRoute::_('index.php?option=com_mue&view=userreg&layout=regform&retry=1&groupid='.$groupid),$model->getError(),'error');
 		} else {
-			$redir = $this->return;
-			if (!$redir) $redir=JRoute::_('index.php?option=com_mue&view=user&layout=profile');
-			if ($muecfg->subscribe) {
-				$redir=JRoute::_('index.php?option=com_mue&view=subscribe');
-				$app->setUserState('mue.userreg.return',$this->return);
+			if ($status == 'userlink') {
+				$this->setLayout('complete');
+				$this->completeMessage = JText::_('COM_MUE_REGISTRATION_COMPLETE_ACTIVATE');
+			} else if ($status == 'adminlink') {
+				$this->setLayout('complete');
+				$this->completeMessage = JText::_('COM_MUE_REGISTRATION_COMPLETE_VERIFY');
+			} else {
+				$redir = $this->return;
+				if ( ! $redir ) {
+					$redir = JRoute::_( 'index.php?option=com_mue&view=user&layout=profile' );
+				}
+				if ( $muecfg->subscribe ) {
+					$redir = JRoute::_( 'index.php?option=com_mue&view=subscribe' );
+					$app->setUserState( 'mue.userreg.return', $this->return );
+				}
+				$app->redirect($redir);
 			}
-			$app->redirect($redir);
 		}		
+	}
+
+	protected function activateUser() {
+		$model = $this->getModel();
+		$token = JRequest::getVar('token');
+		$app=Jfactory::getApplication();
+		if (!$status = $model->activateUser($token)) {
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=userreg&layout=complete', false),$this->getError(),'error');
+		} else {
+			if ($status == 'active') {
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=login&layout=login', false),JText::_('COM_MUE_REGISTRATION_ACTIVATE_SUCCESS'));
+			} else if ($status == 'adminactivate') {
+				$this->setLayout('complete');
+				$this->completeMessage = JText::_('COM_MUE_REGISTRATION_VERIFY_SUCCESS');
+			}
+		}
+
+	}
+
+	protected function adminActivateUser() {
+		$model = $this->getModel();
+		$token = JRequest::getVar('token');
+		$app=Jfactory::getApplication();
+		if (!$status = $model->adminActivateUser($token)) {
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=userreg&layout=complete', false),$this->getError(),'error');
+		} else {
+			$this->setLayout('complete');
+			$this->completeMessage = JText::_('COM_MUE_REGISTRATION_ADMINACTIVATE_SUCCESS');
+		}
+
 	}
 }
 ?>

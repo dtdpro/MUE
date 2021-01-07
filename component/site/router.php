@@ -49,7 +49,6 @@ function MUEBuildRoute(&$query)
 							if (empty( $regform )) $regform = $items[ $i ]->id;
 							break;
 						case "default":
-						default:
 							if (empty( $userreg )) $userreg = $items[ $i ]->id;
 							break;
 					}

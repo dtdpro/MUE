@@ -66,7 +66,6 @@
 			<option value="phone">Phone</option>
 			<option value="password">Password</option>
 			<option value="birthday">Birthday</option>
-			<option value="captcha">Captcha</option>
 			<option value="mailchimp">MailChimp List</option>
 			<option value="cmlist">Campaign Monitor List</option>
             <option value="brlist">Bronto Mail List</option>

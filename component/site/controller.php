@@ -54,7 +54,8 @@ class MUEController extends JControllerLegacy {
 						$this->setRedirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile', false));
 						return;
 					}
-
+					$this->setRedirect(JRoute::_('index.php?option=com_users&view=reset', false));
+					return;
 					// The user is a guest, load the lost password model and show the lost password page.
 					$model = $this->getModel($vName);
 					break;

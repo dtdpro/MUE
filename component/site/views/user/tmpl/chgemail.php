@@ -30,7 +30,7 @@ echo '<form action="" method="post" name="regform" id="regform" class="uk-form u
 if ($ri==1) $ri=0;
 else $ri=1;
 
-echo '<div class="uk-form-row mue-user-edit-row mue-row'.($ri % 2).'">';
+echo '<div class="uk-form-row uk-margin-top mue-user-edit-row mue-row'.($ri % 2).'">';
 echo '<div class="uk-form-label mue-user-edit-label uk-text-bold">Current Email</div>';
 echo '<div class="uk-form-controls uk-form-controls-text mue-user-edit-value">';
 echo $user->email;
@@ -40,7 +40,7 @@ echo '</div>';
 echo '</div>';
 if ($ri==1) $ri=0;
 else $ri=1;
-echo '<div class="uk-form-row mue-user-edit-row mue-row'.($ri % 2).'">';
+echo '<div class="uk-form-row uk-margin-top mue-user-edit-row mue-row'.($ri % 2).'">';
 echo '<div class="uk-form-label mue-user-edit-label uk-text-bold">New Email</div>';
 echo '<div class="uk-form-controls mue-user-edit-value">';
 
@@ -61,7 +61,7 @@ echo '</div>';
 echo '</div>';
 if ($ri==1) $ri=0;
 else $ri=1;
-echo '<div class="uk-form-row mue-user-edit-row mue-row'.($ri % 2).'">';
+echo '<div class="uk-form-row uk-margin-top mue-user-edit-row mue-row'.($ri % 2).'">';
 echo '<div class="uk-form-label mue-user-edit-label uk-text-bold">Confirm Email</div>';
 echo '<div class="uk-form-controls mue-user-edit-value">';
 
@@ -79,7 +79,7 @@ echo '<div class="mue-user-edit-error">';
 echo '</div>';
 echo '</div>';
 
-echo '<div class="uk-form-row mue-user-edit-row">';
+echo '<div class="uk-form-row uk-margin-top uk-margin-bottom mue-user-edit-row">';
 echo '<div class="uk-form-label mue-user-edit-label">';
 echo '</div>';
 echo '<div class="uk-form-controls mue-user-edit-submit">';

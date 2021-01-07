@@ -59,18 +59,26 @@ $ri=1;
 
 // Display Fields
 foreach($this->userfields as $f) {
-	echo '<div class="uk-form-row mue-user-reg-row mue-row'.($ri % 2).'">';
+	$sname = $f->uf_sname;
+
+    // Start Row
+	echo '<div class="uk-form-row uk-margin-top mue-user-reg-row mue-row'.($ri % 2).'">';
+
+	// Field Label
 	echo '<div class="uk-form-label mue-user-reg-label uk-text-bold">';
 	if ($f->uf_req) echo "*";
-	$sname = $f->uf_sname;
-	//field title
-	if ($f->uf_type != "cbox" && $f->uf_type != "message" && $f->uf_type != "mailchimp" && $f->uf_type != "cmlist" && $f->uf_type != "brlist") echo $f->uf_name; 
+	if ($f->uf_type != "cbox" && $f->uf_type != "message" && $f->uf_type != "mailchimp" && $f->uf_type != "cmlist" && $f->uf_type != "brlist") {
+	    echo $f->uf_name;
+	}
 	echo '</div>';
+
+	// Start Field
 	echo '<div class="uk-form-controls mue-user-reg-value';
 	if ($f->uf_type=="cbox" || $f->uf_type=="mailchimp" || $f->uf_type=="cmlist" || $f->uf_type=="brlist" || $f->uf_type == "message") {
 	    echo ' uk-form-controls-text';
 	}
 	echo '">';
+
 	if ($f->uf_type == "mcbox" || $f->uf_type == "mlist") {
 		if (!$f->uf_min && !$f->uf_max) echo '<em>(Select all that apply)</em><br />';
 		if ($f->uf_min && !$f->uf_max) echo '<em>(Select at least '.$f->uf_min.')</em><br />';
@@ -133,33 +141,22 @@ foreach($this->userfields as $f) {
 	if ($f->uf_type=="birthday") {
 		echo JHtml::_('muefields.birthday',$f,$f->value);
 	}
-	
 
-	//captcha
-	if ($f->uf_type=="captcha") {
-		echo '<div class=""><img id="captcha_img" src="'.JURI::base(true).'/components/com_mue/lib/securimage/securimage_show.php" alt="CAPTCHA Image" />';
-		echo '<input name="jform['.$sname.']" id="jform_'.$sname.'" value="" class="form-control uf_field input-sm" type="text"';
-		if ($f->uf_req) { 
-			echo ' data-rule-required="true"';
-			echo ' data-msg-required="This Field is required"';
-		}
-		echo '>';
-		echo '<span class="uf_note">';
-		echo '<a href="#" onclick="document.getElementById(\'captcha_img\').src = \''.JURI::base(true).'/components/com_mue/lib/securimage/securimage_show.php?\' + Math.random(); return false">Reload Image</a>';
-		echo '</span></div>';
-	}
-	
 	if ($f->uf_note && $f->uf_type!="captcha") echo '<span class="uf_note">'.$f->uf_note.'</span>';
 
+	// End Field
 	echo '</div>';
+
+	// End Row
 	echo '</div>';
 
 	if ($ri==1) $ri=0;
 	else $ri=1;
 }
 
+// ReCAPTCHA
 if ($cfg->rc_config == "visible" ) {
-	echo '<div class="uk-form-row mue-user-reg-row">';
+	echo '<div class="uk-form-row mue-user-reg-row uk-margin-top">';
 	echo '<div class="uk-form-label mue-user-reg-label">';
 	echo '</div>';
 	echo '<div class="uk-form-controls mue-user-reg-value">';
@@ -169,7 +166,7 @@ if ($cfg->rc_config == "visible" ) {
 }
 
 // Submit Button
-echo '<div class="uk-form-row mue-user-reg-row">';
+echo '<div class="uk-form-row mue-user-reg-row uk-margin-top uk-margin-bottom">';
 echo '<div class="uk-form-label mue-user-reg-label">';
 echo '</div>';
 echo '<div class="uk-form-controls mue-user-reg-submit">';

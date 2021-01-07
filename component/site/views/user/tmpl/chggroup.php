@@ -11,7 +11,7 @@ echo '<div id="mue-user-edit">';
 echo '<form action="" method="post" name="regform" id="regform" class="uk-form uk-form-horizontal">';
 if ($ri==1) $ri=0;
 else $ri=1;
-echo '<div class="uk-form-row mue-user-edit-row mue-row'.($ri % 2).'">';
+echo '<div class="uk-form-row uk-margin-top mue-user-edit-row mue-row'.($ri % 2).'">';
 echo '<div class="uk-form-label mue-user-edit-label uk-text-bold">'.JText::_('COM_MUE_USER_CHGGROUP_LABEL_USER_GROUP').'</div>';
 echo '<div class="uk-form-controls mue-user-edit-value">';
 
@@ -28,7 +28,7 @@ echo '</div>';
 echo '<div class="mue-user-edit-error">';
 echo '</div>';
 echo '</div>';
-echo '<div class="uk-form-row mue-user-edit-row">';
+echo '<div class="uk-form-row uk-margin-top uk-margin-bottom mue-user-edit-row">';
 echo '<div class="uk-form-label mue-user-edit-label">';
 echo '</div>';
 echo '<div class="uk-form-controls mue-user-edit-submit">';

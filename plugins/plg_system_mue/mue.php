@@ -40,27 +40,29 @@ class plgSystemMUE extends JPlugin
 				case 'registration':
 					$view =	'userreg';
 					break;
-				case 'reset':
+				/*case 'reset':
 				case 'remind':
 					$view = 'lost';
-					break;
+					break;*/
 				case 'logout':
 					$view = 'login';
 					$layout = 'logout';
 					break;
 				case 'login':
-				default:
+				//default:
 					$view = 'login';
 					$layout = 'login';
 					$return = JRequest::getVar('return', '');
 					break;
 			}
-		
-			$url = 'index.php?option=com_mue&view='.$view;
-			$url .= ( $layout ? '&layout=' . $layout : null );
-			$url .= ( $return ? '&return=' . $return : null );
-		
-			$app->redirect(JRoute::_( $url ));
+
+			if ($view) {
+				$url = 'index.php?option=com_mue&view=' . $view;
+				$url .= ( $layout ? '&layout=' . $layout : null );
+				$url .= ( $return ? '&return=' . $return : null );
+
+				$app->redirect( JRoute::_( $url ) );
+			}
 		}
 		
 		return;

@@ -106,6 +106,7 @@ class MUEModelUserreg extends JModelLegacy
 			$cmlists = array();
 			$brlists = array();
 			$flist = $this->getUserFields($data['userGroupID'],false);
+			$item = new stdClass();
 			foreach ($flist as $d) {
 				$fieldname = $d->uf_sname;
 				if ($d->uf_type == 'brlist') {
@@ -114,8 +115,6 @@ class MUEModelUserreg extends JModelLegacy
 					$mclists[]=$d;
 				} else if ($d->uf_type == 'cmlist') {
 					$cmlists[]=$d;
-				} else if ($d->uf_type == 'captcha') {
-					$capfield=$fieldname;
 				} else if ($d->uf_type=="mcbox" || $d->uf_type=="mlist") {
 					$item->$fieldname = implode(" ",$data[$fieldname]);
 				} else if ($d->uf_type=='cbox') {
@@ -131,8 +130,8 @@ class MUEModelUserreg extends JModelLegacy
 				}
 				if ($d->uf_type=="multi" || $d->uf_type=="dropdown") $optfs[]=$d->uf_sname;
 				if ($d->uf_type=="mcbox" || $d->uf_type=="mlist") $moptfs[]=$d->uf_sname;
-				if ($d->uf_type != 'captcha') $fids[]=$d->uf_id;
-				if ($d->uf_type != 'captcha' || $d->uf_type != 'password') $app->setUserState('mue.userreg.'.$fieldname, $item->$fieldname);
+				$fids[]=$d->uf_id;
+				if ($d->uf_type != 'password') $app->setUserState('mue.userreg.'.$fieldname, $item->$fieldname);
 			}
 
 			$ginfo=MUEHelper::getGroupInfo($data['userGroupID']);
@@ -165,17 +164,6 @@ class MUEModelUserreg extends JModelLegacy
 					return false;
 				}
 			}
-
-			if ($capfield) {
-				include_once 'components/com_mue/lib/securimage/securimage.php';
-				$securimage = new Securimage();
-				$securimage->session_name = $session->getName();
-				$securimage->case_sensitive  = false; 
-				if ($securimage->check($data[$capfield]) == false) {
-					$this->setError('Security Code Incorrect');
-					return false;
-				} 
-			}
 				
 			$odsql = "SELECT * FROM #__mue_ufields_opts";
 			$db->setQuery($odsql);
@@ -184,7 +172,14 @@ class MUEModelUserreg extends JModelLegacy
 			foreach ($optres as $o) {
 				$optionsdata[$o->opt_id]=$o->opt_text;
 			}
-			
+
+			// Get Joomla Config
+			$config = JFactory::getConfig();
+
+			//Get Joomla User Config Params
+			$userParams = JComponentHelper::getParams('com_users');
+			$useractivation = $userParams->get('useractivation');
+
 			//Create Joomla User
 			$user= new JUser;
 			$udata['name']=$item->fname." ".$item->lname;
@@ -192,8 +187,18 @@ class MUEModelUserreg extends JModelLegacy
 			$udata['username']=(strtolower($item->username)) ? strtolower($item->username) : strtolower($item->email);
 			$udata['password']=$item->password;
 			$udata['password2']=$item->cpassword;
-			$udata['block']=0;
+
+			// Check if the user needs to activate their account.
+			if (($useractivation == 1) || ($useractivation == 2))
+			{
+				$udata['activation'] = JApplicationHelper::getHash(JUserHelper::genRandomPassword());
+				$udata['block'] = 1;
+			} else {
+				$udata['block']=0;
+			}
+
 			$udata['groups'][]=2;
+
 			if (!$user->bind($udata)) {
 				$this->setError('Bind Error: '.$user->getError());
 				return false;
@@ -465,7 +470,7 @@ class MUEModelUserreg extends JModelLegacy
 			}
 			
 			//Setup Welcome email
-			$groupinfo = $this->getUserGroups($data['userGroupID']);
+			$groupinfo = $this->getUserGroups($data['userGroupID'])[0];
 			if ($groupinfo->ug_send_welcome_email) {
 				$emailtoaddress = $item->email;
 				$emailtoname = $item->fname . " " . $item->lname;
@@ -473,7 +478,7 @@ class MUEModelUserreg extends JModelLegacy
 				$emailfromname = $cfg->FROM_NAME;
 				$emailsubject = $cfg->WELCOME_SUBJECT;
 
-				$emailmsg = $groupinfo[0]->ug_welcome_email;
+				$emailmsg = $groupinfo->ug_welcome_email;
 				$emailmsg = str_replace( "{fullname}", $item->fname . " " . $item->lname, $emailmsg );
 				$emailmsg = str_replace( "{username}",
 					( strtolower( $item->username ) ) ? strtolower( $item->username ) : strtolower( $item->email ),
@@ -499,38 +504,59 @@ class MUEModelUserreg extends JModelLegacy
 						$this->setError("Error saving additional information");
 						return false;
 					}
-					//welcome email fields
-					$emailmsg = str_replace("{".$fieldname."}",$item->$fieldname,$emailmsg);
-					if ($d->uf_type!='captcha' || $d->uf_type!='password') $app->setUserState('mue.userreg.'.$fieldname, "");
+
+					if ($groupinfo->ug_send_welcome_email) {
+						//welcome email fields
+						$emailmsg = str_replace( "{" . $fieldname . "}", $item->$fieldname, $emailmsg );
+					}
+					if ($d->uf_type!='password') $app->setUserState('mue.userreg.'.$fieldname, "");
 				}
 			}
 
+			// Handle account activation/confirmation emails.
+			if ($useractivation == 2 || $useractivation == 1)
+			{
+				// Set the link to confirm the user email.
+				$actLink = JRoute::link( 'site', 'index.php?option=com_mue&view=activation&layout=useractivate&token=' . $udata['activation'], false, 0, true );
+				$emailmsg = str_replace( "{actlink}", $actLink, $emailmsg );
+			}
+
+			//Send Welcome Email
 			if ($groupinfo->ug_send_welcome_email) {
-				//Send Welcome Email
-				$mail = &JFactory::getMailer();
+				$mail = JFactory::getMailer();
 				$mail->IsHTML( true );
 				$mail->addRecipient( $emailtoaddress, $emailtoname );
 				$mail->setSender( $emailfromaddress, $emailfromname );
 				$mail->setSubject( $emailsubject );
 				$mail->setBody( $emailmsg );
 				$sent = $mail->Send();
+				/*if ($sent !== true) {
+					$this->setError($sent->getError());
+					return false;
+				}*/
 			}
-			
-			//Login User
-			$options = array();
-			$options['remember'] = true;
-			$error = $app->login($credentials, $options);
-			
+
+			//Login User if activation not required
+			if (($useractivation == 0)) {
+				$options = array();
+				$options['remember'] = true;
+				$error = $app->login( $credentials, $options );
+			}
 			
 		}
 		catch (Exception $e)
 		{
 			$this->setError($e->getMessage());
-			
 			return false;
 		}
-		
-		return true;
+
+		if ($useractivation == 1) {
+			return 'userlink';
+		} else if ($useractivation == 2) {
+			return 'adminlink';
+		} else {
+			return 'activated';
+		}
 	}
 
 	private function curl_file_get_contents($URL){

@@ -87,10 +87,9 @@ JHtml::_('behavior.keepalive');
 		</div>
 		
 		<ul class="blank">
-			<li>
-				<a href="<?php echo JRoute::_('index.php?option=com_mue&view=lost'); ?>"><?php echo JText::_('MOD_MUELOGIN_FORGOT_YOUR_INFO'); ?></a>
-			</li>
-			<?php
+            <?php
+            echo '<li><a href="'.JRoute::_('index.php?option=com_users&view=reset').'">'.JText::_('MOD_MUELOGIN_FORGOT_YOUR_PASSWORD').'</a></li>';
+            echo '<li><a href="'.JRoute::_('index.php?option=com_users&view=remind').'">'.JText::_('MOD_MUELOGIN_FORGOT_YOUR_USERNAME').'</a></li>';
 			$usersConfig = JComponentHelper::getParams('com_users');
 			if ($usersConfig->get('allowUserRegistration')) : ?>
 			<li>

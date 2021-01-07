@@ -30,35 +30,37 @@ if ($cfg->subscribe){
 }
 echo '</p>';
 echo '<div id="mue-user-info" class="uk-form uk-form-horizontal">';
-if (!$this->one_group) echo '<div class="uk-form-row mue-user-info-row mue-rowh"><div class="uk-form-label mue-user-info-label uk-text-bold">'.JText::_('COM_MUE_USER_PROFILE_LABEL_USER_GROUP').'</div><div class="uk-form-controls uk-form-controls-text mue-user-info-hdr">'.$this->userinfo->userGroupName.'</div></div>';
+if (!$this->one_group) echo '<div class="uk-form-row uk-margin-top mue-user-info-row mue-rowh"><div class="uk-form-label mue-user-info-label uk-text-bold">'.JText::_('COM_MUE_USER_PROFILE_LABEL_USER_GROUP').'</div><div class="uk-form-controls uk-form-controls-text mue-user-info-hdr">'.$this->userinfo->userGroupName.'</div></div>';
 if ($i==1) $i=0; else $i=1;
 if ($cfg->subscribe){
 	if ($numsubs) {
 		if (!$sub) {
-			echo '<div class="uk-form-row mue-user-info-row mue-row'.($i % 2).'"><div class="uk-form-label mue-user-info-label uk-text-bold">'.JText::_('COM_MUE_USER_PROFILE_LABEL_SUB_STATUS').'</div><div class="uk-form-controls uk-form-controls-text mue-user-info-value">Expired</div></div>';
+			echo '<div class="uk-form-row uk-margin-top mue-user-info-row mue-row'.($i % 2).'"><div class="uk-form-label mue-user-info-label uk-text-bold">'.JText::_('COM_MUE_USER_PROFILE_LABEL_SUB_STATUS').'</div><div class="uk-form-controls uk-form-controls-text mue-user-info-value">Expired</div></div>';
 		} else {
-			echo '<div class="uk-form-row mue-user-info-row mue-row'.($i % 2).'"><div class="uk-form-label mue-user-info-label uk-text-bold">'.JText::_('COM_MUE_USER_PROFILE_LABEL_SUB_STATUS').'</div><div class="uk-form-controls uk-form-controls-text mue-user-info-value">Active '.$sub->daysLeft. ' Day(s) Left';
+			echo '<div class="uk-form-row uk-margin-top mue-user-info-row mue-row'.($i % 2).'"><div class="uk-form-label mue-user-info-label uk-text-bold">'.JText::_('COM_MUE_USER_PROFILE_LABEL_SUB_STATUS').'</div><div class="uk-form-controls uk-form-controls-text mue-user-info-value">Active '.$sub->daysLeft. ' Day(s) Left';
 			echo '</div></div>';
 		}
 	} else {
-		echo '<div class="uk-form-row mue-user-info-row mue-row'.($i % 2).'"><div class="uk-form-label mue-user-info-label uk-text-bold">'.JText::_('COM_MUE_USER_PROFILE_LABEL_SUB_STATUS').'</div><div class="uk-form-controls uk-form-controls-text mue-user-info-value">None</div></div>';
+		echo '<div class="uk-form-row uk-margin-top mue-user-info-row mue-row'.($i % 2).'"><div class="uk-form-label mue-user-info-label uk-text-bold">'.JText::_('COM_MUE_USER_PROFILE_LABEL_SUB_STATUS').'</div><div class="uk-form-controls uk-form-controls-text mue-user-info-value">None</div></div>';
 	}
 }
 if ($i==1) $i=0; else $i=1;
-echo '<div class="uk-form-row mue-user-info-row mue-row'.($i % 2).'"><div class="uk-form-label mue-user-info-label uk-text-bold">'.JText::_('COM_MUE_USER_PROFILE_LABEL_REGISTERED_ON').'</div><div class="uk-form-controls uk-form-controls-text mue-user-info-value">'.$this->userinfo->registerDate.'</div></div>';
+echo '<div class="uk-form-row uk-margin-top mue-user-info-row mue-row'.($i % 2).'"><div class="uk-form-label mue-user-info-label uk-text-bold">'.JText::_('COM_MUE_USER_PROFILE_LABEL_REGISTERED_ON').'</div><div class="uk-form-controls uk-form-controls-text mue-user-info-value">'.$this->userinfo->registerDate.'</div></div>';
 if ($i==1) $i=0; else $i=1;
-echo '<div class="uk-form-row mue-user-info-row mue-row'.($i % 2).'"><div class="uk-form-label mue-user-info-label uk-text-bold">'.JText::_('COM_MUE_USER_PROFILE_LABEL_LAST_UPDATED').'</div><div class="uk-form-controls uk-form-controls-text mue-user-info-value">'.$this->userinfo->lastUpdated.'</div></div>';
+echo '<div class="uk-form-row uk-margin-top mue-user-info-row mue-row'.($i % 2).'"><div class="uk-form-label mue-user-info-label uk-text-bold">'.JText::_('COM_MUE_USER_PROFILE_LABEL_LAST_UPDATED').'</div><div class="uk-form-controls uk-form-controls-text mue-user-info-value">'.$this->userinfo->lastUpdated.'</div></div>';
 foreach ($this->userfields as $f) {
 	if ($f->uf_type != "password" && $f->uf_profile) {
 		if ($i==1) $i=0; else $i=1;
 		$field=$f->uf_sname;
-		echo '<div class="uk-form-row mue-user-info-row mue-row'.($i % 2).'">';
+		echo '<div class="uk-form-row uk-margin-top mue-user-info-row mue-row'.($i % 2).'">';
 		if ($f->uf_type == "message") {
             echo '<div class="uk-form-label mue-user-info-label uk-text-bold"></div>';
 		    echo '<div class="uk-form-controls uk-form-controls-text mue-user-info-value"><div class="uk-alert">'.$f->uf_name.'</div>';
         } else {
 			echo '<div class="uk-form-label mue-user-info-label uk-text-bold">' . $f->uf_name . '</div>';
-			echo '<div class="uk-form-controls uk-form-controls-text mue-user-info-value">' . $this->userinfo->$field;
+			echo '<div class="uk-form-controls uk-form-controls-text mue-user-info-value">';
+			if ($this->userinfo->$field) echo $this->userinfo->$field;
+			else echo '&nbsp;';
 		}
 		echo '</div>';
 		echo '</div>';

@@ -22,7 +22,7 @@ echo '<div class="uk-form-row mue-user-reg-row mue-rowh">';
 echo '<div class="uk-form-label mue-user-reg-label uk-text-bold">'.JText::_('COM_MUE_USERREG_LABEL_USER_GROUP').'</div>';
 echo '<div class="uk-form-controls mue-user-reg-hdr">';
 echo '<form action="'.JRoute::_("index.php?option=com_mue&view=userreg").'" method="post" name="regpickform" id="regpickform">';
-echo '<select name="groupid" id="groupid" class="form-control required uf_field uf_select input-sm" onchange="submitGroup()">';
+echo '<select name="groupid" id="groupid" class="form-control required uf_field uf_select input-sm uk-width-1-1 uk-select" onchange="submitGroup()">';
 echo '<option value="">- Select Group -</option>';
 foreach ($this->groups as $g) {
 	echo '<option value="'.$g->ug_id.'">';
