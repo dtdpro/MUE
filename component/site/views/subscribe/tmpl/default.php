@@ -63,18 +63,11 @@ if (!$user->id) {
 	echo '</div>';
 	echo '<div class="mue-plan-pick-submit">';
 	echo '</div>';
-	echo '<div class="mue-plan-pick-submit" id="mue-processors">';
-
-	echo '<table width="100%" border="0" align="center">';
-	echo '<tr>';
-	$procount=1;
-    if ($config->show_continue) { $procount++; }
-	if ($procount == 2) $colwid="50%";
-	if ($procount == 1) $colwid="100%";
-
 
 	//Couponcode
-	echo '<td align="center" valign="middle" width="' . $colwid . '">';
+	echo '<table width="100%" border="0" align="center">';
+	echo '<tr>';
+	echo '<td align="center" valign="middle">';
 	echo '<div class="mue-subscribe-coupon">';
 	echo '<form action="" method="post" name="addcode" id="addcode" class="box style uk-fomr uk-form-stacked">';
 	echo '<div class="uk-form-row">';
@@ -83,23 +76,32 @@ if (!$user->id) {
 	echo ' data-rule-required="true" data-msg-required="Enter Code"';
 	echo ' data-rule-remote="'.JURI::base( true ).'/components/com_mue/helpers/chkcode.php"';
 	echo ' data-msg-remote="Invalid code"';
-	echo '></div></div>';
+	echo '>';
+	echo '</div></div>';
 	echo '<div class="uk-form-row"><div class="uk-form-controls uk-form-controls-text"><input type="submit" name="submit" value="Apply Code" class="button uk-button" /></div></div>';
 	echo '<input type="hidden" name="layout" value="addcode" />';
 	echo '</form>';
 	echo '</div>';
 	echo '</td>';
+	echo '</tr></table>';
 
+
+	echo '<div class="mue-plan-pick-submit" id="mue-processors">';
+
+	echo '<table width="100%" border="0" align="center">';
+	echo '<tr>';
 	if ($config->show_continue) {
 		if ($this->return) $continuelink = $this->return;
 		else $continuelink = JRoute::_('index.php?option=com_mue&view=user&layout=profile');
-		echo '<td align="center" valign="middle" width="' . $colwid . '">';
-		echo '<a href="'.$continuelink.'"  class="button uk-button">'.JText::_('COM_MUE_SUBSCRIBE_LABEL_CONTINUE').'</a>';
+		echo '<td align="center" valign="middle">';
+		echo '<a href="'.$continuelink.'"  class="button uk-button uk-button-default">'.JText::_('COM_MUE_SUBSCRIBE_LABEL_CONTINUE').'</a>';
 		echo '</td>';
 	}
 
 	echo '</tr></table>';
+
 	echo '</div>';
+
 	echo '<div style="clear:both;"></div>';
 	echo '</div>';
 

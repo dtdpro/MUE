@@ -34,8 +34,10 @@ class plgSystemMUE extends JPlugin
 		if ( JRequest::getVar('option') == 'com_users' && $this->params->get('usersredir', false)) {
 			switch ( JRequest::getVar('view') ) {
 				case 'profile':
-					$view='user';
-					$layout = 'profile';
+					if (JRequest::getVar('layout') != 'edit') {
+						$view='user';
+						$layout = 'profile';
+					}
 					break;
 				case 'registration':
 					$view =	'userreg';

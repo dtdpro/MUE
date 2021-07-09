@@ -55,7 +55,8 @@ if ($user->id && $canview) {
 		$query .= " ";
 	}
 	$query .= "HAVING distance < '".$radius."' ";
-	$query .= "ORDER BY distance LIMIT 0 , ".$limit;
+	$query .= "ORDER BY distance ";
+	if ($limit) $query .= "LIMIT 0 , ".$limit;
 	$db->setQuery($query); 
 	$result = $db->loadObjectList();
 	

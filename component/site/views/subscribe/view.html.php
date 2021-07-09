@@ -45,7 +45,8 @@ class MUEViewSubscribe extends JViewLegacy
 		}
 
 		if ($app->getUserState('mue.userreg.return')) $this->return = $app->getUserState('mue.userreg.return');
-		
+		else $this->return = false;
+
 		switch ($layout) {
 			case "ppsubpay":
 				$this->ppSubmitPayment();
@@ -112,10 +113,10 @@ class MUEViewSubscribe extends JViewLegacy
 			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 		}
 		include_once 'components/com_mue/helpers/paypal.php';
-		if ($sub->usrsub_coupon) {
+		/*if ($sub->usrsub_coupon && $app->getUserState('com_mue.discountcode')) {
 			$app->setUserState('com_mue.discountcode',"");
 			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id),'You may only use one active coupon at a time.');
-		}
+		}*/
 		$paypal = new PayPalAPI($muecfg->paypal_mode,$muecfg->paypal_username,$muecfg->paypal_password,$muecfg->paypal_signature);
 		if (!$paypal->submitPayment($this->pinfo,$end)) {
 			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id),$paypal->error,'error');
@@ -219,10 +220,10 @@ class MUEViewSubscribe extends JViewLegacy
 	function addCode() {
 		$sub = MUEHelper::getActiveSub();
 		$app=Jfactory::getApplication();
-		if ($sub->usrsub_coupon) {
+		/*if ($sub->usrsub_coupon) {
 			$app->setUserState('com_mue.discountcode',"");
 			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id),'You may only use one active coupon at a time.');
-		}
+		}*/
 		$this->discountcode = JRequest::getVar( 'discountcode' );
 		$app->setUserState('com_mue.discountcode',$this->discountcode);
 		$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));

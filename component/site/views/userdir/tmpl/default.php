@@ -164,9 +164,10 @@ echo '<div class="uk-form-label mue-user-dir-label"># of Results</div>';
 echo '<div class="uk-form-controls mue-user-dir-value">';
 echo '<select id="limit" name="limit" class="uk-width-1-1 form-control uf_field input-sm">';
 echo '<option value="10">10</option>';
-echo '<option value="20" selected>20</option>';
+echo '<option value="20">20</option>';
 echo '<option value="50">50</option>';
 echo '<option value="100">100</option>';
+echo '<option value="0" selected>All</option>';
 echo '</select>';
 echo '</div></div>';
 //Search fields

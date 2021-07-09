@@ -110,7 +110,7 @@
 		<field name="paybycheck_content" type="textarea" label="COM_MUE_CONFIG_FIELD_PAYBYCHECK_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_PAYBYCHECK_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
 	</fieldset>
 	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
-		<field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" class="inputbox" validate="rules" filter="rules" component="com_continued" section="component" />
+		<field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" class="inputbox" validate="rules" filter="rules" component="com_mue" section="component" />
 	</fieldset>
 </config>
 
