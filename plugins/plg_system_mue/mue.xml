@@ -7,7 +7,7 @@
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>info@dtdpro.com</authorEmail>
 	<authorUrl>www.dtdpro.com</authorUrl>
-	<version>1.3.1</version>
+	<version>1.3.2</version>
 	<description>PLG_MUE_XML_DESCRIPTION</description>
 	<files>
 		<filename plugin="mue">mue.php</filename>
@@ -20,12 +20,12 @@
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
-				<field name="forceupdate" type="radio" description="PLG_SYSTEM_MUE_FIELD_FORCEUPDATE_DESC" label="PLG_SYSTEM_MUE_FIELD_FORCEUPDATE_LABEL" default="0">
+				<field name="forceupdate" type="radio" description="PLG_SYSTEM_MUE_FIELD_FORCEUPDATE_DESC" label="PLG_SYSTEM_MUE_FIELD_FORCEUPDATE_LABEL" default="0" class="btn-group btn-group-yesno">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 				</field>
 				<field name="updatedays" type="text" description="PLG_SYSTEM_MUE_FIELD_UPDATEDAYS_DESC" label="PLG_SYSTEM_MUE_FIELD_UPDATEDAYS_LABEL" filter="integer" default="180" />
-				<field name="usersredir" type="radio" description="PLG_SYSTEM_MUE_FIELD_USERSREDIR_DESC" label="PLG_SYSTEM_MUE_FIELD_USERSREDIR_LABEL" default="1">
+				<field name="usersredir" type="radio" description="PLG_SYSTEM_MUE_FIELD_USERSREDIR_DESC" label="PLG_SYSTEM_MUE_FIELD_USERSREDIR_LABEL" default="1" class="btn-group btn-group-yesno">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 				</field>

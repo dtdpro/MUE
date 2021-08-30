@@ -46,6 +46,7 @@
 		<field name="on_userdir_field" type="FieldOnList" class="inputbox" label="COM_MUE_CONFIG_FIELD_ONUSERDIR_LABEL" description="COM_MUE_CONFIG_FIELD_ONUSERDIR_DESC" />
 		<field name="userdir_mapfields" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_MAPFIELDS_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_MAPFIELDS_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="userdir_userinfo" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_USERINFO_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_USERINFO_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="userdir_usertags" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_USERTAGS_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_USERTAGS_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="userdir_searchinfo" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_SEARCHINFO_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_SEARCHINFO_DESC" size="70" class="inputbox" required="false" default="" />
 	</fieldset>
 	<fieldset name="pmsettings" label="Private Messaging" description="Private Messaging settings" addfieldpath="/administrator/components/com_mue/models/fields">

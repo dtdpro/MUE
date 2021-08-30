@@ -40,6 +40,12 @@ JHtml::_('behavior.keepalive');
 				<a href="<?php echo JRoute::_('index.php?option=com_mue&view=user&layout=subs'); ?>"><?php echo JText::_('MOD_MUELOGIN_SUBS'); ?></a>
 			</li>
 			<?php endif; ?>
+
+			<?php  if ($params->get('show_messages_link', 0)) : ?>
+                <li>
+                    <a href="<?php echo JRoute::_('index.php?option=com_mue&view=pm&layout=messages'); ?>"><?php echo JText::_('MOD_MUELOGIN_MESSAGES'); ?></a>
+                </li>
+			<?php endif; ?>
 			
 			<?php if($params->get('mcme_installed', 0)) : ?>
 			<li>

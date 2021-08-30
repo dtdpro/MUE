@@ -328,6 +328,7 @@ class MUEModelUsers extends JModelList
 		$af=explode(",",$cfg->userdir_mapfields);
 		$uf=explode(",",$cfg->userdir_userinfo);
 		$sf=explode(",",$cfg->userdir_searchinfo);
+		$tf=explode(",",$cfg->userdir_usertags);
 
 		$db = JFactory::getDBO();
 
@@ -353,6 +354,7 @@ class MUEModelUsers extends JModelList
 				$address      = "";
 				$dbuserinfo   = "";
 				$dbsearchinfo = "";
+				$dbusertags = "";
 				foreach ( $af as $f ) {
 					if ( $item->$f ) {
 						if ( in_array( $f, $optfs ) ) {
@@ -392,13 +394,27 @@ class MUEModelUsers extends JModelList
 						}
 					}
 				}
+				foreach ($tf as $f) {
+					if ($item->$f) {
+						if (in_array($f,$optfs)) {
+							$dbusertags .= '<span class="uk-badge badge mue-field-'.$f.'">'.$optionsdata[$item->$f]."</span>&nbsp;";
+						} else if (in_array($f,$moptfs)) {
+							foreach (explode(" ",$item->$f) as $mfo) {
+								$dbusertags .= '<span class="uk-badge badge mue-field-'.$f.'">'.$optionsdata[$mfo]."</span>&nbsp;";
+							}
+						} else {
+							$dbusertags .= '<span class="uk-badge badge mue-field-'.$f.'">'.$item->$f."</span>&nbsp;";
+						}
+					}
+				}
+				if ($dbusertags != "") $dbusertags .= "<br />";
 				$url = "https://maps.googleapis.com/maps/api/geocode/json?address=".urlencode($address).'&key='.$cfg->gm_api_key;
 				$gdata_json = $this->curl_file_get_contents( $url );
 				$gdata      = json_decode( $gdata_json );
 				if ( $gdata->status == 'OK' ) {
-					$udsql = 'INSERT INTO #__mue_userdir (ud_user,ud_lat,ud_lon,ud_userinfo,ud_searchinfo) VALUES  ("' . $item->id . '","' . $gdata->results[0]->geometry->location->lat . '","' . $gdata->results[0]->geometry->location->lng . '","' . $dbuserinfo . '","' . $dbsearchinfo . '")';
+					$udsql = 'INSERT INTO #__mue_userdir (ud_user,ud_lat,ud_lon,ud_userinfo,ud_searchinfo,ud_usertags) VALUES  ("' . $item->id . '","' . $gdata->results[0]->geometry->location->lat . '","' . $gdata->results[0]->geometry->location->lng . '","' . $dbuserinfo . '","' . $dbsearchinfo . '","' . $db->escape($dbusertags) . '")';
 					$db->setQuery( $udsql );
-					$db->query();
+					$db->execute();
 				}
 			}
 		}

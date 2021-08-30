@@ -6,6 +6,13 @@ if ($this->params->get('divwrapper',1)) {
 $config = MUEHelper::getConfig();
 	?>
 <h2 class="componentheading uk-article-title"><?php echo "User Messages"; ?></h2>
+<?php
+
+echo '<p>';
+echo '<a href="'.JRoute::_("index.php?option=com_mue&view=userdir").'" class="button uk-button">'.JText::_('COM_MUE_USER_DIRECTORY_BUTTON').'</a> ';
+echo '</p>';
+
+?>
 <h3>Inbox</h3>
 <?php
 if ($this->messages) {

@@ -1,0 +1,1 @@
+ALTER TABLE `#__mue_userdir`  ADD `ud_usertags` text;

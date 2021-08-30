@@ -629,9 +629,11 @@ class MUEModelUser extends JModelLegacy
 				$af=explode(",",$cfg->userdir_mapfields);
 				$uf=explode(",",$cfg->userdir_userinfo);
 				$sf=explode(",",$cfg->userdir_searchinfo);
+				$tf=explode(",",$cfg->userdir_usertags);
 				$address="";
 				$dbuserinfo="";
 				$dbsearchinfo="";
+				$dbusertags="";
 				foreach ($af as $f) {
 					if ($item->$f) {
 						if (in_array($f,$optfs)) {
@@ -671,14 +673,28 @@ class MUEModelUser extends JModelLegacy
 						}
 					}
 				}
+				foreach ($tf as $f) {
+					if ($item->$f) {
+						if (in_array($f,$optfs)) {
+							$dbusertags .= '<span class="uk-badge badge mue-field-'.$f.'">'.$optionsdata[$item->$f]."</span>&nbsp;";
+						} else if (in_array($f,$moptfs)) {
+							foreach (explode(" ",$item->$f) as $mfo) {
+								$dbusertags .= '<span class="uk-badge badge mue-field-'.$f.'">'.$optionsdata[$mfo]."</span>&nbsp;";
+							}
+						} else {
+							$dbusertags .= '<span class="uk-badge badge mue-field-'.$f.'">'.$item->$f."</span>&nbsp;";
+						}
+					}
+				}
+				if ($dbusertags != "") $dbusertags .= "<br />";
 				$url = "https://maps.googleapis.com/maps/api/geocode/json?address=".urlencode($address).'&key='.$cfg->gm_api_key;
 				//$gdata_json = file_get_contents($url);
 				$gdata_json = $this->curl_file_get_contents($url);
 				$gdata = json_decode($gdata_json);
 				if ($gdata->status == 'OK') {
-					$udsql = 'INSERT INTO #__mue_userdir (ud_user,ud_lat,ud_lon,ud_userinfo,ud_searchinfo) VALUES  ("'.$user->id.'","'.$gdata->results[0]->geometry->location->lat.'","'.$gdata->results[0]->geometry->location->lng.'","'.$dbuserinfo.'","'.$dbsearchinfo.'")';
+					$udsql = 'INSERT INTO #__mue_userdir (ud_user,ud_lat,ud_lon,ud_userinfo,ud_searchinfo,ud_usertags) VALUES  ("'.$user->id.'","'.$gdata->results[0]->geometry->location->lat.'","'.$gdata->results[0]->geometry->location->lng.'","'.$dbuserinfo.'","'.$dbsearchinfo.'","'.$db->escape($dbusertags).'")';
 					$db->setQuery($udsql);
-					$db->query(); 
+					$db->execute();
 					$usernotes .= $date->toSql(true)." Added to/Updated in User Directory\r\n";
 				} else {
 					$item->$udf = 0;

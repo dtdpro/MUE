@@ -71,6 +71,7 @@ if ($user->id && $canview) {
 		$newnode->setAttribute("lng", $row->ud_lon);
 		$newnode->setAttribute("distance", $row->distance);
 		$newnode->setAttribute("userinfo", $row->ud_userinfo);
+		$newnode->setAttribute("usertags", $row->ud_usertags);
 		$newnode->setAttribute("udid", $row->ud_id);
 	}}
 	echo $dom->saveXML();

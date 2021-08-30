@@ -63,7 +63,7 @@ echo '<div class="uk-form-row mue-user-edit-row">';
 echo '<div class="uk-form-label mue-user-edit-label">';
 echo '</div>';
 echo '<div class="uk-form-controls mue-user-edit-submit">';
-echo '<input name="sendmessage" id="sendmessage" value="Send MEssage" type="submit" class="button uk-button">';
+echo '<input name="sendmessage" id="sendmessage" value="Send Message" type="submit" class="button uk-button">';
 echo '</div></div>';
 
 
