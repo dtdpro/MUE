@@ -155,7 +155,7 @@ if ($saveOrder) {
 						case "captcha": echo "Captcha"; break;
 						case "mailchimp": echo "MailChimp List"; break;
 						case "cmlist": echo 'Campaign Monitor List'; break;
-                        case "brlist": echo 'Bronto Mail List'; break;
+                        case "aclist": echo 'Active Campaign List'; break;
 					}
 					?>
 				</td>
@@ -216,10 +216,10 @@ if ($saveOrder) {
 							echo "LIST NOT SET";
 						}
 					}
-                    if ($item->uf_type=="brlist") {
+                    if ($item->uf_type=="aclist") {
                         if ($item->uf_default) {
                             JHtml::_('behavior.modal', 'a.modal');
-                            $link = 'index.php?option=com_mue&amp;view=brlist&amp;tmpl=component&amp;field='.$item->uf_id;
+                            $link = 'index.php?option=com_mue&amp;view=aclist&amp;tmpl=component&amp;field='.$item->uf_id;
                             echo '<a class="modal" title="Edit List Options"  href="'.$link.'" rel="{handler: \'iframe\', size: {x: 800, y: 450}}">List Options</a>';
                         } else {
                             echo "LIST NOT SET";

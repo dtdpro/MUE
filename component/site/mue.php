@@ -14,12 +14,11 @@ if($controller = JRequest::getVar('controller')) {
 	require_once (JPATH_COMPONENT.'/controllers/'.$controller.'.php');
 }
 
+// load composer packages
+require JPATH_ROOT.'/components/com_mue/vendor/autoload.php';
+
 // Load helper
 require_once(JPATH_COMPONENT.'/helpers/mue.php');
-
-//Load Bronto
-JLoader::registerNamespace('Bronto_Api', JPATH_COMPONENT . '/lib/bronto/src');
-JLoader::registerNamespace('Bronto_SoapClient', JPATH_COMPONENT . '/lib/bronto/src');
 
 // Load StyleSheet for template, based on config
 $doc = JFactory::getDocument();

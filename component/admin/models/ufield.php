@@ -107,6 +107,11 @@ class MUEModelUfield extends JModelAdmin
 			$registry->loadString($item->params);
 			$item->params = $registry->toArray();
 		}
+
+		if ($item->uf_type == "aclist")
+		{
+			$item->uf_default = json_decode($item->uf_default);
+		}
 		
 		if ($pk > 0) {
 			$q = 'SELECT uguf_group FROM #__mue_uguf WHERE uguf_field = '.$item->uf_id;

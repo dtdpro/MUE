@@ -12,7 +12,7 @@ class JFormFieldMUEDefault extends JFormField
 		$type = $this->form->getValue('uf_type');
 		
 		$id	= (int) $this->form->getValue('uf_id');
-		if (!$id) return '<input type="hidden" name="' . $name . '" value="0" />' . '<span class="readonly">Available Once Field Saved</span>';
+		if (!$id) return '<input type="hidden" name="' . $this->name . '" value="0" />' . '<span class="readonly">Available Once Field Saved</span>';
 		
 		switch ($type) {
 			case "multi":
@@ -33,8 +33,8 @@ class JFormFieldMUEDefault extends JFormField
 			case "cmlist":
 				$html = $this->getCMList();
 				break;
-            case "brlist":
-                $html = $this->getBRList();
+            case "aclist":
+                $html = $this->getACList();
                 break;
 			case "textbox":
 			case "textar":
@@ -61,38 +61,39 @@ class JFormFieldMUEDefault extends JFormField
 				. htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"' . $class . $size . $disabled . $readonly . $onchange . $maxLength . '/>';
 	}
 
-    protected function getBRList()
+    protected function getACList()
     {
-        $cfg=MUEHelper::getConfig();
 
-        if (!$cfg->brkey) return $this->getTextField();
-        else $token = $cfg->brkey;
+	    require_once(JPATH_ROOT.'/components/com_mue/lib/activecampaign.php');
 
-        $bronto = new Bronto_Api();
-        $bronto->setToken($token);
-        $bronto->login();
+		$cfg=MUEHelper::getConfig();
 
-        $listObject = $bronto->getListObject();
+        if (!$cfg->ackey || !$cfg->acurl) return $this->getTextField();
 
-        $br_lists = $listObject->readAll();
-        $lists = array();
+        $acClient = new ActiveCampaign($cfg->ackey,$cfg->acurl);
 
-        foreach ($br_lists->iterate() as $l) {
-            $lists[] = JHtml::_('select.option', $l->id,$l->name);
+        $acLists = $acClient->getListsById();
+
+        foreach ($acLists as $k=>$l) {
+            $lists[] = JHtml::_('select.option', $k,$l);
         }
 
         // Initialize variables.
         $html = array();
         $attr = '';
         // Initialize some field attributes.
-        $attr .= $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
+        $attr .= $this->element['class'] ? ' multiple="true" class="'.(string) $this->element['class'].'"' : '';
         $attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
 
 
         // Initialize JavaScript field attributes.
         $attr .= $this->element['onchange'] ? ' onchange="'.(string) $this->element['onchange'].'"' : '';
 
-        $html[] = JHtml::_('select.genericlist',$lists,$this->name,$attr, "value","text",$this->value);
+		if (!is_array($this->value)) {
+			$this->value = json_decode($this->value);
+		}
+
+        $html[] = JHtml::_('select.genericlist',$lists,$this->name.'[]',$attr, "value","text",$this->value);
 
 
         return implode($html);

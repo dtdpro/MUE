@@ -9,6 +9,7 @@ if ($this->params->get('divwrapper',1)) {
 echo '<h2 class="componentheading uk-article-title">'.JText::_('COM_MUE_USER_CHGGROUP_PAGE_TITLE').'</h2>';
 echo '<div id="mue-user-edit">';
 echo '<form action="" method="post" name="regform" id="regform" class="uk-form uk-form-horizontal">';
+$ri=1;
 if ($ri==1) $ri=0;
 else $ri=1;
 echo '<div class="uk-form-row uk-margin-top mue-user-edit-row mue-row'.($ri % 2).'">';
@@ -18,9 +19,9 @@ echo '<div class="uk-form-controls mue-user-edit-value">';
 $first=true;
 foreach ($this->groups as $o) {
 	$checked = ($o->ug_id == $this->currentgroup) ? ' checked="checked"' : '';
-	echo '<div class="radio"><input type="radio" name="newgroup" value="'.$o->ug_id.'" id="jform_'.$sname.$o->ug_id.'" class="uf_radio input-sm"';
+	echo '<div class="radio"><input type="radio" name="newgroup" value="'.$o->ug_id.'" id="jform_'.$o->ug_id.'" class="uf_radio input-sm"';
 	echo $checked.'/>'."\n";
-	echo '<label for="jform_'.$sname.$o->ug_id.'">';
+	echo '<label for="jform_'.$o->ug_id.'">';
 	echo ' '.$o->ug_name.'</label></div>'."\n";
 	
 }

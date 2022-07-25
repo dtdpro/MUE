@@ -5,10 +5,10 @@
 	<author>DtD Productions</author>
 	<authorEmail>info@dtdpro.com</authorEmail>
 	<authorUrl>http://www.dtdpro.com</authorUrl>
-	<copyright>Copyright 2012-2018 DtD Productions</copyright>
+	<copyright>Copyright 2012-2022 DtD Productions</copyright>
 	<license>GPL v2</license>
-	<version>1.10.4</version>
-	<releaseDate>2018.09.14</releaseDate>
+	<version>1.11.0</version>
+	<releaseDate>2022.07.22</releaseDate>
 	<releaseType>Update</releaseType>
 	<downloadUrl>http://www.dtdpro.com/</downloadUrl>
 	<description>COM_MUE_DESC</description>
@@ -33,6 +33,7 @@
 		<folder>views</folder>
 		<folder>lib</folder>
 		<folder>helpers</folder>
+		<folder>vendor</folder>
 	</files>
 	<languages folder="site">
 		<language tag="en-GB">language/en-GB.com_mue.ini</language>

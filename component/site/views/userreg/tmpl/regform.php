@@ -67,14 +67,14 @@ foreach($this->userfields as $f) {
 	// Field Label
 	echo '<div class="uk-form-label mue-user-reg-label uk-text-bold">';
 	if ($f->uf_req) echo "*";
-	if ($f->uf_type != "cbox" && $f->uf_type != "message" && $f->uf_type != "mailchimp" && $f->uf_type != "cmlist" && $f->uf_type != "brlist") {
+	if ($f->uf_type != "cbox" && $f->uf_type != "message" && $f->uf_type != "cmlist" && $f->uf_type != "aclist") {
 	    echo $f->uf_name;
 	}
 	echo '</div>';
 
 	// Start Field
 	echo '<div class="uk-form-controls mue-user-reg-value';
-	if ($f->uf_type=="cbox" || $f->uf_type=="mailchimp" || $f->uf_type=="cmlist" || $f->uf_type=="brlist" || $f->uf_type == "message") {
+	if ($f->uf_type=="cbox" || $f->uf_type=="mailchimp" || $f->uf_type=="cmlist" || $f->uf_type=="aclist" || $f->uf_type == "message") {
 	    echo ' uk-form-controls-text';
 	}
 	echo '">';
@@ -90,7 +90,7 @@ foreach($this->userfields as $f) {
 	if ($f->uf_type == "message") echo '<div class="uk-alert">'.$f->uf_name.'</div>';
 	
 	//checkbox
-	if ($f->uf_type=="cbox" || $f->uf_type=="mailchimp" || $f->uf_type=="cmlist" || $f->uf_type=="brlist") {
+	if ($f->uf_type=="cbox" || $f->uf_type=="mailchimp" || $f->uf_type=="cmlist" || $f->uf_type=="aclist") {
 		if ($f->uf_type == "cbox") $val=$f->value;
 		else $val = $cfg->mailing_list;
 		echo JHtml::_('muefields.cbox',$f,$val);

@@ -23,6 +23,11 @@ class MUETableUfield extends JTable
 			$parameter->loadArray($array['params']);
 			$array['params'] = (string)$parameter;
 		}
+
+		if ($array['uf_type'] == 'aclist') {
+			$array['uf_default'] = json_encode($array['uf_default']);
+		}
+
 		return parent::bind($array, $ignore);
 	}
 	

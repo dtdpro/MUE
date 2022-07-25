@@ -100,38 +100,40 @@ class MUEModelUserreg extends JModelLegacy
 		{
 			//setup item and bind data
 			$fids = array();
-			$optfs = array();
-			$moptfs = array();
-			$mclists = array();
+			$optfs = array(); // single option field
+			$moptfs = array(); // multi option field
 			$cmlists = array();
-			$brlists = array();
 			$flist = $this->getUserFields($data['userGroupID'],false);
 			$item = new stdClass();
 			foreach ($flist as $d) {
 				$fieldname = $d->uf_sname;
-				if ($d->uf_type == 'brlist') {
-					$brlists[]=$d;
-				} else if ($d->uf_type == 'mailchimp') {
-					$mclists[]=$d;
+				if ($d->uf_type == 'aclist') {
+					$aclists[]=$d;
 				} else if ($d->uf_type == 'cmlist') {
 					$cmlists[]=$d;
 				} else if ($d->uf_type=="mcbox" || $d->uf_type=="mlist") {
 					$item->$fieldname = implode(" ",$data[$fieldname]);
 				} else if ($d->uf_type=='cbox') {
-					$item->$fieldname = ($data[$fieldname]=='on') ? "1" : "0";
+					if (isset($data[$fieldname])) {
+						$item->$fieldname = ( $data[ $fieldname ] == 'on' ) ? "1" : "0";
+					} else {
+						$item->$fieldname = 0;
+					}
 				} else if ($d->uf_type=='birthday') {
 					$fmonth = (int)$data[$fieldname.'_month'];
 					$fday = (int)$data[$fieldname.'_day'];
 					if ($fmonth < 10) $fmonth = "0".$fmonth;
 					if ($fday < 10) $fday = "0".$fday;
 					$item->$fieldname = $fmonth.$fday;
-				} else {
+				} else if ($d->uf_type != 'message') {
 					$item->$fieldname = $data[$fieldname];
 				}
 				if ($d->uf_type=="multi" || $d->uf_type=="dropdown") $optfs[]=$d->uf_sname;
 				if ($d->uf_type=="mcbox" || $d->uf_type=="mlist") $moptfs[]=$d->uf_sname;
 				$fids[]=$d->uf_id;
-				if ($d->uf_type != 'password') $app->setUserState('mue.userreg.'.$fieldname, $item->$fieldname);
+				if ($d->uf_type != 'password') {
+					if (property_exists($item,$fieldname)) $app->setUserState('mue.userreg.'.$fieldname, $item->$fieldname);
+				}
 			}
 
 			$ginfo=MUEHelper::getGroupInfo($data['userGroupID']);
@@ -208,81 +210,84 @@ class MUEModelUserreg extends JModelLegacy
 				return false;
 			}
 			
-			// Bronto Mail Integration
-			foreach ($brlists as $brlist) {
-				try {
-					// Get contact and status
-					$token  = $cfg->brkey;
-					$bronto = new Bronto_Api();
-					$bronto->setToken( $token );
-					$bronto->login();
-					$contactObject  = $bronto->getContactObject();
-					$contact        = $contactObject->createRow();
-					$contact->email = $item->email;
-					$contact->read();
-					$unsubed = false;
+			// Active Campaign Integration
+			if (count($aclists) > 0) {
+				// Load up AC connector
+				require_once(JPATH_ROOT.'/components/com_mue/lib/activecampaign.php');
+				$acClient = new ActiveCampaign($cfg->ackey,$cfg->acurl);
 
-					if ($data[$brlist->uf_sname]) {
-						if ( $contact->status == 'transactional' || $contact->status == 'unconfirmed' || $contact->status == 'unsub' ) {
-							if ( $contact->status == 'unsub' ) {
-								$unsubed = true;
-							}
-							$contact->status = "onboarding";
-							$contact->save();
-						}
-					}
+				//get first list
+				$aclistFirst = $aclists[0];
 
-
-					// Update fields
-					if ( $brlist->params->brvars && $data[ $brlist->uf_sname ] ) {
-						$othervars = $brlist->params->brvars;
-						foreach ( $othervars as $brv => $mue ) {
-							if ( $mue ) {
-								if ( $brlist->params->brfieldtypes->$brv == "checkbox" ) {
-									if ( $item->$mue == "1" ) {
-										$contact->setField( $brv, 'true' );
-									} else {
-										$contact->setField( $brv, 'false' );
-									}
-								} else if ( in_array( $mue, $optfs ) ) {
-									$contact->setField( $brv, $optionsdata[ $item->$mue ] );
-								} else if ( in_array( $mue, $moptfs ) ) {
-									$mcdata[ $mcv ] = "";
-									$fv             = '';
-									foreach ( explode( " ", $item->$mue ) as $mfo ) {
-										$fv .= $optionsdata[ $mfo ] . " ";
-									}
-									$contact->setField( $brv, $fv );
-								} else {
-									$contact->setField( $brv, $item->$mue );
+				//setup field data
+				$fieldData = [];
+				if ( $aclistFirst->params->acvars) {
+					// User Fields
+					foreach ($aclistFirst->params->acvars as $acFieldId => $mueVar) {
+						if ($mueVar) {
+							$fieldVal = '';
+							if ( $mueVar == "user_group" ) {
+								$fieldVal = $ginfo->ug_name;
+							} else if ( in_array( $mueVar, $optfs ) ) {
+								$fieldVal = $optionsdata[ $item->$mueVar ];
+							} else if ( in_array( $mueVar, $moptfs ) ) {
+								$fv = '';
+								foreach ( explode( " ", $item->$mueVar ) as $mfo ) {
+									$fv .= $optionsdata[ $mfo ] . " ";
 								}
+								$fieldVal= $fv;
+							} else {
+								$fieldVal = $item->$mueVar;
 							}
+							$fieldDataEntry = [];
+							$fieldDataEntry['field'] = $acFieldId;
+							$fieldDataEntry['value'] = $fieldVal;
+							$fieldData[] = $fieldDataEntry;
+						}
+					}
+					// Subscription Status
+					if ($aclistFirst->params->acsubstatus) {
+						$fieldVal = '';
+						$fieldVal=$aclistFirst->params->acsubtextyes;
+						$fieldDataEntry = [];
+						$fieldDataEntry['field'] = $aclistFirst->params->acsubstatus;
+						$fieldDataEntry['value'] = $fieldVal;
+						$fieldData[] = $fieldDataEntry;
+					}
+				}
+
+				// sync contact
+				$acClient->syncContact($item->email,$item->fname, $item->lname,$fieldData);
+
+				// get contact
+				$contact = $acClient->getContact($item->email);
+
+				// pause
+				sleep(1);
+
+				if ($contact) {
+					// Gather List Ids and set status to subscribed, only if checked, unchecked does nothing
+					$linkedLists = [];
+					foreach ( $aclists as $aclist ) {
+						$acFieldName = $aclist->uf_sname;
+						if ( isset($data[ $aclist->uf_sname ]) && $data[ $aclist->uf_sname ] ) {
+							$item->$acFieldName=1;
+							$subtolist = true;
+							$listsForField = json_decode( $aclist->uf_default, true );
+							foreach ( $listsForField as $lf ) {
+								$linkedLists[ $lf ] = $subtolist;
+							}
+						} else {
+							$item->$acFieldName=0;
 						}
 					}
 
-					// Update Subscription Info
-					if ( $brlist->params->brsubstatus ) {
-						// Set Member Status
-						$contact->setField( $brlist->params->brsubstatus, $brlist->params->brsubtextno );
-					}
-
-					// Update Lists
-					if ( $data[ $brlist->uf_sname ] ) {
-						if ( $unsubed ) { //Remove all previous list
-							$currentLists = $contact->getLists();
-							foreach ( $currentLists as $l ) {
-								$contact->removeFromList( $l );
-							}
-							$contact->save( true );
+					// list update
+					if ( count( $linkedLists ) ) {
+						foreach ( $linkedLists as $lId => $lStatus ) {
+							$acClient->changeListSub( $lId, $contact['id'], $lStatus );
 						}
-						$contact->addToList( $brlist->uf_default );
 					}
-
-					// Save
-					$contact->save( true );
-
-				} catch (Exception $e) {
-
 				}
 			}
 						
@@ -351,47 +356,6 @@ class MUEModelUserreg extends JModelLegacy
 						
 				} else {
 					$item->$cmf=0;
-				}
-			}
-			
-			//MailChimp List
-			foreach ($mclists as $mclist) {
-				if ($data[$mclist->uf_sname])  {
-					if (strstr($mclist->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$mclist->uf_default,2);	} 
-					else { $mc_key = $cfg->mckey; $mc_list = $mclist->uf_default; }
-					$mcf=$mclist->uf_sname;
-					include_once 'components/com_mue/lib/mailchimp.php';
-					$mc = new MailChimpHelper($mc_key,$mc_list);
-					$mcdata = array('FNAME'=>$item->fname, 'LNAME'=>$item->lname, 'OPTIN_IP'=>$_SERVER['REMOTE_ADDR'], 'OPTIN_TIME'=>$date->toSql(true));
-					if ($mclist->params->mcvars) {
-						$othervars=$mclist->params->mcvars;
-						foreach ($othervars as $mcv=>$mue) {
-							if ($mue) {
-								if (in_array($mue,$optfs)) {
-									$mcdata[$mcv] = $optionsdata[$item->$mue];
-								} else if (in_array($mue,$moptfs)) {
-									$mcdata[$mcv] = "";
-									foreach (explode(" ",$item->$mue) as $mfo) {
-										$mcdata[$mcv] .= $optionsdata[$mfo]." ";
-									}
-								} else {
-									$mcdata[$mcv] = $item->$mue;
-								}
-							}
-						}
-					}
-					if ($mclist->params->mcrgroup) {
-						$mcdata[$mclist->params->mcrgroup]=$mclist->params->mcreggroup;
-					}
-					if ($mclist->params->mcigroup) {
-						$mcdata['groupings']=array(array("name"=>$mclist->params->mcigroup,"groups"=>$mclist->params->mcigroups));
-					}
-					$mcresult = $mc->subscribeUser(array("email"=>$item->email),$mcdata,false,"html");
-					if ($mcresult) { $item->$mcf=1; $usernotes .= $date->toSql(true)." Subscribed to MailChimp List #".$mclist->uf_default."\r\n"; }
-					else { $item->$mcf=0; $usernotes .= $date->toSql(true)." Could not subscribe to MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
-				} else {
-					$mcf=$mclist->uf_sname;
-					$item->$mcf=0;
 				}
 			}
 			
@@ -498,18 +462,21 @@ class MUEModelUserreg extends JModelLegacy
 			foreach ($flist as $fl) {
 				$fieldname = $fl->uf_sname;
 				if (!$fl->uf_cms && $fl->uf_type != "captcha") {
-					$qf = 'INSERT INTO #__mue_users (usr_user,usr_field,usr_data) VALUES ("'.$user->id.'","'.$fl->uf_id.'","'.$db->escape($item->$fieldname).'")';
-					$db->setQuery($qf);
-					if (!$db->query()) {
-						$this->setError("Error saving additional information");
-						return false;
+					if (property_exists($item,$fieldname)) {
+						$qf = 'INSERT INTO #__mue_users (usr_user,usr_field,usr_data) VALUES ("' . $user->id . '","' . $fl->uf_id . '","' . $db->escape( $item->$fieldname ) . '")';
+						$db->setQuery( $qf );
+						if ( ! $db->query() ) {
+							$this->setError( "Error saving additional information" );
+							return false;
+						}
+						if ( $groupinfo->ug_send_welcome_email ) {
+							//welcome email fields
+							$emailmsg = str_replace( "{" . $fieldname . "}", $item->$fieldname, $emailmsg );
+						}
+						if ( $d->uf_type != 'password' ) {
+							$app->setUserState( 'mue.userreg.' . $fieldname, "" );
+						}
 					}
-
-					if ($groupinfo->ug_send_welcome_email) {
-						//welcome email fields
-						$emailmsg = str_replace( "{" . $fieldname . "}", $item->$fieldname, $emailmsg );
-					}
-					if ($d->uf_type!='password') $app->setUserState('mue.userreg.'.$fieldname, "");
 				}
 			}
 

@@ -59,7 +59,7 @@ foreach ($this->userfields as $f) {
         } else {
 			echo '<div class="uk-form-label mue-user-info-label uk-text-bold">' . $f->uf_name . '</div>';
 			echo '<div class="uk-form-controls uk-form-controls-text mue-user-info-value">';
-			if ($this->userinfo->$field) echo $this->userinfo->$field;
+			if (property_exists($this->userinfo,$field)) echo $this->userinfo->$field;
 			else echo '&nbsp;';
 		}
 		echo '</div>';

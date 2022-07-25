@@ -10,9 +10,9 @@ class MUEHelper {
 	}
 
 	public static function getDaysSinceLastUpdate() {
-		$user =& JFactory::getUser();
+		$user = JFactory::getUser();
 		$userid = $user->id;
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT DATE(userg_update) FROM #__mue_usergroup ';
 		$query.= 'WHERE userg_user="'.$userid.'"';
 		$db->setQuery($query); 
@@ -64,17 +64,6 @@ class MUEHelper {
 				} else if ($u->uf_type == 'cbox' || $u->uf_type == 'yesno') {
 					if ($useids && $u->uf_change) $user->$fn=$u->usr_data;
 					else $user->$fn = ($u->usr_data == "1") ? "Yes" : "No";
-				} else if ($u->uf_type == 'mailchimp') {
-					include_once JPATH_BASE.'/components/com_mue/lib/mailchimp.php';
-
-					if (strstr($u->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$u->uf_default,2);	}
-					else { $mc_key = $cfg->mckey; $mc_list = $u->uf_default; }
-					$mc = new MailChimpHelper($mc_key,$mc_list);
-					$mcresult = $mc->subStatus($user->email);
-					if ($mcresult) $onlist=true;
-					else $onlist=false;
-					if ($useids && $u->uf_change) $user->$fn=$onlist;
-					else $user->$fn = ($onlist) ? "Yes" : "No";
 				} else if ($u->uf_type == 'cmlist') {
 					include_once JPATH_BASE.'/components/com_mue/lib/campaignmonitor.php';
 					$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
@@ -83,32 +72,26 @@ class MUEHelper {
 					else $onlist=false;
 					if ($useids && $u->uf_change) $user->$fn=$onlist;
 					else $user->$fn = ($onlist) ? "Yes" : "No";
-				} else if ($u->uf_type == 'brlist') {
-                    $token = $cfg->brkey;
-                    $bronto = new Bronto_Api();
-                    $bronto->setToken($token);
-                    try {
-                    	$bronto->login();
-	                    $contactObject = $bronto->getContactObject();
-	                    $contact = $contactObject->createRow();
-	                    $contact->email = $user->email;
-	                    $contact->read();
-	                    $onlist = false;
-	                    if ($contact->status == 'active' || $contact->status == 'onboarding') {
-		                    if (!$contact->listIds || !is_array($contact->listIds)) {
-			                    $onlist = false;
-		                    } else if (in_array($u->uf_default,$contact->listIds)) {
-			                    $onlist = true;
-		                    }
-		                    else {
-			                    $onlist = false;
-		                    }
-	                    } else {
-		                    $onlist = false;
-	                    }
-                    } catch (Exception $e) {
-	                    $onlist = false;
-                    }
+				} else if ($u->uf_type == 'aclist') {
+					require_once(JPATH_ROOT.'/components/com_mue/lib/activecampaign.php');
+					$acClient = new ActiveCampaign($cfg->ackey,$cfg->acurl);
+					$contact = $acClient->getContact($user->email);
+					$onlist = true;
+					if ($contact) {
+						$contactSubedLists = $acClient->getContactListsIdsSubscribedTo($contact['id']);
+						if (count($contactSubedLists)) {
+							$fieldLists = json_decode( $u->uf_default );
+							foreach ( $fieldLists as $fl ) {
+								if ( ! in_array( $fl, $contactSubedLists ) ) {
+									$onlist = false;
+								}
+							}
+						} else {
+							$onlist = false;
+						}
+					} else {
+						$onlist = false;
+					}
                     if ($useids && $u->uf_change) $user->$fn=$onlist;
                     else $user->$fn = ($onlist) ? "Yes" : "No";
                 } else if ($u->uf_type == 'birthday') {
@@ -124,10 +107,10 @@ class MUEHelper {
 
 	public static function getUserGroup($userid = 0) {
 		if (!$userid) {
-			$user =& JFactory::getUser();
+			$user = JFactory::getUser();
 			$userid = $user->id;
 		}
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT ug.userg_group AS userGroupID, ug.userg_update AS lastUpdated, g.* FROM #__mue_usergroup as ug ';
 		$query.= 'RIGHT JOIN #__mue_ugroups AS g ON ug.userg_group = g.ug_id ';
 		$query.= 'WHERE ug.userg_user="'.$userid.'"';
@@ -140,7 +123,7 @@ class MUEHelper {
 		if (!$groupid) {
 			return false;
 		}
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = 'SELECT * FROM #__mue_ugroups ';
 		$query.= 'WHERE ug_id="'.$groupid.'"';
 		$db->setQuery($query);
@@ -251,67 +234,99 @@ class MUEHelper {
 			$db->query();
 		}
 
-		$db = JFactory::getDBO();
-		$qd = 'SELECT f.* FROM #__mue_ufields as f ';
-		$qd.= ' WHERE f.published = 1 ';
-		$qd .= ' && f.uf_type IN ("mailchimp","brlist","cmlist")';
-		$qd.= ' ORDER BY f.ordering';
-		$db->setQuery( $qd );
-		$listFields = $db->loadObjectList();
-
 		$ugq = "SELECT * FROM #__mue_usergroup WHERE userg_user = ".$userid;
 		$db->setQuery($ugq);
 		$ug = $db->loadObject();
 
 		$usernotes = '';
+
+		/// Active campaign Integration
+		$db = JFactory::getDBO();
+		$qd = 'SELECT f.* FROM #__mue_ufields as f ';
+		$qd.= ' WHERE f.published = 1 ';
+		$qd .= ' && f.uf_type IN ("aclist")';
+		$qd.= ' ORDER BY f.ordering';
+		$db->setQuery( $qd );
+		$acfields = $db->loadObjectList();
+
+		if (count($acfields)) {
+			// Load up AC connector
+			require_once( JPATH_ROOT . '/components/com_mue/lib/activecampaign.php' );
+			$acClient = new ActiveCampaign( $cfg->ackey, $cfg->acurl );
+
+			//get first list
+			$aclistFirst = $acfields[0];
+
+			// get contact
+			$contact = $acClient->getContact($user->email);
+
+			// update group fields
+			if ($contact) {
+				// set field data
+				$fieldData = [];
+
+
+				// Set Subscription Status
+				if ($aclistFirst->params->acsubstatus) {
+					$fieldVal = '';
+					if ($sub) $fieldVal=$aclistFirst->params->acsubtextyes;
+					else $fieldVal=$aclistFirst->params->acsubtextno;
+					$fieldDataEntry = [];
+					$fieldDataEntry['field'] = $aclistFirst->params->acsubstatus;
+					$fieldDataEntry['value'] = $fieldVal;
+					$fieldData[] = $fieldDataEntry;
+				}
+
+				// Set Member Since
+				if ( $aclistFirst->params->acsubsince && $uginfo->userg_subsince != "0000-00-00") {
+					$fieldDataEntry = [];
+					$fieldDataEntry['field'] = $aclistFirst->params->acsubsince;
+					$fieldDataEntry['value'] = $uginfo->userg_subsince;
+					$fieldData[] = $fieldDataEntry;
+				}
+
+				// Set Member Exp
+				if ( $aclistFirst->params->acsubexp  && $uginfo->userg_subexp != '0000-00-00') {
+					$fieldDataEntry = [];
+					$fieldDataEntry['field'] = $aclistFirst->params->acsubexp;
+					$fieldDataEntry['value'] = $uginfo->userg_subexp;
+					$fieldData[] = $fieldDataEntry;
+				}
+
+				// Set Active/End Member Plan
+				if ( $aclistFirst->params->acsubplan ) {
+					$fieldDataEntry = [];
+					$fieldDataEntry['field'] = $aclistFirst->params->acsubplan;
+					if ( !$sub ) {
+						$fieldDataEntry['value'] = 'None';
+					} else {
+						$fieldDataEntry['value'] = $uginfo->userg_subendplanname;
+					}
+					$fieldData[] = $fieldDataEntry;
+				}
+
+				// update ac data
+				if (count($fieldData)) {
+					$acClient->updateContactFields($contact['id'],$fieldData);
+				}
+
+				$usernotes .= $date->toSql(true)." EMail Contact Data Updated on Active Campaign\r\n";
+			}
+		}
+
+		/// Campaign Monitor Integration
+		$db = JFactory::getDBO();
+		$qd = 'SELECT f.* FROM #__mue_ufields as f ';
+		$qd.= ' WHERE f.published = 1 ';
+		$qd .= ' && f.uf_type IN ("cmlist")';
+		$qd.= ' ORDER BY f.ordering';
+		$db->setQuery( $qd );
+		$listFields = $db->loadObjectList();
+
 		foreach ($listFields as $f) {
 			$registry = new JRegistry();
 			$registry->loadString($f->params);
 			$f->params = $registry->toObject();
-
-			if ($f->uf_type == "brlist") {
-				// Update Subscription Info
-				if ($f->params->brsubstatus) {
-					$token = $cfg->brkey;
-					$bronto = new Bronto_Api();
-					$bronto->setToken($token);
-					$bronto->login();
-
-					// Get Contact
-					$contactObject = $bronto->getContactObject();
-					$contact = $contactObject->createRow();
-					$contact->email = $user->email;
-					$contact->read();
-
-					// Set Member Status
-					if ($sub) $contact->setField( $f->params->brsubstatus, $f->params->brsubtextyes );
-					else $contact->setField( $f->params->brsubstatus, $f->params->brsubtextno );
-
-					// Set Member Since
-					if ( $f->params->brsubsince && $ug->userg_subsince != "0000-00-00" ) {
-						$contact->setField( $f->params->brsubsince, $ug->userg_subsince );
-					}
-
-					// Set Member Exp
-					if ( $f->params->brsubexp && $ug->userg_subexp != '0000-00-00') {
-						$contact->setField( $f->params->brsubexp, $ug->userg_subexp );
-					}
-
-					// Set Active/End Member Plan
-					if ( $f->params->brsubplan ) {
-						if ( !$sub ) {
-							$contact->setField( $f->params->brsubplan, 'None' );
-						} else {
-							$contact->setField( $f->params->brsubplan, $ug->userg_subendplanname );
-						}
-					}
-
-					// Save Contact
-					$contact->save();
-
-					$usernotes .= $date->toSql(true)." EMail Contact Updated on Bronto List ID: ".$f->uf_default."\r\n";
-				}
-			}
 
 			if ($f->uf_type == "cmlist") {
 				if ($f->params->msgroup->field) {
@@ -332,36 +347,6 @@ class MUEHelper {
 						$cmresult = $cm->updateSubscriber($f->uf_default,$user->email,$cmdata);
 						if ($cmresult) {  $usernotes .= $date->toSql(true)." EMail Subscription Updated on Campaign Monitor List #".$f->uf_default.' '.$cmd."\r\n"; }
 						else { $usernotes .= $date->toSql(true)." Could not update EMail subscription on Campaign Monitor List #".$f->uf_default." Error: ".$cm->error.' '.$cmd."\r\n"; }
-					}
-				}
-			}
-
-			if ($f->uf_type == "mailchimp") {
-				if ($f->params->mcrgroup) {
-
-					if (strstr($f->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$f->uf_default,2);	}
-					else { $mc_key = $cfg->mckey; $mc_list = $f->uf_default; }
-					$mc = new MailChimpHelper($mc_key,$mc_list);
-					$mcdata=array();
-
-					if (!$sub) $mcdata[$f->params->mcrgroup]=$f->params->mcreggroup;
-					else $mcdata[$f->params->mcrgroup]=$f->params->mcsubgroup;
-
-					if ($f->params->mcsubsince) {
-						if ($ug->userg_subsince != "0000-00-00")	$mcdata[$f->params->mcsubsince] = $ug->userg_subsince;
-						else $mcdata[$f->params->mcsubsince] = "";
-					}
-					if ($f->params->mcsubexp) {
-						if ($ug->userg_subexp != '0000-00-00') $mcdata[$f->params->mcsubexp] = $ug->userg_subexp;
-						else $mcdata[$f->params->mcsubexp] = "";
-					}
-					if ($f->params->mcsubpaytype) $mcdata[$f->params->mcsubpaytype] = $ug->userg_lastpaidvia;
-
-					$mcd=print_r($mcdata,true);
-					if ($mc->subStatus($user->email)) {
-						$mcresult = $mc->updateUser(array("email"=>$user->email),$mcdata,false,"html");
-						if ($mcresult) { $usernotes .= $date->toSql(true)." EMail Subscription Updated on MailChimp List #".$f->uf_default.' '.$mcd."\r\n"; }
-						else { $usernotes .= $date->toSql(true)." Could not update EMail subscription on MailChimp List #".$f->uf_default." Error: ".$mc->error."\r\n"; }
 					}
 				}
 			}

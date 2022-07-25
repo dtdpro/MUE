@@ -11,8 +11,9 @@ $mainframe = JFactory::getApplication('site');
 $db  = JFactory::getDBO();
 $user = JFactory::getUser();
 
-$data = JRequest::getVar('jform', array(), 'post', 'array'); 
-$email = strtolower($db->escape($data['email']));
+$data = JRequest::getVar('jform', array(), 'post', 'array');
+if (isset($data['email'])) $email = strtolower($db->escape($data['email']));
+else $email = false;
 if (!$email) $email = $db->escape(strtolower(JRequest::getVar("newemail")));
 $qn = 'SELECT username FROM #__users WHERE email="'.$email.'"';
 $db->setQuery($qn); $hasuser = $db->loadResult();

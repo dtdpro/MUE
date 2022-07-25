@@ -51,56 +51,22 @@ class MUEModelUser extends JModelLegacy
 			$this->setError($db->getErrorMsg());
 			return false;
 		}
-        
-        // Bronto Mail Integration
-        $brlists = $this->getUserFields(1,false,false,false,"brlist");
-        foreach ($brlists as $brlist) {
-        	try {
-	            // Get contact and status
-	            $token = $cfg->brkey;
-	            $bronto = new Bronto_Api();
-	            $bronto->setToken($token);
-	            $bronto->login();
-	            $contactObject = $bronto->getContactObject();
-	            $oldcontact = $contactObject->createRow();
-	            $oldcontact->email = $oldemail;
-	            $oldcontact->read();
-	            $contactid = $oldcontact->id;
 
-	            $contact = $contactObject->createRow();
-	            $contact->id = $contactid;
-	            $contact->read();
+		// Active Campaign Integration
+		$aclists = $this->getUserFields(1,false,false,false,"aclist");
+		if (count($aclists) > 0) {
+			// Load up AC connector
+			require_once( JPATH_ROOT . '/components/com_mue/lib/activecampaign.php' );
+			$acClient = new ActiveCampaign( $cfg->ackey, $cfg->acurl );
 
-	            if ($contact->status != 'unsub') {
-	                $contact->email = $newemail;
+			// get contact
+			$contact = $acClient->getContact($oldemail);
 
-	                // Save
-	                $contact->save(true);
-	            }
-
-	        } catch (Exception $e) {
-
-	        }
-        }
-        
-		//MC Update
-		$mclists = $this->getUserFields(1,false,false,false,"mailchimp");
-		foreach ($mclists as $mclist) {
-			include_once 'components/com_mue/lib/mailchimp.php';
-			if (strstr($mclist->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$mclist->uf_default,2);	}
-			else { $mc_key = $cfg->mckey; $mc_list = $mclist->uf_default; }
-			$mcf=$mclist->uf_sname;
-			$mc = new MailChimpHelper($mc_key,$mc_list);
-			$mcdata = array();
-			$mcdata['new-email']=$user->email;
-			$mcd=print_r($mcdata,true);
-			if ($mc->subStatus($oldemail)) {
-				$mcresult = $mc->updateUser(array("email"=>$oldemail),$mcdata,false,"html");
-				if ($mcresult) { $usernotes .= $date->toSql(true)." Email Address Updated on MailChimp List #".$mclist->uf_default.' '.$mcd."\r\n"; }
-				else { $usernotes .= $date->toSql(true)." Could not update Email Address on MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
+			if ($contact) {
+				$acClient->updateContactEmail($contact['id'],$newemail);
 			}
 		}
-	
+
 		//CM Update
 		$cmlists = $this->getUserFields(1,false,false,false,"cmlist");
 		foreach ($cmlists as $cmlist) {
@@ -144,60 +110,28 @@ class MUEModelUser extends JModelLegacy
 		
 		$ginfo=MUEHelper::getGroupInfo($groupid);
 
-        // Bronto Mail Integration
-        $brlists = $this->getUserFields($groupid,false,false,false,"brlist");
-        foreach ($brlists as $brlist) {
-        	try {
-		        // Get contact and status
-		        $token  = $cfg->brkey;
-		        $bronto = new Bronto_Api();
-		        $bronto->setToken( $token );
-		        $bronto->login();
-		        $contactObject  = $bronto->getContactObject();
-		        $contact        = $contactObject->createRow();
-		        $contact->email = $user->email;
-		        $contact->read();
+		// Active Campaign Integration
+		$aclists = $this->getUserFields(1,false,false,false,"aclist");
+		if (count($aclists) > 0) {
+			// Load up AC connector
+			require_once( JPATH_ROOT . '/components/com_mue/lib/activecampaign.php' );
+			$acClient = new ActiveCampaign( $cfg->ackey, $cfg->acurl );
 
-		        if ( $contact->status != 'unsub' ) {
-			        // Update field
-			        if ( $brlist->params->brvars ) {
-				        $othervars = $brlist->params->brvars;
-				        foreach ( $othervars as $brv => $mue ) {
-					        if ( $mue == "user_group" ) {
-						        $contact->setField( $brv, $ginfo->ug_name );
-					        }
-				        }
-			        }
+			//get first list
+			$aclistFirst = $aclists[0];
 
-			        // Save
-			        $contact->save( true );
-		        }
-	        } catch (Exception $e) {
+			// get contact
+			$contact = $acClient->getContact($user->email);
 
-	        }
-        }
-		
-		//MC Update
-		$mclists = $this->getUserFields($groupid,false,false,false,"mailchimp");
-		foreach ($mclists as $mclist) {
-			include_once 'components/com_mue/lib/mailchimp.php';
-			if (strstr($mclist->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$mclist->uf_default,2);	}
-			else { $mc_key = $cfg->mckey; $mc_list = $mclist->uf_default; }
-			$mcf=$mclist->uf_sname;
-			$mc = new MailChimpHelper($mc_key,$mc_list);
-			$mcdata = array();
-			if ($mclist->params->mcvars) {
-				$othervars=$mclist->params->mcvars;
-				foreach ($othervars as $mcv=>$mue) {
-					if ($mue == "user_group") {
-						$mcdata[$mcv] = $ginfo->ug_name;
+			// update group fields
+			if ($contact) {
+				if ( $aclistFirst->params->acvars) {
+					// User Fields
+					foreach ( $aclistFirst->params->acvars as $acFieldId => $mueVar ) {
+						if ( $mueVar == "user_group" ) {
+							$acClient->updateContactUserGroup($contact['id'],$acFieldId,$ginfo->ug_name);
+						}
 					}
-				}
-				$mcd=print_r($mcdata,true);
-				if ($mc->subStatus($user->email)) {
-					$mcresult = $mc->updateUser(array("email"=>$user->email),$mcdata,false,"html");
-					if ($mcresult) { $usernotes .= $date->toSql(true)." User Group Updated on MailChimp List #".$mclist->uf_default.' '.$mcd."\r\n"; }
-					else { $usernotes .= $date->toSql(true)." Could not update User Group on MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
 				}
 			}
 		}
@@ -345,17 +279,14 @@ class MUEModelUser extends JModelLegacy
 			$fids = array();
 			$optfs = array();
 			$moptfs = array();
-			$mclists = array();
 			$cmlists = array();
-            $brlists = array();
+            $aclists = array();
 			$flist = $this->getUserFields($ugroup,false,false,false);
 			foreach ($flist as $d) {
 				$fieldname = $d->uf_sname;
-				if ($d->uf_type == 'brlist') {
-					$brlists[]=$d;
-				} else if ($d->uf_type == 'mailchimp') {
-                    $mclists[]=$d;
-                } else if ($d->uf_type == 'cmlist') {
+				if ($d->uf_type == 'aclist') {
+					$aclists[]=$d;
+				} else if ($d->uf_type == 'cmlist') {
 					$cmlists[]=$d;
 				} else if ($d->uf_type=='birthday') {
 					$fmonth = (int)$data[$fieldname.'_month'];
@@ -383,104 +314,82 @@ class MUEModelUser extends JModelLegacy
 				$optionsdata[$o->opt_id]=$o->opt_text;
 			}
 
-            // Bronto Mail Integration
-            foreach ($brlists as $brlist) {
-            	try {
-	                // Get contact and status
-	                $token = $cfg->brkey;
-	                $bronto = new Bronto_Api();
-	                $bronto->setToken($token);
-	                $bronto->login();
-	                $contactObject = $bronto->getContactObject();
-	                $contact = $contactObject->createRow();
-	                $contact->email = $user->email;
-	                $contact->read();
-					$unsubed=false;
+			// Active Campaign Integration
+			if (count($aclists) > 0) {
+				// Load up AC connector
+				require_once(JPATH_ROOT.'/components/com_mue/lib/activecampaign.php');
+				$acClient = new ActiveCampaign($cfg->ackey,$cfg->acurl);
 
-	                // Update Status, but only if we are unsubscribed, transactional, or unconfirmed
-	                if ($data[$brlist->uf_sname]) {
-	                    if ($contact->status == 'transactional' || $contact->status == 'unconfirmed' || $contact->status == 'unsub') {
-	                        if ($contact->status == 'unsub') $unsubed=true;
-	                        $contact->status = "onboarding";
-	                        $contact->save();
-	                    }
-	                }
+				//get first list
+				$aclistFirst = $aclists[0];
 
-	                // Update fields
-	                if ($brlist->params->brvars && $data[$brlist->uf_sname]) {
-	                    $othervars=$brlist->params->brvars;
-	                    foreach ($othervars as $brv=>$mue) {
-	                        if ($mue) {
-	                            if ($brlist->params->brfieldtypes->$brv == "checkbox") {
-	                                if ($item->$mue == "1") $contact->setField($brv,'true');
-	                                else $contact->setField($brv,'false');
-	                            } else if (in_array($mue,$optfs)) {
-	                                $contact->setField($brv,$optionsdata[$item->$mue]);
-	                            }
-	                            else if (in_array($mue,$moptfs)) {
-	                                $fv = '';
-	                                foreach (explode(" ",$item->$mue) as $mfo) {
-	                                    $fv .= $optionsdata[$mfo]." ";
-	                                }
-	                                $contact->setField($brv,$fv);
-	                            }
-	                            else {
-	                                $contact->setField($brv,$item->$mue);
-	                            }
-	                        }
-	                    }
-	                }
+				//setup field data
+				$fieldData = [];
+				if ( $aclistFirst->params->acvars) {
+					// User Fields
+					foreach ($aclistFirst->params->acvars as $acFieldId => $mueVar) {
+						if ($mueVar) {
+							$fieldVal = '';
+							if ( in_array( $mueVar, $optfs ) ) {
+								$fieldVal = $optionsdata[ $item->$mueVar ];
+							} else if ( in_array( $mueVar, $moptfs ) ) {
+								$fv = '';
+								foreach ( explode( " ", $item->$mueVar ) as $mfo ) {
+									$fv .= $optionsdata[ $mfo ] . " ";
+								}
+								$fieldVal= $fv;
+							} else {
+								$fieldVal = $item->$mueVar;
+							}
+							$fieldDataEntry = [];
+							$fieldDataEntry['field'] = $acFieldId;
+							$fieldDataEntry['value'] = $fieldVal;
+							$fieldData[] = $fieldDataEntry;
+						}
+					}
+					// Subscription Status
+					if ($aclistFirst->params->acsubstatus) {
+						$fieldVal = '';
+						if (!$substatus) { $fieldVal=$aclistFirst->params->acsubtextno; }
+						else { $fieldVal=$aclistFirst->params->acsubtextyes; }
+						$fieldDataEntry = [];
+						$fieldDataEntry['field'] = $aclistFirst->params->acsubstatus;
+						$fieldDataEntry['value'] = $fieldVal;
+						$fieldData[] = $fieldDataEntry;
+					}
+				}
 
-	                // Update Subscription Info
-		            if ($brlist->params->brsubstatus) {
-			            // Set Member Status
-			            if ( $substatus ) {
-				            $contact->setField( $brlist->params->brsubstatus, $brlist->params->brsubtextyes );
-			            } else {
-				            $contact->setField( $brlist->params->brsubstatus, $brlist->params->brsubtextno );
-			            }
+				// sync contact
+				$acClient->syncContact($item->email,$item->fname, $item->lname,$fieldData);
 
-			            // Set Member Since
-			            if ( $brlist->params->brsubsince && $uginfo->userg_subsince != "0000-00-00" ) {
-				            $contact->setField( $brlist->params->brsubsince, $uginfo->userg_subsince );
-			            }
+				// get contact
+				$contact = $acClient->getContact($item->email);
 
-			            // Set Member Exp
-			            if ( $brlist->params->brsubexp  && $uginfo->userg_subexp != '0000-00-00') {
-				            $contact->setField( $brlist->params->brsubexp, $uginfo->userg_subexp );
-			            }
+				// pause
+				sleep(1);
 
-			            // Set Active/End Member Plan
-			            if ( $brlist->params->brsubplan ) {
-				            if ( !$substatus ) {
-				                $contact->setField( $brlist->params->brsubplan, 'None' );
-				            } else {
-					            $contact->setField( $brlist->params->brsubplan, $uginfo->userg_subendplanname );
-				            }
-			            }
-		            }
+				if ($contact) {
+					// Gather List Ids and set status
+					$linkedLists = [];
+					foreach ( $aclists as $aclist ) {
+						$subtolist = true;
+						if ( ! $data[ $aclist->uf_sname ] ) {
+							$subtolist = false;
+						}
+						$listsForField = json_decode( $aclist->uf_default, true );
+						foreach ( $listsForField as $lf ) {
+							$linkedLists[ $lf ] = $subtolist;
+						}
+					}
 
-	                // Update Lists
-	                if ($data[$brlist->uf_sname]) {
-	                    if ($unsubed) { //Remove all previous list
-	                        $currentLists = $contact->getLists();
-	                        foreach ($currentLists as $l) {
-	                            $contact->removeFromList($l);
-	                        }
-							$contact->save(true);
-	                    }
-	                    $contact->addToList($brlist->uf_default);
-	                } else {
-	                    $contact->removeFromList($brlist->uf_default);
-	                }
-
-	                // Save
-	                $contact->save(true);
-
-	            } catch (Exception $e) {
-
-	            }
-            }
+					// list update
+					if ( count( $linkedLists ) ) {
+						foreach ( $linkedLists as $lId => $lStatus ) {
+							$acClient->changeListSub( $lId, $contact['id'], $lStatus );
+						}
+					}
+				}
+			}
 
 			//Campaign Monitor Integration
 			foreach ($cmlists as $cmlist) {
@@ -551,72 +460,6 @@ class MUEModelUser extends JModelLegacy
 					$cmresult = $cm->removeSubscriber($cmlist->uf_default,$item->email);
 					if ($cmresult) { $item->$cmf=0; $usernotes .= $date->toSql(true)." EMail Unsubscribed from Campaign Monitor List #".$cmlist->uf_default."\r\n"; }
 					else { $item->$cmf=0; $usernotes .= $date->toSql(true)." Could not unsubscribe EMail from Campaign Monitor List #".$cmlist->uf_default." Error: ".$cm->error."\r\n"; }
-				}
-			}
-			
-			//MailChimp Integration
-			foreach ($mclists as $mclist) {
-				include_once 'components/com_mue/lib/mailchimp.php';
-				if ($data[$mclist->uf_sname]) {
-					if (strstr($mclist->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$mclist->uf_default,2);	} 
-					else { $mc_key = $cfg->mckey; $mc_list = $mclist->uf_default; }
-					$mcf=$mclist->uf_sname;
-					$mc = new MailChimpHelper($mc_key,$mc_list);
-					$mcdata = array('FNAME'=>$item->fname, 'LNAME'=>$item->lname, 'OPTIN_IP'=>$_SERVER['REMOTE_ADDR'], 'OPTIN_TIME'=>$date->toSql(true));
-					if ($mclist->params->mcvars) {
-						$othervars=$mclist->params->mcvars;
-						foreach ($othervars as $mcv=>$mue) {
-							if ($mue) {
-								if (in_array($mue,$optfs)) $mcdata[$mcv] = $optionsdata[$item->$mue];
-								else if (in_array($mue,$moptfs)) {
-									$mcdata[$mcv] = "";
-									foreach (explode(" ",$item->$mue) as $mfo) {
-										$mcdata[$mcv] .= $optionsdata[$mfo]." ";
-									}
-								}
-								else $mcdata[$mcv] = $item->$mue;
-							}
-						} 
-					}
-					if ($mclist->params->mcrgroup) {
-						if (!$substatus) $mcdata[$mclist->params->mcrgroup]=$mclist->params->mcreggroup;
-						else $mcdata[$mclist->params->mcrgroup]=$mclist->params->mcsubgroup;
-						if ($mclist->params->mcsubsince) {
-							if ($uginfo->userg_subsince != "0000-00-00")	$mcdata[$mclist->params->mcsubsince] = $uginfo->userg_subsince;
-							else $mcdata[$mclist->params->mcsubsince] = "";
-						}
-						if ($mclist->params->mcsubexp) {
-							if ($uginfo->userg_subexp != '0000-00-00') $mcdata[$mclist->params->mcsubexp] = $uginfo->userg_subexp;
-							else $mcdata[$mclist->params->mcsubexp] = "";
-						}
-						if ($mclist->params->mcsubpaytype) $mcdata[$mclist->params->mcsubpaytype] = $uginfo->userg_lastpaidvia;
-					}
-					if ($mclist->params->mcigroup) {
-						$mcdata['groupings']=array(array("name"=>$mclist->params->mcigroup,"groups"=>$mclist->params->mcigroups));
-					}
-					$mcd=print_r($mcdata,true);
-					if ($mc->subStatus($item->email)) {
-						$mcresult = $mc->updateUser(array("email"=>$item->email),$mcdata,false,"html");
-						if ($mcresult) { $item->$mcf=1; $usernotes .= $date->toSql(true)." EMail Subscription Updated on MailChimp List #".$mclist->uf_default.' '.$mcd."\r\n"; }
-						else { $item->$mcf=1; $usernotes .= $date->toSql(true)." Could not update EMail subscription on MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
-					}
-					else {
-						$mcresult = $mc->subscribeUser(array("email"=>$item->email),$mcdata,false,"html");
-						if ($mcresult) { $item->$mcf=1; $usernotes .= $date->toSql(true)." EMail Subscribed to MailChimp List #".$mclist->uf_default.' '.$mcd."\r\n"; }
-						else { $item->$mcf=0; $usernotes .= $date->toSql(true)." Could not subscribe EMail to MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
-					}
-					
-					
-				} else {
-					if (strstr($mclist->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$mclist->uf_default,2);	} 
-					else { $mc_key = $cfg->mckey; $mc_list = $mclist->uf_default; }
-					$mcf=$mclist->uf_sname;
-					$mc = new MailChimpHelper($mc_key,$mc_list);
-					if ($mc->subStatus($item->email)) {
-						$mcresult = $mc->unsubscribeUser(array("email"=>$item->email));
-						if ($mcresult) { $item->$mcf=0; $usernotes .= $date->toSql(true)." EMail Unsubscribed from MailChimp List #".$mclist->uf_default."\r\n"; }
-						else { $item->$mcf=0; $usernotes .= $date->toSql(true)." Could not unsubscribe EMail from MailChimp List #".$mclist->uf_default." Error: ".$mc->error."\r\n"; }
-					}
 				}
 			}
 			

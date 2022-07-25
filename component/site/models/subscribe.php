@@ -188,27 +188,8 @@ class MUEModelSubscribe extends JModelLegacy
 		$user = JFactory::getUser();
 		$db = JFactory::getDBO();
 		$date = new JDate('now');
-		$usernotes = "\r\n".$date->toSql(true)." User Subcription Added\r\n";
+		$usernotes = "\r\n".$date->toSql(true)." User Subscription Added\r\n";
 		$uginfo = $this->getUserGroupInfo($user->id);
-		
-		//MailChimp List Update
-		foreach ($this->getMCFields() as $f) {
-			if ($f->params->mcrgroup) {
-				include_once 'components/com_mue/lib/mailchimp.php';
-
-				if (strstr($f->uf_default,"_")){ list($mc_key, $mc_list) = explode("_",$f->uf_default,2);	}
-				else { $mc_key = $cfg->mckey; $mc_list = $f->uf_default; }
-				$mc = new MailChimpHelper($mc_key,$mc_list);
-				$mcdata=array();
-				$mcdata[$f->params->mcrgroup]=$f->params->mcsubgroup;
-				$mcd=print_r($mcdata,true);
-				if ($mc->subStatus($user->email)) {
-					$mcresult = $mc->updateUser(array("email"=>$user->email),$mcdata,false,"html");
-					if ($mcresult) { $usernotes .= $date->toSql(true)." EMail Subscription Updated on MailChimp List #".$f->uf_default.' '.$mcd."\r\n"; }
-					else { $usernotes .= $date->toSql(true)." Could not update EMail subscription on MailChimp List #".$f->uf_default." Error: ".$mc->error."\r\n"; }
-				}
-			}
-		}
 		
 		//Campaign Monitor List Update
 		foreach ($this->getCMFields() as $f) {
@@ -234,48 +215,66 @@ class MUEModelSubscribe extends JModelLegacy
 			}
 		}
 
-		// Bronto List Update
-		foreach ($this->getBrontoFields() as $f) {
-			try {
-				if ($f->params->brsubstatus) {
-					$token = $cfg->brkey;
-					$bronto = new Bronto_Api();
-					$bronto->setToken($token);
-					$bronto->login();
+		// Active Campaign Integration
+		$acfields = $this->getACFields();
+		if (count($acfields) > 0) {
+			// Load up AC connector
+			require_once( JPATH_ROOT . '/components/com_mue/lib/activecampaign.php' );
+			$acClient = new ActiveCampaign( $cfg->ackey, $cfg->acurl );
 
-					// Get Contact
-					$contactObject = $bronto->getContactObject();
-					$contact = $contactObject->createRow();
-					$contact->email = $user->email;
-					$contact->read();
+			//get first list
+			$aclistFirst = $acfields[0];
 
-					// Set Member Status
-					$contact->setField($f->params->brsubstatus,$f->params->brsubtextyes);
+			// get contact
+			$contact = $acClient->getContact($user->email);
 
-					// Set Member Since
-					if ( $f->params->brsubsince && $uginfo->userg_subsince != "0000-00-00") {
-						$contact->setField( $f->params->brsubsince, $uginfo->userg_subsince );
-					}
+			// update group fields
+			if ($contact) {
+				// set field data
+				$fieldData = [];
 
-					// Set Member Exp
-					if ( $f->params->brsubexp  && $uginfo->userg_subexp != '0000-00-00') {
-						$contact->setField( $f->params->brsubexp, $uginfo->userg_subexp );
-					}
-
-					// Set Active/End Member Plan
-					if ( $f->params->brsubplan ) {
-						$contact->setField( $f->params->brsubplan, $uginfo->userg_subendplanname );
-					}
-
-					// Save
-					$contact->save(true);
+				// Set Subscription Status
+				if ($aclistFirst->params->acsubstatus) {
+					$fieldVal = '';
+					$fieldVal=$aclistFirst->params->acsubtextyes;
+					$fieldDataEntry = [];
+					$fieldDataEntry['field'] = $aclistFirst->params->acsubstatus;
+					$fieldDataEntry['value'] = $fieldVal;
+					$fieldData[] = $fieldDataEntry;
 				}
 
-			} catch (Exception $e) {
+				// Set Member Since
+				if ( $aclistFirst->params->acsubsince && $uginfo->userg_subsince != "0000-00-00") {
+					$fieldDataEntry = [];
+					$fieldDataEntry['field'] = $aclistFirst->params->acsubsince;
+					$fieldDataEntry['value'] = $uginfo->userg_subsince;
+					$fieldData[] = $fieldDataEntry;
+				}
 
+				// Set Member Exp
+				if ( $aclistFirst->params->acsubexp  && $uginfo->userg_subexp != '0000-00-00') {
+					$fieldDataEntry = [];
+					$fieldDataEntry['field'] = $aclistFirst->params->acsubexp;
+					$fieldDataEntry['value'] = $uginfo->userg_subexp;
+					$fieldData[] = $fieldDataEntry;
+				}
+
+				// Set Active/End Member Plan
+				if ( $aclistFirst->params->acsubplan ) {
+					$fieldDataEntry = [];
+					$fieldDataEntry['field'] = $aclistFirst->params->acsubplan;
+					$fieldDataEntry['value'] = $uginfo->userg_subendplanname;
+					$fieldData[] = $fieldDataEntry;
+				}
+
+				// update ac data
+				if (count($fieldData)) {
+					$acClient->updateContactFields($contact['id'],$fieldData);
+				}
+
+				$usernotes .= $date->toSql(true)." Contact Data Updated on Active Campaign\r\n";
 			}
 		}
-
 
 		//Update update date
 		$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
@@ -318,11 +317,11 @@ class MUEModelSubscribe extends JModelLegacy
 		return $ufields;
 	}
 
-	function getBrontoFields() {
+	function getACFields() {
 		$db = JFactory::getDBO();
 		$qd = 'SELECT f.* FROM #__mue_ufields as f ';
 		$qd.= ' WHERE f.published = 1 ';
-		$qd .= ' && f.uf_type = "brlist"';
+		$qd .= ' && f.uf_type = "aclist"';
 		$qd.= ' ORDER BY f.ordering';
 		$db->setQuery( $qd );
 		$ufields = $db->loadObjectList();

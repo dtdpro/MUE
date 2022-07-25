@@ -27,6 +27,7 @@ $user=JFactory::getUser();
 echo '<h2 class="componentheading uk-article-title">'.JText::_('COM_MUE_USER_CHGEMAIL_PAGE_TITLE').'</h2>';
 echo '<div id="mue-user-edit">';
 echo '<form action="" method="post" name="regform" id="regform" class="uk-form uk-form-horizontal">';
+$ri=1;
 if ($ri==1) $ri=0;
 else $ri=1;
 

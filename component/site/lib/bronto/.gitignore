@@ -1,6 +1,0 @@
-/load/*
-/nbproject/private
-/tests/temp/*
-/vendor/*
-autoload.php
-phpunit.xml
