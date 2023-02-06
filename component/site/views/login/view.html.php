@@ -35,7 +35,7 @@ class MUEViewLogin extends JViewLegacy
 		$app=Jfactory::getApplication();
 		$ufdata=$app->getUserState( 'users.login.form.data',array());
 		$redir = base64_decode(JRequest::getVar('return', null));
-		if (!$redir) $redir = $ufdata['return'];
+		if (!$redir && isset($ufdata['return'])) $redir = $ufdata['return'];
 		if (!$redir) $redir = $this->params->get('login_redirect_url');
 		$this->redirurl = $redir;
 	}

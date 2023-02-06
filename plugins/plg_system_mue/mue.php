@@ -10,7 +10,7 @@ class plgSystemMUE extends JPlugin
 		$app = JFactory::getApplication();
 
 		// No sub enforcement me for admin
-		if ($app->isAdmin()) {
+		if ($app->isClient('administrator')) {
 			return;
 		}
 

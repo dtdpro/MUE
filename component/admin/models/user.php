@@ -150,6 +150,7 @@ class MUEModelUser extends JModelAdmin
 		{
 			//setup item and bind data
 			$flist = $this->getFields(false);
+			$item = new stdClass();
 			foreach ($flist as $d) {
 				$fieldname = $d->uf_sname;
 				$item->$fieldname = $data[$fieldname];
