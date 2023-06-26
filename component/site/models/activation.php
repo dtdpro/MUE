@@ -19,8 +19,7 @@ class MUEModelActivation extends JModelLegacy
 		$query->select($db->quoteName('id'))
 		      ->from($db->quoteName('#__users'))
 		      ->where($db->quoteName('activation') . ' = ' . $db->quote($token))
-		      ->where($db->quoteName('block') . ' = ' . 1)
-		      ->where($db->quoteName('lastvisitDate') . ' = ' . $db->quote($db->getNullDate()));
+		      ->where($db->quoteName('block') . ' = ' . 1);
 		$db->setQuery($query);
 		$userId = $db->loadResult();
 		if (!$userId) {
@@ -98,8 +97,7 @@ class MUEModelActivation extends JModelLegacy
 		$query->select($db->quoteName('id'))
 		      ->from($db->quoteName('#__users'))
 		      ->where($db->quoteName('activation') . ' = ' . $db->quote($token))
-		      ->where($db->quoteName('block') . ' = ' . 1)
-		      ->where($db->quoteName('lastvisitDate') . ' = ' . $db->quote($db->getNullDate()));
+		      ->where($db->quoteName('block') . ' = ' . 1);
 		$db->setQuery($query);
 		$userId = $db->loadResult();
 		if (!$userId) {

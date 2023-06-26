@@ -2,6 +2,8 @@
 
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Session\Session;
+
 class PayPalAPI {
 
 	var $API_USERNAME = "";
@@ -40,28 +42,19 @@ class PayPalAPI {
 		$db  = JFactory::getDBO();
 		$q2='UPDATE #__mue_usersubs SET usrsub_status="canceled" WHERE usrsub_id = "'.$usid.'"';
 		$db->setQuery($q2);
-		$db->query();
+		$db->execute();
 	}
 	
 	function cancelSub($sub) {
 		$db  = JFactory::getDBO();
 		$q2='SELECT * FROM #__mue_usersubs WHERE usrsub_id = "'.$sub.'"';
 		$db->setQuery($q2);
-		$db->query();
+		$db->execute();
 		$sinfo = $db->loadObject();
 		$nvpstr='&ACTION=Cancel'.'&PROFILEID='.$sinfo->usrsub_rpprofile ;
 		$resArray=$this->hash_call("ManageRecurringPaymentsProfileStatus",$nvpstr); 
 		$ack = strtoupper($resArray["ACK"]);
-		if ($resArray) {
-			$ralogtxt = "";
-			foreach($resArray as $key => $value) {
-				$ralogtxt .= "$key: $value\r\n";
-			}
-			$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$sub.',"'.$db->escape($ralogtxt).'")';
-			$db->setQuery($ql);
-			$db->query();
-		}
-		
+
 		if($ack != 'SUCCESS' && $ack != 'SUCCESSWITHWARNING'){
 			$this->error="An Error has occurred";
 			return false;
@@ -71,11 +64,12 @@ class PayPalAPI {
 	}
 	
 	function verifyPayment($pinfo,$usid) {
+		$input = JFactory::getApplication()->input;
 		$session=JFactory::getSession();
 		$db  = JFactory::getDBO();
 		$user  = JFactory::getUser();
 		$app=Jfactory::getApplication();
-		$iid = JRequest::getVar('Itemid');
+		$iid = $input->get('Itemid');
 		$config = MUEHelper::getConfig();
 		
 		$qsubid = 'SELECT * FROM #__mue_usersubs WHERE usrsub_id = "'.$usid.'"';
@@ -100,21 +94,11 @@ class PayPalAPI {
 		$nvpstr.='&IPADDRESS='.$serverName ;
 		$resArray=$this->hash_call("DoExpressCheckoutPayment",$nvpstr);
 		$ack = strtoupper($resArray["ACK"]);
-		
-		if ($resArray) {
-			$ralogtxt = $nvpstr."\r\n";
-			foreach($resArray as $key => $value) {
-				$ralogtxt .= "$key: $value\r\n";
-			}
-			$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$usid.',"'.$db->escape($ralogtxt).'")';
-			$db->setQuery($ql);
-			$db->query();
-		}
-		
+
 		if($ack != 'SUCCESS' && $ack != 'SUCCESSWITHWARNING'){
 			$qe='UPDATE #__mue_usersubs SET usrsub_status="error" WHERE usrsub_id = "'.$usid.'"';
 			$db->setQuery($qe);
-			$db->query();
+			$db->execute();
 			$this->error="An Error has occurred";
 			return false;
 		} else {
@@ -131,34 +115,24 @@ class PayPalAPI {
 				$nvpstr = $nvpHeader.$nvpstr;
 				$resArray=$this->hash_call("CreateRecurringPaymentsProfile",$nvpstr);
 				$ack = strtoupper($resArray["ACK"]);
-				
-				if ($resArray) {
-					$ralogtxt = "";
-					foreach($resArray as $key => $value) {
-						$ralogtxt .= "$key: $value\r\n";
-					}
-					$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$usid.',"'.$db->escape($ralogtxt).'")';
-					$db->setQuery($ql);
-					$db->query();
-				}
-				
+
 				if($ack == 'SUCCESS' || $ack == 'SUCCESSWITHWARNING') {
 					
 					$token = $resArray['TOKEN'];
 					$q= 'UPDATE #__mue_usersubs SET usrsub_rpprofile="'.$resArray['PROFILEID'].'", usrsub_rpstatus="'.$resArray['PROFILESTATUS'].'" WHERE usrsub_id = '.$usid;
 					$db->setQuery($q);
-					$db->query();
+					$db->execute();
 				} else  {
 					$q='UPDATE #__mue_usersubs SET usrsub_status="error" WHERE usrsub_id = "'.$usid.'"';
 					$db->setQuery($q);
-					$db->query();
+					$db->execute();
 					$this->error="An error has occured";
 					return false;
 				}
 			} else {
 				$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$resArray['PAYMENTINFO_0_TRANSACTIONID'].'", usrsub_status="accepted" WHERE usrsub_id = "'.$usid.'"';
 				$db->setQuery($q2);
-				$db->query();
+				$db->execute();
 			}
 		}
 		return true;
@@ -166,27 +140,18 @@ class PayPalAPI {
 	}
 	
 	function confirmPayment($pinfo,$usid,$ppt) {
+		$input = JFactory::getApplication()->input;
 		$session = JFactory::getSession();
 		$db  = JFactory::getDBO();
 		$user  = JFactory::getUser();
 		$app = Jfactory::getApplication();
-		$iid = JRequest::getVar('Itemid');
+		$iid = $input->get('Itemid');
 		
 		$nvpHeader=$this->nvpHeader();
 		$nvpstr="&TOKEN=".$ppt;
 		$nvpstr = $nvpHeader.$nvpstr;
 		$resArray=$this->hash_call("GetExpressCheckoutDetails",$nvpstr);
 		$ack = strtoupper($resArray["ACK"]);
-		
-		if ($resArray) {
-			$ralogtxt = "";
-			foreach($resArray as $key => $value) {
-				$ralogtxt .= "$key: $value\r\n";
-			}
-			$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$usid.',"'.$db->escape($ralogtxt).'")';
-			$db->setQuery($ql);
-			$db->query();
-		}
 		
 		if($ack == 'SUCCESS' || $ack == 'SUCCESSWITHWARNING') {
 			$session->set('token',$ppt);
@@ -200,11 +165,11 @@ class PayPalAPI {
 			$token = $resArray['TOKEN'];
 			$q= 'UPDATE #__mue_usersubs SET usrsub_status="verified",usrsub_email="'.$resArray['EMAIL'].'" WHERE usrsub_id = '.$usid;
 			$db->setQuery($q);
-			$db->query();
+			$db->execute();
 		} else  {
 			$q='UPDATE #__mue_usersubs SET usrsub_status="error" WHERE usrsub_id = "'.$usid.'"';
 			$db->setQuery($q);
-			$db->query();
+			$db->execute();
 			$this->error="An error has occured";
 			return false;
 		}
@@ -212,12 +177,12 @@ class PayPalAPI {
 	}
 	
 	function submitPayment($pinfo,$start) {
-		
-		JRequest::checkToken() or jexit( 'Invalid Token' );
+		$this->checkToken() or die(JText::_('JINVALID_TOKEN'));
+		$input = JFactory::getApplication()->input;
 		$db  = JFactory::getDBO();
 		$user  = JFactory::getUser();
 		$app=Jfactory::getApplication();
-		$iid = JRequest::getVar('Itemid');
+		$iid = $input->get('Itemid');
 		$session=JFactory::getSession();
 
 		if ($pinfo->discounted != -1) {
@@ -237,7 +202,7 @@ class PayPalAPI {
 		$q .= ',"'.$db->escape($pinfo->discountcode).'"';
 		$q .= ',"'.$db->escape(number_format($cost,2)).'"';
 		$q .= ')';
-		$db->setQuery($q); $db->query();
+		$db->setQuery($q); $db->execute();
 		$purchaseid = $db->insertid();
 		
 		$ivn=$purchaseid."-s".$pinfo->sub_id."-u".$user->id;
@@ -281,15 +246,6 @@ class PayPalAPI {
 		$nvpstr = $nvpstr;
 		
 		$resArray=$this->hash_call("SetExpressCheckout",$nvpstr);
-		if ($resArray) {
-			$ralogtxt = "";
-			foreach($resArray as $key => $value) {
-				$ralogtxt .= "$key: $value\r\n";
-			}
-			$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.(int)$purchaseid.',"'.$db->escape($ralogtxt).'")';
-			$db->setQuery($ql);
-			$db->query();
-		} 
 		
 		$ack = strtoupper($resArray["ACK"]);
 		$token = $resArray['TOKEN'];
@@ -297,14 +253,14 @@ class PayPalAPI {
 			// Redirect to paypal.com here
 			$qt='UPDATE #__mue_usersubs SET usrsub_status="started" WHERE usrsub_id = '.(int)$purchaseid;
 			$db->setQuery($qt);
-			$db->query();
+			$db->execute();
 			$token = urldecode($resArray["TOKEN"]);
 			$payPalURL = $this->PAYPAL_URL.$token;
 			$app->redirect($payPalURL);
 		} else {
 			$q='UPDATE #__mue_usersubs SET usrsub_status="notyetstarted" WHERE usrsub_id = "'.(int)$purchaseid.'"';
 			$db->setQuery($q);
-			$db->query();
+			$db->execute();
 			$this->error="An error has occured";
 			return false;
 		
@@ -342,7 +298,7 @@ class PayPalAPI {
 			if ($txn_type == "new_case") {
 				$q1='UPDATE #__mue_usersubs SET usrsub_status="dispute" WHERE usrsub_id = "'.$pid.'"';
 				$db->setQuery($q1);
-				$db->query();
+				$db->execute();
 				$qsubid = 'SELECT * FROM #__mue_usersubs WHERE usrsub_id = "'.$pid.'"';
 				$db->setQuery($qsubid);
 				$sinfo = $db->loadObject();
@@ -361,7 +317,7 @@ class PayPalAPI {
 						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="completed", usrsub_end = DATE_ADD(usrsub_end,INTERVAL '.$pinfo->sub_length.' '.strtoupper($pinfo->sub_period).') WHERE usrsub_id = "'.$pid.'"';
 						$db->setQuery($q2);
 						$ralogtxt .= $q2;
-						if (!$db->query()) $ralogtxt .= $db->error();
+						if (!$db->execute()) $ralogtxt .= $db->error();
 						break;
 				}
 			} else if ($txn_type=="recurring_payment_profile_cancel") {
@@ -377,7 +333,7 @@ class PayPalAPI {
 				$profile_status=$_POST['profile_status'];
 				$q2='UPDATE #__mue_usersubs SET usrsub_status="completed", usrsub_rpstatus = "'.$profile_status.'" WHERE usrsub_id = "'.$pid.'"';
 				$db->setQuery($q2);
-				if (!$db->query()) $ralogtxt .= $db->error();
+				if (!$db->execute()) $ralogtxt .= $db->error();
 			} else {
 				$qsubid = 'SELECT * FROM #__mue_usersubs WHERE usrsub_id = "'.$pid.'"';
 				$db->setQuery($qsubid);
@@ -386,52 +342,52 @@ class PayPalAPI {
 					case "Refunded":
 						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="refunded" WHERE usrsub_id = "'.$pid.'"';
 						$db->setQuery($q2);
-						$db->query();
+						$db->execute();
 						break;
 					case "Completed":
 						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="completed" WHERE usrsub_id = "'.$pid.'"';
 						$db->setQuery($q2);
-						$db->query();
+						$db->execute();
 						break;
 					case "Canceled_Reversal":
 						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="canceled_reversal" WHERE usrsub_id = "'.$pid.'"';
 						$db->setQuery($q2);
-						$db->query();
+						$db->execute();
 						break;
 					case "Denied":
 						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="denied" WHERE usrsub_id = "'.$pid.'"';
 						$db->setQuery($q2);
-						$db->query();
+						$db->execute();
 						break;
 					case "Expired":
 						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="expired" WHERE usrsub_id = "'.$pid.'"';
 						$db->setQuery($q2);
-						$db->query();
+						$db->execute();
 						break;
 					case "Failed":
 						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="failed" WHERE usrsub_id = "'.$pid.'"';
 						$db->setQuery($q2);
-						$db->query();
+						$db->execute();
 						break;
 					case "Pending":
 						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="pending" WHERE usrsub_id = "'.$pid.'"';
 						$db->setQuery($q2);
-						$db->query();
+						$db->execute();
 						break;
 					case "Reversed":
 						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="reversed" WHERE usrsub_id = "'.$pid.'"';
 						$db->setQuery($q2);
-						$db->query();
+						$db->execute();
 						break;
 					case "Processed":
 						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="completed" WHERE usrsub_id = "'.$pid.'"';
 						$db->setQuery($q2);
-						$db->query();
+						$db->execute();
 						break;
 					case "Voided":
 						$q2='UPDATE #__mue_usersubs SET usrsub_transid = "'.$txn_id.'", usrsub_status="voided" WHERE usrsub_id = "'.$pid.'"';
 						$db->setQuery($q2);
-						$db->query();
+						$db->execute();
 						break;
 				}
 			}
@@ -439,20 +395,12 @@ class PayPalAPI {
 			$usernotes = "PayPal IPN Update Status on Sub ID #$pid to: $payment_status \r\n";
 			$qud = 'UPDATE #__mue_usergroup SET userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$sinfo->usrsub_user;
 			$db->setQuery($qud);
-			$db->query();
-
-			$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$pid.',"'.$db->escape($ralogtxt).'")';
-			$db->setQuery($ql);
-			$db->query();
+			$db->execute();
 
 			return $sinfo->usrsub_user;
 					
 
 		}
-
-		$ql = 'INSERT INTO #__mue_usersubs_log (usl_usid,usl_resarray) VALUES ('.$pid.',"'.$db->escape($ralogtxt).'")';
-		$db->setQuery($ql);
-		$db->query();
 
 		return false;
 		
@@ -666,5 +614,12 @@ class PayPalAPI {
 		} else {
 			return false;
 		}
+	}
+
+	public function checkToken($method = 'post', $redirect = true)
+	{
+		$valid = Session::checkToken($method);
+
+		return $valid;
 	}
 }

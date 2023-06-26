@@ -2,7 +2,7 @@
 
 jimport( 'joomla.application.component.view');
 
-
+use Joomla\CMS\Session\Session;
 class MUEViewUser extends JViewLegacy
 {
 	public function display($tpl = null)
@@ -10,6 +10,7 @@ class MUEViewUser extends JViewLegacy
 		$cfg = MUEHelper::getConfig();
 		$layout = $this->getLayout();
 		$this->params	= JFactory::getApplication()->getParams('com_mue');
+		$this->input = JFactory::getApplication()->input;
 		
 		switch($layout) {
 			case "cerecords": 
@@ -47,18 +48,20 @@ class MUEViewUser extends JViewLegacy
 	}
 	
 	protected function saveEmail() {
-		JRequest::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$this->checkToken() or die(JText::_('JINVALID_TOKEN'));
 		$model = $this->getModel();
-		$newemail = JRequest::getVar('newemail');
+		$newemail = $this->input->get('newemail');
 		$user = JFactory::getUser();
 		$userid = $user->id;
 		if ($userid != 0) {
 			if (!$model->saveEmail($newemail)) {
 				$app=Jfactory::getApplication();
-				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'),'Could not change Email Address');
+				$app->enqueueMessage($model->getError(), 'error');
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'));
 			} else {
 				$app=Jfactory::getApplication();
-				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'),"Email Address Changed");
+				$app->enqueueMessage("Email Address Changed");
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'));
 			}
 		}
 	
@@ -66,13 +69,13 @@ class MUEViewUser extends JViewLegacy
 	
 	protected function changeEmail() {
 		$model = $this->getModel();
-		$print = JRequest::getVar('print');
+		$print = $this->input->get('print');
 	}
 	
 	protected function saveGroup() {
-		JRequest::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$this->checkToken() or die(JText::_('JINVALID_TOKEN'));
 		$model = $this->getModel();
-		$newgroup = JRequest::getVar('newgroup');
+		$newgroup = $this->input->get('newgroup');
 		$user = JFactory::getUser();
 		$userid = $user->id;
 		if (count($model->getGroups()) == 1) {
@@ -82,10 +85,12 @@ class MUEViewUser extends JViewLegacy
 		if ($userid != 0) {
 			if (!$model->saveGroup($newgroup)) {
 				$app=Jfactory::getApplication();
-				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'),'Could not change group');
+				$app->enqueueMessage('Could not change group', 'error');
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'));
 			} else {
 				$app=Jfactory::getApplication();
-				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'),"User Group Changed");
+				$app->enqueueMessage("User Group Changed");
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'));
 			}
 		}
 		
@@ -93,7 +98,7 @@ class MUEViewUser extends JViewLegacy
 	
 	protected function changeGroup() {
 		$model = $this->getModel();
-		$print = JRequest::getVar('print');
+		$print = $this->input->get('print');
 		$user = JFactory::getUser();
 		$userid = $user->id;
 		if (count($model->getGroups()) == 1) {
@@ -103,39 +108,39 @@ class MUEViewUser extends JViewLegacy
 		if ($userid != 0) {
 			$userinfo=MUEHelper::getUserInfo(true);
 			$groups=$model->getGroups();
-			$this->assignRef('currentgroup',$userinfo->userGroupID);
-			$this->assignRef('groups',$groups);
+			$this->currentgroup=$userinfo->userGroupID;
+			$this->groups=$groups;
 		}
 		
 	}
 	
 	protected function userCerts() {
 		$model = $this->getModel();
-		$print = JRequest::getVar('print');
+		$print = $this->input->get('print');
 		$user = JFactory::getUser();
 		$userid = $user->id;
 		if ($userid != 0) {
 			$userrecs=$model->getUserCERecords();
-			$this->assignRef('userrecs',$userrecs);
+			$this->userrecs=$userrecs;
 		}
 		
 	}
 	
 	protected function userSubs() {
 		$model = $this->getModel();
-		$print = JRequest::getVar('print');
+		$print = $this->input->get('print');
 		$user = JFactory::getUser();
 		$userid = $user->id;
 		if ($userid != 0) {
 			$usersubs=MUEHelper::getUserSubs();
-			$this->assignRef('usersubs',$usersubs);
+			$this->usersubs=$usersubs;
 		}
 		
 	}
 	
 	protected function userProfile() {
 		$model = $this->getModel();
-		$print = JRequest::getVar('print');
+		$print = $this->input->get('print');
 		$user = JFactory::getUser();
 		$userid = $user->id;
 		if ($userid != 0) {
@@ -143,15 +148,15 @@ class MUEViewUser extends JViewLegacy
 			$userfields=$model->getUserFields($userinfo->userGroupID);
 			if (count($model->getGroups()) == 1) $this->one_group = true;
 			else $this->one_group=false;
-			$this->assignRef('userinfo',$userinfo);
-			$this->assignRef('userfields',$userfields);
+			$this->userinfo=$userinfo;
+			$this->userfields=$userfields;
 		}
 		
 	}
 	
 	protected function userEdit() {
 		$model = $this->getModel();
-		$print = JRequest::getVar('print');
+		$print = $this->input->get('print');
 		$user = JFactory::getUser();
 		$userid = $user->id;
 		if ($userid != 0) {
@@ -159,24 +164,27 @@ class MUEViewUser extends JViewLegacy
 			$userfields=$model->getUserFields($userinfo->userGroupID,false,true);
 			if (count($model->getGroups()) == 1) $this->one_group = true;
 			else $this->one_group=false;
-			$this->assignRef('userinfo',$userinfo);
-			$this->assignRef('userfields',$userfields);
+			$this->userinfo=$userinfo;
+			$this->userfields=$userfields;
+			$this->defaultTimezone = JFactory::getConfig()->get( 'offset' );
 		}
 		
 	}
 	
 	protected function saveUser() {
 		$model = $this->getModel();
-		$print = JRequest::getVar('print');
+		$print = $this->input->get('print');
 		$user = JFactory::getUser();
 		$userid = $user->id;
 		if ($userid != 0) {
 			if (!$model->save()) {
 				$app=Jfactory::getApplication();
-				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=proedit'),$model->getError());
+				$app->enqueueMessage($model->getError(), 'error');
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=proedit'));
 			} else {
 				$app=Jfactory::getApplication();
-				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'),"Profile Saved");
+				$app->enqueueMessage("Profile Saved");
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'));
 			}
 		}
 		
@@ -184,7 +192,7 @@ class MUEViewUser extends JViewLegacy
 	
 	protected function cancelUserSub() {
 		$model = $this->getModel();
-		$sub = JRequest::getInt('sub');
+		$sub = $this->input->get('sub');
 		$user = JFactory::getUser();
 		$userid = $user->id;
 		$muecfg = MUEHelper::getConfig();
@@ -193,13 +201,22 @@ class MUEViewUser extends JViewLegacy
 		if ($userid != 0) {
 			if (!$paypal->cancelSub($sub)) {
 				$app=Jfactory::getApplication();
-				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=subs'),$paypal->error,'error');
+				$app->enqueueMessage($paypal->error,'error');
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=subs'));
 			} else {
 				$app=Jfactory::getApplication();
-				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=subs'),"Recurring Subscription Cancellation Request Submitted");
+				$app->enqueueMessage("Recurring Subscription Cancellation Request Submitted");
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=subs'));
 			}
 		}
 	
+	}
+
+	public function checkToken($method = 'post', $redirect = true)
+	{
+		$valid = Session::checkToken($method);
+
+		return $valid;
 	}
 }
 ?>

@@ -8,12 +8,13 @@ class MUEModelAclist extends JModelLegacy
 {
 	protected function populateState()
 	{
-		$field = JRequest::getInt('field');
+		$app	= JFactory::getApplication();
+		$field = $app->input->getInt('field');
 		$this->setState('aclist.field', $field);
 	}
 	
 	function getUFields() {
-		$app = JFactory::getApplication('administrator');
+		$app = JFactory::getApplication();
 		$query = $this->_db->getQuery(true);
 		$query->select('uf_sname AS value, CONCAT(uf_name," [",uf_sname,"]") AS text');
 		$query->from('#__mue_ufields');
@@ -86,7 +87,7 @@ class MUEModelAclist extends JModelLegacy
 		$query->set('params = '.$db->quote($params));
 		$query->where('uf_id = '.$field);
 		$db->setQuery($query);
-		if ($db->query()) { return true; }
+		if ($db->execute()) { return true; }
 		else { $this->setError($db->getError()); return false; }
 	}
 }

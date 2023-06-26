@@ -45,7 +45,9 @@ class MUEViewUser extends JViewLegacy
 	 */
 	protected function addToolBar() 
 	{
-		JRequest::setVar('hidemainmenu', true);
+		$jinput = JFactory::getApplication()->input;
+		$jinput->set('hidemainmenu', true);
+
 		$isNew = $this->item->usr_user == 0;
 		JToolBarHelper::title($isNew ? JText::_('COM_MUE_MANAGER_USER_NEW') : JText::_('COM_MUE_MANAGER_USER_EDIT'), 'mue');
 		// Built the actions for new and existing records.

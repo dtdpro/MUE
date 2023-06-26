@@ -11,17 +11,17 @@ class MUEViewCouponcodes extends JViewLegacy
 	protected $items;
 	protected $pagination;
 	protected $state;
-	protected $arttitle;
 	
 	function display($tpl = null) 
 	{
+		$jinput = JFactory::getApplication()->input;
 		$this->state		= $this->get('State');
 		$this->items = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
-		$this->arttitle = $this->get('ArticleTitle');
-		
+		$this->filterForm    = $this->get('FilterForm');
+		$this->activeFilters = $this->get('ActiveFilters');
 
-		MUEHelper::addSubmenu(JRequest::getVar('view'));
+		if (JVersion::MAJOR_VERSION == 3) MUEHelper::addSubmenu($jinput->getVar('view'));
 		
 		if (count($errors = $this->get('Errors'))) 
 		{
@@ -51,10 +51,6 @@ class MUEViewCouponcodes extends JViewLegacy
 		} else  {
 			JToolBarHelper::trash('couponcodes.trash');
 		}
-		
-		JHtmlSidebar::setAction('index.php?option=com_mue&view=couponcodes');
-		
-		JHtmlSidebar::addFilter(JText::_('JOPTION_SELECT_PUBLISHED'),'filter_state',JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.state'), true));
 		
 	}
 	

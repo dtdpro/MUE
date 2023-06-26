@@ -10,6 +10,8 @@ class MUEViewUsersubs extends JViewLegacy
 {
 	function display($tpl = null) 
 	{
+		$jinput = JFactory::getApplication()->input;
+
 		// Get data from the model
 		$this->items = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
@@ -29,7 +31,7 @@ class MUEViewUsersubs extends JViewLegacy
 		$this->addToolBar();
 
         // Set the submenu
-        MUEHelper::addSubmenu(JRequest::getVar('view'));
+        if (JVersion::MAJOR_VERSION == 3) MUEHelper::addSubmenu($jinput->getVar('view'));
         $this->sidebar = JHtmlSidebar::render();
 
 		// Display the template
@@ -54,16 +56,6 @@ class MUEViewUsersubs extends JViewLegacy
 		$tbar->appendButton('Link','export','Export CSV','index.php?option=com_mue&view=usersubs&format=csv');
 
 		JHtmlSidebar::setAction('index.php?option=com_mue&view=usersubs');
-
-		/*JHtmlSidebar::addFilter(JText::_("- Subscription Type -"),'filter_subtype',JHtml::_('select.options', [
-			['value'=>"paypal",'text'=>"PayPal"],
-			['value'=>"redeem",'text'=>"Reddemed Code"],
-			['value'=>"admin",'text'=>"Admin Add"],
-			['value'=>"google",'text'=>"Google Checkout"],
-			['value'=>"migrate",'text'=>"Migrated"],
-			['value'=>"check",'text'=>"Check"],
-			['value'=>"trial",'text'=>"Trial/Free"]
-		], 'value', 'text', $state->get('filter.subtype'), true));*/
 
 
 	}

@@ -1,94 +1,137 @@
 <?php
-//$path = JPATH_SITE.'/cache/';
+defined('_JEXEC') or die('Restricted access');
+
+// Load CSV Exporter
+require JPATH_COMPONENT."/vendor/autoload.php";
+
 $cfg=MUEHelper::getConfig();
+
+// FIlename
 $filename = 'MUE_Users_Report' . '-' . date("Y-m-d").'.csv';
-$contents = "";
 
-$contents .= '"User Id","Username","Name","email","User Group","Join Site","LastVisit","Last Update","Registered"';
-if ($cfg->subscribe) $contents .= ',"Subscriber Since","Subcription Status"';
-foreach ($this->fdata as $f) {
-	$contents .= ',"'.$f->uf_name.'"';
+// Basic Headings
+$headers = ["User Id","Username","Name","email","User Group","Join Site","LastVisit","Last Update","Registered"];
+
+// Subscription Headings
+if ($cfg->subscribe) {
+	$headers[] = "Subscriber Since";
+	$headers[] = "Subcription Status";
+	$headers[] = "Days Left/Ago";
 }
-$contents .= "\n";
 
+// Field Headings
+foreach ($this->fdata as $f) {
+	$headers[] = $f->uf_name;
+}
+
+// Data Rows
+$dataRows = [];
+
+// Itrate Users
 foreach ($this->items as $i) {
-	$contents .= '"'.$i->id.'",'; 
-	$contents .= '"'.$i->username.'",'; 
-	$contents .= '"'.preg_replace( "/\r|\n/", "", $i->name).'",';
-	$contents .= '"'.$i->email.'",'; 
-	$contents .= '"'.$this->usergroups[$i->userg_group].'",'; 
-	$contents .= '"'.$i->userg_siteurl.'",'; 
-	$contents .= '"'.$i->lastvisitDate.'",'; 
-	$contents .= '"'.$i->lastUpdate.'",'; 
-	$contents .= '"'.$i->registerDate.'"'; 
+	$dataRow = [];
+
+	$dataRow[] = $i->id;
+	$dataRow[] = $i->username;
+	$dataRow[] = preg_replace( "/\r|\n/", "", $i->name);
+	$dataRow[] = $i->email;
+	if (isset($this->usergroups[$i->userg_group])) $dataRow[] = $this->usergroups[$i->userg_group];
+	else $dataRow[] = "";
+	$dataRow[] = $i->userg_siteurl;
+	$dataRow[] = $i->lastvisitDate;
+	$dataRow[] = $i->lastUpdate;
+	$dataRow[] = $i->registerDate;
+
 	if ($cfg->subscribe) {
-		$contents .= ',"'.$i->member_since.'"'; 
-		$contents .= ',"';
+		$dataRow[] = $i->member_since;
 		if ($i->sub) {
 			if ((int)$i->sub->daysLeft > 0) {
-			
 				switch ($i->sub->usrsub_status) {
-					case "notyetstarted": $contents .=   "Not Yet Started"; break;
-					case "verified": $contents .=   "Assessment"; break;
-					case "canceled": $contents .=   "Canceled"; break;
-					case "accepted": $contents .=   "Accepted"; break;
-					case "pending": $contents .=   "Pending"; break;
-					case "started": $contents .=   "Started"; break;
-					case "denied": $contents .=   "Denied"; break;
-					case "refunded": $contents .=   "Refunded"; break;
-					case "failed": $contents .=   "Failed"; break;
-					case "pending": $contents .=   "Pending"; break;
-					case "reversed": $contents .=   "Reversed"; break;
-					case "canceled_reversal": $contents .=   "Canceled Dispute"; break;
-					case "expired": $contents .=   "Expired"; break;
-					case "voided": $contents .=   "Voided"; break;
-					case "completed": $contents .=   "Active"; break;
-					case "dispute": $contents .=   "Dispute"; break;
+					case "notyetstarted": $dataRow[] = "Not Yet Started"; break;
+					case "verified": $dataRow[] = "Assessment"; break;
+					case "canceled": $dataRow[] = "Canceled"; break;
+					case "accepted": $dataRow[] = "Accepted"; break;
+					case "pending": $dataRow[] = "Pending"; break;
+					case "started": $dataRow[] = "Started"; break;
+					case "denied": $dataRow[] = "Denied"; break;
+					case "refunded": $dataRow[] = "Refunded"; break;
+					case "failed": $dataRow[] = "Failed"; break;
+					case "pending": $dataRow[] = "Pending"; break;
+					case "reversed": $dataRow[] = "Reversed"; break;
+					case "canceled_reversal": $dataRow[] = "Canceled Dispute"; break;
+					case "expired": $dataRow[] =  "Expired"; break;
+					case "voided": $dataRow[] = "Voided"; break;
+					case "completed": $dataRow[] = "Active"; break;
+					case "dispute": $dataRow[] = "Dispute"; break;
 				}
-				$contents .=  ': '.$i->sub->daysLeft.'  Days Left';
+				$dataRow[] = $i->sub->daysLeft;
 			}
-			else $contents .=  'Expired: '.abs((int)$i->sub->daysLeft).'  Days Ago';
+			else {
+				$dataRow[] = "Expired";
+				$dataRow[] = abs((int)$i->sub->daysLeft);
+			}
 		} else {
-			$contents .=  'No Subscription';
+			$dataRow[] = "No Subscription";
+			$dataRow[] = 0;
 		}
-		$contents .= '"';
 	}
 	foreach ($this->fdata as $f) {
-		$contents .= ',"';
 		if (!$f->uf_cms) {
 			$fn=$f->uf_sname;
 			$udf = $this->udata->$fn;
 			$uid = $i->id;
 			if ($f->uf_type == 'multi' || $f->uf_type == 'dropdown' || $f->uf_type == 'mcbox' || $f->uf_type == 'mlist') {
-				$ansarr=explode(" ",$udf[$uid]);
-				foreach ($ansarr as $a) {
-					$contents .= $this->adata[$a]." "; 
+				if (isset($udf[$uid])) {
+					$ansarr      = explode( " ", $udf[ $uid ] );
+					$rowcontents = "";
+					foreach ( $ansarr as $a ) {
+						$rowcontents .= $this->adata[ $a ] . " ";
+					}
+					$dataRow[] = $rowcontents;
+				} else {
+					$dataRow[] = "";
 				}
 			} else if ($f->uf_type == 'cbox' || $f->uf_type == 'yesno' || $f->uf_type == 'mailchimp') {
-				$contents .= ($udf[$uid] == "1") ? "Yes" : "No";
+				if (isset($udf[$uid])) $dataRow[] = ($udf[$uid] == "1") ? "Yes" : "No";
+				else $dataRow[] = "";
 			} else if ($f->uf_type == 'birthday') {
-				if ($udf[$uid]) $contents .= date("F j",strtotime('2000-'.substr($udf[$uid],0,2)."-".substr($udf[$uid],2,2).''));
+				if ($udf[$uid]) $dataRow[] = date("F j",strtotime('2000-'.substr($udf[$uid],0,2)."-".substr($udf[$uid],2,2).''));
+				else $dataRow[] = "";
 			} else{
-				$contents .= $udf[$uid];
+				if (isset($udf[$uid])) $dataRow[] = $udf[$uid];
+				else $dataRow[] = "";
 			}
 		}
-		$contents .= '"';
 	}
-	$contents .= "\n";
+	$dataRows[] = $dataRow;
 }
 
-JResponse::clearHeaders();
-JResponse::setHeader("Pragma","public");
-JResponse::setHeader('Cache-Control', 'no-cache, must-revalidate', true);
-JResponse::setHeader('Expires', 'Sat, 26 Jul 1997 05:00:00 GMT', true);
-JResponse::setHeader('Content-Type', 'text/csv', true);
-JResponse::setHeader('Content-Description', 'File Transfer', true);
-JResponse::setHeader('Content-Disposition', 'attachment; filename="'.$filename.'"', true);
-JResponse::setHeader('Content-Transfer-Encoding', 'binary', true);
-JResponse::sendHeaders();
-echo $contents;
-exit();
-//JFile::write($path.$filename,$contents);
-//$app = JFactory::getApplication();
-//$app->redirect('../cache/'.$filename);
+// HTTP Headers
+$app = JFactory::getApplication();
+$app->clearHeaders();
+$app->setHeader( "Pragma", "public" );
+$app->setHeader( 'Cache-Control', 'no-cache, must-revalidate', true );
+$app->setHeader( 'Expires', 'Sat, 26 Jul 1997 05:00:00 GMT', true );
+$app->setHeader( 'Content-Type', 'text/csv', true );
+$app->setHeader( 'Content-Description', 'File Transfer', true );
+$app->setHeader( 'Content-Disposition', 'attachment; filename="' . $filename . '"', true );
+$app->setHeader( 'Content-Transfer-Encoding', 'binary', true );
+$app->sendHeaders();
+
+// Create CSV Writer
+$csv = \League\Csv\Writer::createFromString();
+
+// insert the Headings
+$csv->insertOne($headers);
+
+// insert all the records
+$csv->insertAll($dataRows);
+
+// CSV content
+echo $csv->toString();
+
+// stop
+$app->close();
+
+
 

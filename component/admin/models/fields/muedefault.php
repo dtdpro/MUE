@@ -38,6 +38,7 @@ class JFormFieldMUEDefault extends JFormField
                 break;
 			case "textbox":
 			case "textar":
+			case "timezone":
 			default:
 				$html = $this->getTextField();
 				break;
@@ -94,7 +95,6 @@ class JFormFieldMUEDefault extends JFormField
 		}
 
         $html[] = JHtml::_('select.genericlist',$lists,$this->name.'[]',$attr, "value","text",$this->value);
-
 
         return implode($html);
     }

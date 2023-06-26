@@ -18,10 +18,22 @@ class MUEViewAclist extends JViewLegacy
 			return false;
 		}
 
-		$this->document->setTitle("AC List Options");
+		$this->addToolBar();
 
 		parent::display($tpl);
-		JRequest::setVar('hidemainmenu', true);
+	}
+
+	protected function addToolBar()
+	{
+		$jinput = JFactory::getApplication()->input;
+		$jinput->set('hidemainmenu', true);
+		$user = JFactory::getUser();
+		JToolBarHelper::title('Manage AC List Options', 'mue');
+		// Built the actions for new and existing records.
+		JToolBarHelper::apply('aclist.apply', 'JTOOLBAR_APPLY');
+		JToolBarHelper::save('aclist.save', 'JTOOLBAR_SAVE');
+		JToolBarHelper::cancel('aclist.cancel', 'JTOOLBAR_CLOSE');
+
 	}
 }
 

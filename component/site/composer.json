@@ -1,5 +1,6 @@
 {
     "require": {
-        "league/oauth2-client": "^2.6"
+        "league/oauth2-client": "^2.6",
+        "campaignmonitor/createsend-php": "^7.0"
     }
 }

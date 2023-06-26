@@ -11,12 +11,12 @@ class plgAuthenticationMUE extends JPlugin
 	function onUserAuthorisation($user, $options)
 	{
 		$app = JFactory::getApplication();
-		if ($app->isAdmin()) {
+		if ($app->isClient('administrator')) {
 			return true;
 		}
 		require_once('components/com_mue/helpers/mue.php');
 		$config=MUEHelper::getConfig();
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		if ($config->subscribe) {
 			$query = $db->getQuery(true);
 			$query->select($db->quoteName('id'));

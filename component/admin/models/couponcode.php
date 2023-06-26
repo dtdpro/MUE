@@ -5,6 +5,8 @@ defined('_JEXEC') or die('Restricted access');
 // import Joomla modelform library
 jimport('joomla.application.component.modeladmin');
 
+use Joomla\Utilities\ArrayHelper;
+
 class MUEModelCouponcode extends JModelAdmin
 {
 	public function getTable($type = 'Couponcode', $prefix = 'MUETable', $config = array())
@@ -64,7 +66,7 @@ class MUEModelCouponcode extends JModelAdmin
 		}
 		// Convert to the JObject before adding other data.
 		$properties = $table->getProperties(1);
-		$item = JArrayHelper::toObject($properties, 'JObject');
+		$item = ArrayHelper::toObject($properties, 'JObject');
 		if (property_exists($item, 'params'))
 		{
 			$registry = new Registry;
@@ -92,7 +94,6 @@ class MUEModelCouponcode extends JModelAdmin
 	public function save($data)
 	{
 		// Initialise variables;
-		$dispatcher = JDispatcher::getInstance();
 		$table = $this->getTable();
 		$key = $table->getKeyName();
 		$pk = (!empty($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
@@ -133,15 +134,7 @@ class MUEModelCouponcode extends JModelAdmin
 				return false;
 			}
 
-			// Trigger the onContentBeforeSave event.
-			$result = $dispatcher->trigger($this->event_before_save, array($this->option . '.' . $this->name, &$table, $isNew));
-			if (in_array(false, $result, true))
-			{
-				$this->setError($table->getError());
-				return false;
-			}
-
-			// Store the data.
+			/// Store the data.
 			if (!$table->store())
 			{
 				$this->setError($table->getError());
@@ -150,9 +143,6 @@ class MUEModelCouponcode extends JModelAdmin
 
 			// Clean the cache.
 			$this->cleanCache();
-
-			// Trigger the onContentAfterSave event.
-			$dispatcher->trigger($this->event_after_save, array($this->option . '.' . $this->name, &$table, $isNew));
 		}
 		catch (Exception $e)
 		{

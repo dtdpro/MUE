@@ -3,10 +3,14 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 // load tooltip behavior
-JHtml::_('behavior.tooltip');
-JHtml::_('behavior.multiselect');
-JHtml::_('formbehavior.chosen', 'select');
-JHtml::_('behavior.modal', 'a.modal');
+if (JVersion::MAJOR_VERSION == 3) {
+	JHtml::_('bootstrap.tooltip');
+	JHtml::_('formbehavior.chosen', 'select');
+}
+
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Session\Session;
+use Joomla\CMS\Layout\LayoutHelper;
 
 $cfg=MUEHelper::getConfig();
 
@@ -68,15 +72,6 @@ JFactory::getDocument()->addScriptDeclaration('
 				<th width="200">
 					<?php echo JHtml::_('searchtools.sort',  'COM_MUE_USER_HEADING_EMAIL' , 'u.email', $listDirn, $listOrder); ?>
 				</th>
-				<th width="150">
-					<?php echo JText::_('COM_MUE_USER_HEADING_GROUP'); ?>
-				</th>
-				<th width="150">
-					<?php echo JText::_('COM_MUE_USER_HEADING_JGROUP'); ?>
-				</th>
-				<th width="150">
-					<?php echo JHtml::_('searchtools.sort',  'COM_MUE_USER_HEADING_JOINSITE' , 'g.userg_siteurl', $listDirn, $listOrder); ?>
-				</th>
 				<th class="nowrap" width="60">
 					<?php echo JHtml::_('searchtools.sort',  'COM_MUE_USER_HEADING_ENABLED', 'u.block', $listDirn, $listOrder); ?>
 				</th>
@@ -114,6 +109,7 @@ JFactory::getDocument()->addScriptDeclaration('
 				<td>
 						<a href="<?php echo JRoute::_('index.php?option=com_mue&task=user.edit&id='.(int) $item->id); ?>">
 						<?php echo $item->username; ?></a>
+					    <div class="small"><?php if (isset($item->userg_group)) echo $this->usergroups[$item->userg_group]; ?></div>
 				</td>
 				<td class="center small">
 					<?php echo $item->name; ?>
@@ -122,16 +118,25 @@ JFactory::getDocument()->addScriptDeclaration('
 					<?php echo $item->email; ?>
 				</td>
 				<td class="center small">
-					<?php if (isset($item->userg_group)) echo $this->usergroups[$item->userg_group]; ?>
-				</td>
-				<td class="center small">
-					<?php echo implode('<br />',$item->jgroups); ?>
-				</td>
-				<td class="center small">
-					<?php echo $item->userg_siteurl; ?>
-				</td>
-				<td class="center small">
-				<?php echo JHtml::_('grid.boolean', $i, !$item->block, 'users.unblock', 'users.block'); ?>
+					<?php
+					if (JVersion::MAJOR_VERSION == 3) {
+						echo JHtml::_('grid.boolean', $i, !$item->block, 'users.unblock', 'users.block');
+					} else {
+						$self = $loggeduser->id == $item->id;
+						if ($self) {
+							$states = [
+								1 => [ 'task'           => 'unblock', 'text'           => '', 'active_title'   => 'COM_USERS_TOOLBAR_BLOCK', 'inactive_title' => '', 'tip'            => true, 'active_class'   => 'unpublish', 'inactive_class' => 'unpublish', ],
+								0 => [ 'task'           => 'block', 'text'           => '', 'active_title'   => '', 'inactive_title' => 'COM_USERS_USERS_ERROR_CANNOT_BLOCK_SELF', 'tip'            => true, 'active_class'   => 'publish', 'inactive_class' => 'publish', ]
+							];
+						} else {
+							$states = [
+								1 => [ 'task'           => 'unblock', 'text'           => '', 'active_title'   => 'COM_USERS_TOOLBAR_UNBLOCK', 'inactive_title' => '', 'tip'            => true, 'active_class'   => 'unpublish', 'inactive_class' => 'unpublish', ],
+								0 => [ 'task'           => 'block', 'text'           => '', 'active_title'   => 'COM_USERS_TOOLBAR_BLOCK', 'inactive_title' => '', 'tip'            => true, 'active_class'   => 'publish', 'inactive_class' => 'publish', ]
+							];
+						}
+						echo HTMLHelper::_( 'jgrid.state', $states, $item->block, $i, 'users.', !$self );
+					}
+					?>
 				</td>
 				<td class="center small">
 					<?php echo $item->lastvisitDate; ?>
@@ -183,61 +188,9 @@ JFactory::getDocument()->addScriptDeclaration('
 		<?php endforeach; ?>
 		</tbody>
 	</table>
-<?php 
-	// Create the copy/move options.
-$options = array(
-	JHtml::_('select.option', 'add', JText::_('COM_USERS_BATCH_ADD')),
-	JHtml::_('select.option', 'del', JText::_('COM_USERS_BATCH_DELETE')),
-	JHtml::_('select.option', 'set', JText::_('COM_USERS_BATCH_SET'))
-);
-// Create the reset password options.
-$resetOptions = array(
-	JHtml::_('select.option', '', JText::_('COM_USERS_NO_ACTION')),
-	JHtml::_('select.option', 'yes', JText::_('JYES')),
-	JHtml::_('select.option', 'no', JText::_('JNO'))
-);
-JHtml::_('formbehavior.chosen', 'select');
-?>
-<div class="modal hide fade" id="collapseModal">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal">&#215;</button>
-		<h3><?php echo JText::_('COM_USERS_BATCH_OPTIONS'); ?></h3>
-	</div>
-	<div class="modal-body modal-batch">
-		<div class="row-fluid">
-			<div id="batch-choose-action" class="combo control-group">
-				<label id="batch-choose-action-lbl" class="control-label" for="batch-choose-action">
-					<?php echo JText::_('COM_USERS_BATCH_GROUP') ?>
-				</label>
-			</div>
-			<div id="batch-choose-action" class="combo controls">
-				<div class="control-group">
-					<select name="batch[group_id]" id="batch-group-id">
-						<option value=""><?php echo JText::_('JSELECT') ?></option>
-						<?php echo JHtml::_('select.options', JHtml::_('user.groups')); ?>
-					</select>
-				</div>
-			</div>
-			<div class="control-group radio">
-				<?php echo JHtml::_('select.radiolist', $options, 'batch[group_action]', '', 'value', 'text', 'add') ?>
-			</div>
-		</div>
-		<label><?php echo JText::_('COM_USERS_REQUIRE_PASSWORD_RESET'); ?></label>
-		<div class="control-group radio">
-			<?php echo JHtml::_('select.radiolist', $resetOptions, 'batch[reset_id]', '', 'value', 'text', '') ?>
-		</div>
-	</div>
-	<div class="modal-footer">
-		<button class="btn" type="button" onclick="document.getElementById('batch-group-id').value=''" data-dismiss="modal">
-			<?php echo JText::_('JCANCEL'); ?>
-		</button>
-		<button class="btn btn-primary" type="submit" onclick="Joomla.submitbutton('user.batch');">
-			<?php echo JText::_('JGLOBAL_BATCH_PROCESS'); ?>
-		</button>
-	</div>
-</div>
 
-		<input type="hidden" name="task" value="" />
+
+        <input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />
 		<?php echo JHtml::_('form.token'); ?>
 	</div>

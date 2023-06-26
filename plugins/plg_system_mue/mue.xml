@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="2.5" type="plugin" group="system" method="upgrade">
+<extension version="4.2" type="plugin" group="system" method="upgrade">
 	<name>plg_system_mue</name>
 	<author>DtD Productions</author>
 	<creationDate>May 2013</creationDate>
-	<copyright>Copyright (C) 2013 DtD Prodcutions. All rights reserved.</copyright>
+	<copyright>Copyright (C) 2013-2023 DtD Prodcutions. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>info@dtdpro.com</authorEmail>
 	<authorUrl>www.dtdpro.com</authorUrl>
-	<version>1.3.2</version>
+	<version>1.4.0</version>
 	<description>PLG_MUE_XML_DESCRIPTION</description>
 	<files>
 		<filename plugin="mue">mue.php</filename>
@@ -29,9 +29,9 @@
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 				</field>
-				<field name="quickicon" type="list" description="PLG_SYSTEM_MUE_FIELD_QUICKICON_DESC" label="PLG_SYSTEM_MUE_FIELD_QUICKICON_LABEL" filter="integer" default="1">
-					<option value="1">JYES</option>
+				<field name="quickicon" type="radio" description="PLG_SYSTEM_MUE_FIELD_QUICKICON_DESC" label="PLG_SYSTEM_MUE_FIELD_QUICKICON_LABEL" filter="integer" default="1" class="btn-group btn-group-yesno">
 					<option value="0">JNO</option>
+					<option value="1">JYES</option>
 				</field>
 			</fieldset>
 		</fields>

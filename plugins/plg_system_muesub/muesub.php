@@ -8,9 +8,10 @@ class plgSystemMUESub extends JPlugin
 	function onAfterRoute()
 	{
 		$app = JFactory::getApplication();
+		$jinput = $app->input;
 
 		// No sub enforcement me for admin
-		if ($app->isAdmin()) {
+		if ($app->isClient('administrator')) {
 			return;
 		}
 
@@ -18,7 +19,7 @@ class plgSystemMUESub extends JPlugin
 		$exceptions = Array();
 		$exceptions[]="com_mue";
 		//$exceptions[]="com_mcor";
-		if (in_array(JRequest::getVar('option'),$exceptions) && $user->id) {
+		if (in_array($jinput->getVar('option'),$exceptions) && $user->id) {
 			return;
 			
 		} else if ($user->id) {
@@ -33,7 +34,7 @@ class plgSystemMUESub extends JPlugin
 						$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=subs'));
 					} else {
 						if ((!$sub->sub_recurring || $sub->usrsub_rpstatus != "ActiveProfile") && $sub->daysLeft <= 10 && $this->params->get('warnexp', 0)) {
-							JError::raiseNotice('muesubexpiressoon','Subscription Expires in '.$sub->daysLeft. ' day(s)');
+							$app->enqueueMessage('Subscription Expires in '.$sub->daysLeft. ' day(s)','notice');
 						}
 					}
 				} else {

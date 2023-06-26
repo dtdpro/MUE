@@ -1,6 +1,7 @@
 <?php
 defined('_JEXEC') or die;
 
+use Joomla\CMS\HTML\HTMLHelper;
 abstract class JHtmlMUEFields
 {
 	public static function cbox($field,$value=null)
@@ -132,15 +133,11 @@ abstract class JHtmlMUEFields
 			if ($field->uf_max) $html .=  ' data-rule-maxlength="'.$field->uf_max.'"';
 			if ($field->uf_type=="email") $html .=  ' data-rule-email="true"';
 			if ($field->uf_match) $html .=  ' data-rule-equalTo="#jform_'.$field->uf_match.'"';
-			if ($field->uf_type == "username" && $field->uf_cms) $html .=  ' data-rule-remote="'.JURI::base( true ).'/components/com_mue/helpers/chkuser.php"';
-			if ($field->uf_type == "email" && !$field->uf_match && $field->uf_cms) $html .=  ' data-rule-remote="'.JURI::base( true ).'/components/com_mue/helpers/chkemail.php"';
 			$html .= ' data-msg-required="This Field is required"';
 			if ($field->uf_min) $html .=  ' data-msg-minlength="Min length '.$field->uf_min.' characters"';
 			if ($field->uf_max) $html .=  ' data-msg-maxlength="Max length '.$field->uf_max.' characters"';
 			if ($field->uf_type=="email") $html .=  ' data-msg-email="Email address must be valid"';
 			if ($field->uf_match) $html .=  ' data-msg-equalTo="Fields must match"';
-			if ($field->uf_type=="username" && $field->uf_cms) $html .=  ' data-msg-remote="The username you have entered is already registered."';
-			if ($field->uf_type=="email" && !$field->uf_match && $field->uf_cms) $html .=  ' data-msg-remote="The email address you have entered is already registered."';
 		}
 		$html .=  '>';
 
@@ -227,6 +224,65 @@ abstract class JHtmlMUEFields
 		}
 		$html .=  '</select>';
 	
+		return $html;
+	}
+
+	public static function timezone($field,$value=null)
+	{
+		$sname = $field->uf_sname;
+		$selected = ' selected="selected"';
+		$html = "";
+		$html .= '<select id="jform_'.$sname.'" name="jform['.$sname.']" class="form-control uf_field input-sm uk-select" size="1">';
+		$html .= '<option value="">- Use Default -</option>';
+
+		$zoneGroups = ['Africa', 'America', 'Antarctica', 'Arctic', 'Asia', 'Atlantic', 'Australia', 'Europe', 'Indian', 'Pacific'];
+		$zones = \DateTimeZone::listIdentifiers();
+
+		$groups = [];
+
+		// Build the group lists.
+		foreach ($zones as $zone) {
+			// Time zones not in a group we will ignore.
+			if (strpos($zone, '/') === false) {
+				continue;
+			}
+
+			// Get the group/locale from the timezone.
+			list($group, $locale) = explode('/', $zone, 2);
+
+			// Only use known groups.
+			if (\in_array($group, $zoneGroups)) {
+				// Initialize the group if necessary.
+				if (!isset($groups[$group])) {
+					$groups[$group] = [];
+				}
+
+				// Only add options where a locale exists.
+				if (!empty($locale)) {
+					$groups[$group][$zone] = ['zone' => $zone,'label'=>str_replace('_', ' ', $locale)];
+				}
+			}
+		}
+
+		// Sort the group lists.
+		ksort($groups);
+
+		foreach ($groups as &$location) {
+			sort($location);
+		}
+
+		foreach ($groups as $groupName=>$location) {
+			$html .= '<optgroup label="'.$groupName.'">';
+			foreach ($location as $locale) {
+				$html .= '<option value="'.$locale['zone'].'"';
+				$html .= ( $value == $locale['zone'] ) ? $selected : '';
+				$html .= '>'.$locale['label'].'</option>';
+			}
+			$html .= '</optgroup>';
+		}
+
+		$html .= '</select>';
+
 		return $html;
 	}
 }

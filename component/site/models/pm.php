@@ -4,6 +4,8 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
 
+use Joomla\CMS\Session\Session;
+
 class MUEModelPM extends JModelLegacy
 {
 	function checkAccessRequirement() {
@@ -17,7 +19,7 @@ class MUEModelPM extends JModelLegacy
 	}
 
 	function checkRecentSent() {
-		$numSentMax = 5;
+		$numSentMax = 10;
 		$user = JFactory::getUser();
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);
@@ -196,7 +198,7 @@ class MUEModelPM extends JModelLegacy
 	}
 
 	function saveMessage($msgId,$msgSubject,$msgBody) {
-		JSession::checkToken() or jexit( 'Invalid Token' );
+		$this->checkToken() or die(JText::_('JINVALID_TOKEN'));
 		$user = JFactory::getUser();
 		$config=MUEHelper::getConfig();
 		$db = JFactory::getDBO();
@@ -224,17 +226,22 @@ class MUEModelPM extends JModelLegacy
 		$message = $db->loadObject();
 
 		//send notification email
+		$mail = JFactory::getMailer();
 		$toUser = JFactory::getUser($message->msg_to);
 		$emailmsg = $config->pmemail_content;
-		$mail = JFactory::getMailer();
-		$mail->IsHTML(true);
-		$mail->addRecipient($toUser->email);
-		$mail->setSender($config->pmemail_email,$config->pmemail_name);
-		$mail->setSubject($config->pmemail_subject);
-		$mail->setBody( $emailmsg );
-		$sent = $mail->Send();
 
+		$emllist = Array();
+		$emllist[] = $toUser->email;
+
+		$sent = $mail->sendMail($config->pmemail_email, $config->pmemail_name, $emllist, $config->pmemail_subject, $emailmsg, true, null, null, null);
 		return true;
+	}
+
+	public function checkToken($method = 'post', $redirect = true)
+	{
+		$valid = Session::checkToken($method);
+
+		return $valid;
 	}
 
 }

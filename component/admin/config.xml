@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <config>
-	<fieldset name="general" label="COM_MUE_CONFIG_SETTINGS_LABEL" description="COM_MUE_CONFIG_SETTINGS_DESC">
-		<field name="divwrapper" type="radio" label="COM_MUE_CONFIG_FIELD_DIVWRAPPER_LABEL" description="COM_MUE_CONFIG_FIELD_DIVWRAPPER_DESC" default="1" class="btn-group">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
-		</field>
-		<field name="wrapperclass" type="text" label="COM_MUE_CONFIG_FIELD_WRAPPERCLASS_LABEL" description="COM_MUE_CONFIG_FIELD_WRAPPERCLASS_DESC" size="40" class="inputbox" required="false" default="uk-article" />
-	</fieldset>
 	<fieldset name="registration" label="COM_MUE_CONFIG_REG_LABEL" description="COM_MUE_CONFIG_REG_DESC" addfieldpath="/administrator/components/com_mue/models/fields">
 		<field name="REG_PAGE_CONTENT" type="textarea" label="COM_MUE_CONFIG_FIELD_REG_PAGE_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_REG_PAGE_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="true" filter="safehtml" buttons="false" />
 		<field name="FROM_EMAIL" type="text" label="COM_MUE_CONFIG_FIELD_FROM_EMAIL_LABEL" description="COM_MUE_CONFIG_FIELD_FROM_EMAIL_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="FROM_NAME" type="text" label="COM_MUE_CONFIG_FIELD_FROM_NAME_LABEL" description="COM_MUE_CONFIG_FIELD_FROM_NAME_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="WELCOME_SUBJECT" type="text" label="COM_MUE_CONFIG_FIELD_WELCOME_SUBJECT_LABEL" description="COM_MUE_CONFIG_FIELD_WELCOME_SUBJECT_DESC" size="70" class="inputbox" required="false" default="" />
-		<field name="LOSTINFO_SUBJECT" type="text" label="COM_MUE_CONFIG_FIELD_LOSTINFO_SUBJECT_LABEL" description="COM_MUE_CONFIG_FIELD_LOSTINFO_SUBJECT_DESC" size="70" class="inputbox" required="false" default="" /> 
 		<field name="profile_top_content" type="textarea" label="COM_MUE_CONFIG_FIELD_PROFILE_TOP_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_PROFILE_TOP_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
 		<field name="profile_bottom_content" type="textarea" label="COM_MUE_CONFIG_FIELD_PROFILE_BOTTOM_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_PROFILE_BOTTOM_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
 		<field name="mailing_list" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_MAILING_LIST_LABEL" description="COM_MUE_CONFIG_FIELD_MAILING_LIST_DESC" default="0">
@@ -28,53 +20,12 @@
 		<field name="rc_api_key" type="text" label="COM_MUE_CONFIG_FIELD_RC_APIKEY_LABEL" description="COM_MUE_CONFIG_FIELD_RC_APIKEY_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="rc_api_secret" type="text" label="COM_MUE_CONFIG_FIELD_RC_APISECRET_LABEL" description="COM_MUE_CONFIG_FIELD_RC_APISECRET_DESC" size="70" class="inputbox" required="false" default="" />
 	</fieldset>
-	<fieldset name="reports" label="COM_MUE_CONFIG_REPORTS_LABEL" description="COM_MUE_CONFIG_REPORTS_DESC" addfieldpath="/administrator/components/com_mue/models/fields">
-		<field name="on_list_field" type="FieldInclude" class="inputbox" label="COM_MUE_CONFIG_FIELD_ONLIST_LABEL" description="COM_MUE_CONFIG_FIELD_ONLIST_DESC" />
-	</fieldset>
-	<fieldset name="userdirectory" label="COM_MUE_CONFIG_USERDIR_LABEL" description="COM_MUE_CONFIG_USERDIR_DESC" addfieldpath="/administrator/components/com_mue/models/fields">
-		<field name="userdir" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_USERDIR_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_DESC" default="0">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
-		</field>
-		<field name="usrdir_sub" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_USERDIRSUB_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIRSUB_DESC" default="0">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
-		</field>
-		<field name="gm_api_key" type="text" label="COM_MUE_CONFIG_FIELD_GM_APIKEY_LABEL" description="COM_MUE_CONFIG_FIELD_GM_APIKEY_DESC" size="70" class="inputbox" required="false" default="" />
-		<field name="gm_jsapi_key" type="text" label="COM_MUE_CONFIG_FIELD_GM_JSAPIKEY_LABEL" description="COM_MUE_CONFIG_FIELD_GM_JSAPIKEY_DESC" size="70" class="inputbox" required="false" default="" />
-		<field name="userdir_title" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_TITLE_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_TITLE_DESC" size="70" class="inputbox" required="false" default="" />
-		<field name="on_userdir_field" type="FieldOnList" class="inputbox" label="COM_MUE_CONFIG_FIELD_ONUSERDIR_LABEL" description="COM_MUE_CONFIG_FIELD_ONUSERDIR_DESC" />
-		<field name="userdir_mapfields" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_MAPFIELDS_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_MAPFIELDS_DESC" size="70" class="inputbox" required="false" default="" />
-		<field name="userdir_userinfo" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_USERINFO_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_USERINFO_DESC" size="70" class="inputbox" required="false" default="" />
-		<field name="userdir_usertags" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_USERTAGS_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_USERTAGS_DESC" size="70" class="inputbox" required="false" default="" />
-		<field name="userdir_searchinfo" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_SEARCHINFO_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_SEARCHINFO_DESC" size="70" class="inputbox" required="false" default="" />
-	</fieldset>
-	<fieldset name="pmsettings" label="Private Messaging" description="Private Messaging settings" addfieldpath="/administrator/components/com_mue/models/fields">
-		<field name="pmgroup" type="accesslevel" id="pmgroup" class="inputbox" label="PM Access Level" description="Access level requirement to use private messaging"  />
-		<field name="pmemail_email" type="text" label="PM Notification From Email" description="" size="70" class="inputbox" required="false" default="" />
-		<field name="pmemail_name" type="text" label="PM Notification From Name" description="" size="70" class="inputbox" required="false" default="" />
-		<field name="pmemail_subject" type="text" label="PM Notification From Subject" description="" size="70" class="inputbox" required="false" default="" />
-		<field name="pmemail_content" type="textarea" label="PM Notification From Content" description="" rows="4" cols="70" class="inputbox" required="false" filter="raw" buttons="false" />
-	</fieldset>
-	<fieldset name="integrations" label="COM_MUE_CONFIG_INTEGRATIONS_LABEL" description="COM_MUE_CONFIG_INTEGRATIONS_DESC">
-		<field name="spacer_apis0" type="spacer" label="COM_MUE_CONFIG_MAILCHIMP_LABEL" />
-		<field name="mckey" type="text" label="COM_MUE_CONFIG_FIELD_MCKEY_LABEL" description="COM_MUE_CONFIG_FIELD_MCKEY_DESC" size="70" class="inputbox" required="false" default="" />
-		<field name="spacer_apis1" type="spacer" hr="true" />
-		<field name="spacer_apis2" type="spacer" label="COM_MUE_CONFIG_CAMPAIGNMONITOR_LABEL" />
-		<field name="cmkey" type="text" label="COM_MUE_CONFIG_FIELD_CMKEY_LABEL" description="COM_MUE_CONFIG_FIELD_MCKEY_DESC" size="70" class="inputbox" required="false" default="" />
-		<field name="cmclient" type="text" label="COM_MUE_CONFIG_FIELD_CMCLIENT_LABEL" description="COM_MUE_CONFIG_FIELD_CMCLIENT_DESC" size="70" class="inputbox" required="false" default="" />
-        <field name="spacer_apis3" type="spacer" hr="true" />
-        <field name="spacer_apis4" type="spacer" label="COM_MUE_CONFIG_AC_LABEL" />
-		<field name="acurl" type="text" label="COM_MUE_CONFIG_FIELD_ACURL_LABEL" description="COM_MUE_CONFIG_FIELD_ACURL_DESC" size="70" class="inputbox" required="false" default="" />
-        <field name="ackey" type="text" label="COM_MUE_CONFIG_FIELD_ACKEY_LABEL" description="COM_MUE_CONFIG_FIELD_ACKEY_DESC" size="70" class="inputbox" required="false" default="" />
-		
-	</fieldset>
 	<fieldset name="subscribing" label="COM_MUE_CONFIG_SUBSCRIBE_LABEL" description="COM_MUE_CONFIG_SUBSCRIBE_DESC">
 		<field name="subscribe" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_SUBSCRIBE_LABEL" description="COM_MUE_CONFIG_FIELD_SUBSCRIBE_DESC" default="0">
 			<option value="0">No</option>
 			<option value="1">Yes</option>
 		</field>
-		<field name="subgroup" type="usergroup" default="2" label="COM_MUE_CONFIG_SUBSCRIBEGROUP_LABEL" description="COM_MUE_CONFIG_SUBSCRIBEGROUP_DESC" />
+		<field name="subgroup" type="UserGroupList" default="2" label="COM_MUE_CONFIG_SUBSCRIBEGROUP_LABEL" description="COM_MUE_CONFIG_SUBSCRIBEGROUP_DESC" />
 		<field name="show_progbar" class="btn-group" type="radio" description="COM_MUE_CONFIG_SHOW_PROGBAR_DESC" label="COM_MUE_CONFIG_SHOW_PROGBAR_LABEL" default="1">
 			<option value="0">JHIDE</option>
 			<option value="1">JSHOW</option>
@@ -110,6 +61,44 @@
 			<option value="1">Yes</option>
 		</field>
 		<field name="paybycheck_content" type="textarea" label="COM_MUE_CONFIG_FIELD_PAYBYCHECK_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_PAYBYCHECK_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="false" filter="safehtml" buttons="false" />
+	</fieldset>
+	<fieldset name="reports" label="COM_MUE_CONFIG_REPORTS_LABEL" description="COM_MUE_CONFIG_REPORTS_DESC" addfieldpath="/administrator/components/com_mue/models/fields">
+		<field name="on_list_field" type="FieldInclude" class="inputbox" label="COM_MUE_CONFIG_FIELD_ONLIST_LABEL" description="COM_MUE_CONFIG_FIELD_ONLIST_DESC" />
+	</fieldset>
+	<fieldset name="userdirectory" label="COM_MUE_CONFIG_USERDIR_LABEL" description="COM_MUE_CONFIG_USERDIR_DESC" addfieldpath="/administrator/components/com_mue/models/fields">
+		<field name="userdir" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_USERDIR_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_DESC" default="0">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</field>
+		<field name="usrdir_sub" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_USERDIRSUB_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIRSUB_DESC" default="0">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</field>
+		<field name="gm_api_key" type="text" label="COM_MUE_CONFIG_FIELD_GM_APIKEY_LABEL" description="COM_MUE_CONFIG_FIELD_GM_APIKEY_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="gm_jsapi_key" type="text" label="COM_MUE_CONFIG_FIELD_GM_JSAPIKEY_LABEL" description="COM_MUE_CONFIG_FIELD_GM_JSAPIKEY_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="userdir_title" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_TITLE_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_TITLE_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="on_userdir_field" type="FieldOnList" class="inputbox" label="COM_MUE_CONFIG_FIELD_ONUSERDIR_LABEL" description="COM_MUE_CONFIG_FIELD_ONUSERDIR_DESC" />
+		<field name="userdir_mapfields" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_MAPFIELDS_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_MAPFIELDS_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="userdir_userinfo" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_USERINFO_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_USERINFO_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="userdir_usertags" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_USERTAGS_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_USERTAGS_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="userdir_searchinfo" type="text" label="COM_MUE_CONFIG_FIELD_USERDIR_SEARCHINFO_LABEL" description="COM_MUE_CONFIG_FIELD_USERDIR_SEARCHINFO_DESC" size="70" class="inputbox" required="false" default="" />
+	</fieldset>
+	<fieldset name="pmsettings" label="Private Messaging" description="Private Messaging settings" addfieldpath="/administrator/components/com_mue/models/fields">
+		<field name="pmgroup" type="accesslevel" id="pmgroup" class="inputbox" label="PM Access Level" description="Access level requirement to use private messaging"  />
+		<field name="pmemail_email" type="text" label="PM Notification From Email" description="" size="70" class="inputbox" required="false" default="" />
+		<field name="pmemail_name" type="text" label="PM Notification From Name" description="" size="70" class="inputbox" required="false" default="" />
+		<field name="pmemail_subject" type="text" label="PM Notification From Subject" description="" size="70" class="inputbox" required="false" default="" />
+		<field name="pmemail_content" type="textarea" label="PM Notification From Content" description="" rows="4" cols="70" class="inputbox" required="false" filter="raw" buttons="false" />
+	</fieldset>
+	<fieldset name="integrations" label="COM_MUE_CONFIG_INTEGRATIONS_LABEL" description="COM_MUE_CONFIG_INTEGRATIONS_DESC">
+		<field name="spacer_apis2" type="spacer" label="COM_MUE_CONFIG_CAMPAIGNMONITOR_LABEL" />
+		<field name="cmkey" type="text" label="COM_MUE_CONFIG_FIELD_CMKEY_LABEL" description="COM_MUE_CONFIG_FIELD_CMKEY_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="cmclient" type="text" label="COM_MUE_CONFIG_FIELD_CMCLIENT_LABEL" description="COM_MUE_CONFIG_FIELD_CMCLIENT_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="spacer_apis3" type="spacer" hr="true" />
+		<field name="spacer_apis4" type="spacer" label="COM_MUE_CONFIG_AC_LABEL" />
+		<field name="acurl" type="text" label="COM_MUE_CONFIG_FIELD_ACURL_LABEL" description="COM_MUE_CONFIG_FIELD_ACURL_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="ackey" type="text" label="COM_MUE_CONFIG_FIELD_ACKEY_LABEL" description="COM_MUE_CONFIG_FIELD_ACKEY_DESC" size="70" class="inputbox" required="false" default="" />
+
 	</fieldset>
 	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" class="inputbox" validate="rules" filter="rules" component="com_mue" section="component" />

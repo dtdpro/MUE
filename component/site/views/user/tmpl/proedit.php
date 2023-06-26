@@ -1,9 +1,6 @@
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
 JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
-if ($this->params->get('divwrapper',1)) {
-	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
-}
 echo '<h2 class="componentheading uk-article-title">'.JText::_('COM_MUE_USER_PROEDIT_PAGE_TITLE').'</h2>';
 ?>
 <script type="text/javascript">
@@ -103,8 +100,14 @@ foreach($this->userfields as $f) {
 		if ($f->uf_type=="birthday") {
 			echo JHtml::_('muefields.birthday',$f,$this->userinfo->$sname);
 		}
+
+		//Timezone
+		if ($f->uf_type=="timezone") {
+			echo JHtml::_('muefields.timezone',$f,$this->userinfo->timezone);
+		}
 		
-		if ($f->uf_note) echo '<span class="uf_note">'.$f->uf_note.'</span>';
+		if ($f->uf_note) echo '<span class="uf_note uk-text-small">'.$f->uf_note.'</span>';
+		if ($f->uf_type=="timezone")  echo '<span class="uf_note uk-text-small">Default Timezone is: '.$this->defaultTimezone.'</span>';
 		echo '</div>';
 		echo '</div>';
 	} else {
@@ -131,7 +134,7 @@ echo '<div class="uk-form-row uk-margin-top uk-margin-bottom mue-user-edit-row">
 echo '<div class="uk-form-label mue-user-edit-label">';
 echo '</div>';
 echo '<div class="uk-form-controls mue-user-edit-submit">';
-echo '<input name="saveprofile" id="saveprofile" value="'.JText::_('COM_MUE_USER_PROEDIT_BUTTON_SAVE').'" type="submit" class="button uk-button">';
+echo '<input name="saveprofile" id="saveprofile" value="'.JText::_('COM_MUE_USER_PROEDIT_BUTTON_SAVE').'" type="submit" class="button uk-button uk-button-primary">';
 echo '</div></div>';
 echo '<input type="hidden" name="option" value="com_mue">';
 echo '<input type="hidden" name="view" value="user">';
@@ -141,5 +144,4 @@ echo JHtml::_('form.token');
 echo '</form>';
 echo '<div style="clear:both;"></div>';
 echo '</div>';
-if ($this->params->get('divwrapper',1)) { echo '</div>'; }
 ?>

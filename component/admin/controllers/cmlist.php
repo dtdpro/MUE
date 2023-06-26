@@ -11,21 +11,27 @@ class MUEControllerCmlist extends JControllerLegacy
 		$this->registerTask('apply', 'save');
 	}
 
+	public function cancel($key = null) {
+		$this->checkToken();
+		$this->setRedirect('index.php?option=com_mue&view=ufields');
+		return true;
+	}
+
 	function save()
 	{
 		// Check for request forgeries.
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$this->checkToken();
 
 		// Initialise variables.
 		$app	= JFactory::getApplication();
 		$model	= $this->getModel('Cmlist');
-		$data	= JRequest::getVar('jform', array(), 'post', 'array');
-		$field	= JRequest::getInt('field');
+		$data	= $this->input->get('jform', array(), 'post', 'array');
+		$field	= $this->input->get('field');
 
 		// Check if the user is authorized to do this.
 		if (!JFactory::getUser()->authorise('core.admin', $field))
 		{
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 			return;
 		}
 
@@ -37,7 +43,8 @@ class MUEControllerCmlist extends JControllerLegacy
 		{
 			// Save failed, go back to the screen and display a notice.
 			$message = JText::sprintf('COM_MUE_CMLIST_SAVE_FAILED', $model->getError());
-			$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field.'&tmpl=component', $message, 'error');
+			$app->enqueueMessage($message, 'error');
+			$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field);
 			return false;
 		}
 
@@ -46,12 +53,13 @@ class MUEControllerCmlist extends JControllerLegacy
 		{
 			case 'apply':
 				$message = JText::_('COM_MUE_CMLIST_SAVE_SUCCESS');
-				$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field.'&tmpl=component&refresh=1', $message);
+				$app->enqueueMessage($message);
+				$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field);
 				break;
 
 			case 'save':
 			default:
-				$this->setRedirect('index.php?option=com_config&view=close&tmpl=component');
+			$this->setRedirect('index.php?option=com_mue&view=ufields');
 				break;
 		}
 
@@ -61,17 +69,17 @@ class MUEControllerCmlist extends JControllerLegacy
 	function syncField()
 	{
 		// Check for request forgeries.
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$this->checkToken();
 
 		// Initialise variables.
 		$app	= JFactory::getApplication();
 		$model	= $this->getModel('Cmlist');
-		$field	= JRequest::getInt('field');
+		$field	= $this->input->get('field');
 
 		// Check if the user is authorized to do this.
 		if (!JFactory::getUser()->authorise('core.admin', $field))
 		{
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 			return;
 		}
 
@@ -83,7 +91,8 @@ class MUEControllerCmlist extends JControllerLegacy
 		{
 			// Save failed, go back to the screen and display a notice.
 			$message = JText::sprintf('COM_MUE_CMLIST_SYNC_FAILED', $model->getError());
-			$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field.'&tmpl=component', $message, 'error');
+			$app->enqueueMessage($message,'error');
+			$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field);
 			return false;
 		}
 
@@ -91,7 +100,8 @@ class MUEControllerCmlist extends JControllerLegacy
 		$message = JText::_('COM_MUE_CMLIST_SYNC_SUCCESS');
 		if ($return['users']) $message .= '<br>Users Processed: '.$return['users'];
 		if ($return['members']) $message .= '<br>List Memebrs: '.$return['members'];
-		$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field.'&tmpl=component&refresh=1', $message);
+		$app->enqueueMessage($message);
+		$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field);
 				
 
 		return true;
@@ -100,17 +110,17 @@ class MUEControllerCmlist extends JControllerLegacy
 	function syncList()
 	{
 		// Check for request forgeries.
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$this->checkToken();
 
 		// Initialise variables.
 		$app	= JFactory::getApplication();
 		$model	= $this->getModel('Cmlist');
-		$field	= JRequest::getInt('field');
+		$field	= $this->input->get('field');
 
 		// Check if the user is authorized to do this.
 		if (!JFactory::getUser()->authorise('core.admin', $field))
 		{
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 			return;
 		}
 
@@ -122,7 +132,8 @@ class MUEControllerCmlist extends JControllerLegacy
 		{
 			// Save failed, go back to the screen and display a notice.
 			$message = JText::sprintf('COM_MUE_CMLIST_SYNC_FAILED', $model->getError());
-			$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field.'&tmpl=component', $message, 'error');
+			$app->enqueueMessage($message,'error');
+			$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field);
 			return false;
 		}
 
@@ -133,8 +144,9 @@ class MUEControllerCmlist extends JControllerLegacy
 		if ($return['update_count']) $message .= '<br>Updated: '.$return['update_count'];
 		if ($return['error_count']) $message .= '<br>Errors: '.$return['error_counr'];
 		if (count($return['errors'])) $message .= '<br>Errors: <pre>'.print_r($return,true).'</pre>';
-		
-		$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field.'&tmpl=component&refresh=1', $message);
+
+		$app->enqueueMessage($message);
+		$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field);
 				
 		return true; 
 	}
@@ -142,29 +154,31 @@ class MUEControllerCmlist extends JControllerLegacy
 	function addWebhook()
 	{
 		// Check for request forgeries.
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$this->checkToken();
 
 		// Initialise variables.
 		$app	= JFactory::getApplication();
 		$model	= $this->getModel('Cmlist');
-		$field	= JRequest::getInt('field');
+		$field	= $this->input->get('field');
 
 		// Check if the user is authorized to do this.
 		if (!JFactory::getUser()->authorise('core.admin', $field))
 		{
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 			return;
 		}
 
 		// Attempt to save the configuration.
 		if (!$model->addWebhook($field)) {
 			$message = JText::sprintf('COM_MUE_CMLIST_WHADD_FAILED', $model->getError());
-			$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field.'&tmpl=component', $message, 'error');
+			$app->enqueueMessage($message,'error');
+			$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field);
 			return false;
 		} 
 		
 		$message = JText::_('COM_MUE_CMLIST_WHADD_SUCCESS');
-		$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field.'&tmpl=component&refresh=1', $message);	
+		$app->enqueueMessage($message);
+		$this->setRedirect('index.php?option=com_mue&view=cmlist&field='.$field);
 		return true; 
 	}
 }

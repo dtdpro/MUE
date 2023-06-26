@@ -1,8 +1,5 @@
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
-if ($this->params->get('divwrapper',1)) {
-	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
-}
 $config = MUEHelper::getConfig();
 	?>
 <h2 class="componentheading uk-article-title"><?php echo "User CE Records"; ?></h2>
@@ -33,7 +30,7 @@ if ($this->userrecs) {
 		}
 		echo '</td><td> ';
 		if ($course->sess_pstatus == "pass" && $course->course_hascert && $course->givecert) {
-			echo '<a href="'.JURI::base( true ).'/components/com_mcme/gencert.php?certid='.$course->ci_id.'" target="_blank" class="button uk-button">Download</a>';
+			echo '<a href="'.JURI::base( true ).'/components/com_mcme/gencert.php?certid='.$course->ci_id.'" target="_blank" class="button uk-button uk-button-primary">Download</a>';
 		}
 		echo '</td></tr>';
 	}
@@ -42,5 +39,4 @@ if ($this->userrecs) {
 	echo '</table>';
 } else echo '<p>At this time, you have not completed any CE programs.</p>';
 
-if ($this->params->get('divwrapper',1)) { echo '</div>'; }
 ?>

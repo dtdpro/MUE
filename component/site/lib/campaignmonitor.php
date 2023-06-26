@@ -1,4 +1,5 @@
 <?php
+
 class CampaignMonitor {
 	
 	public $apikey="";
@@ -11,17 +12,17 @@ class CampaignMonitor {
 	}
 	
 	function getClientObject() {
-		require_once dirname(__FILE__).'/campaignmonitor/csrest_clients.php';
+		require_once dirname(__FILE__).'/../vendor/campaignmonitor/createsend-php/csrest_clients.php';
 		return new CS_REST_Clients($this->clientid,$this->apikey);
 	}
 	
 	function getListObject($listid="") {
-		require_once dirname(__FILE__).'/campaignmonitor/csrest_lists.php';
+		require_once dirname(__FILE__).'/../vendor/campaignmonitor/createsend-php/csrest_lists.php';
 		return new CS_REST_Lists($listid,$this->apikey);
 	}
 	
 	function getSubscriberObject($listid="") {
-		require_once dirname(__FILE__).'/campaignmonitor/csrest_subscribers.php';
+		require_once dirname(__FILE__).'/../vendor/campaignmonitor/createsend-php/csrest_subscribers.php';
 		return new CS_REST_Subscribers($listid,$this->apikey);
 	}
 	

@@ -35,7 +35,8 @@ class MUEViewPM extends JViewLegacy
 	
 	protected function addToolBar() 
 	{
-		JRequest::setVar('hidemainmenu', true);
+		$jinput = JFactory::getApplication()->input;
+		$jinput->set('hidemainmenu', true);
 		JToolBarHelper::title("View Message");
 
 		$tbar = JToolBar::getInstance('toolbar');

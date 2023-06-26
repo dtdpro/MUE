@@ -20,9 +20,10 @@ class MUEModelUser extends JModelAdmin
 		$app = JFactory::getApplication('administrator');
 		//$table = $this->getTable();
 		$key = 'usr_user';
+		$input      = JFactory::getApplication()->input;
 
 		// Get the pk of the record from the request.
-		$pk = JRequest::getInt($key);
+		$pk = $input->get($key);
 		$this->setState($this->getName().'.id', $pk);
 
 		// Load the parameters.
@@ -45,7 +46,8 @@ class MUEModelUser extends JModelAdmin
 	public function getItem($pk = null)
 	{
 		// Initialise variables.
-		$pk = (!empty($pk)) ? $pk : JRequest::getInt('id',0);
+		$input      = JFactory::getApplication()->input;
+		$pk = (!empty($pk)) ? $pk : $input->get('id',0);
 		$cfg = MUEHelper::getConfig();
 		
 		//set item variable
@@ -134,7 +136,6 @@ class MUEModelUser extends JModelAdmin
 	public function save($data)
 	{
 		// Initialise variables;
-		$dispatcher = JDispatcher::getInstance();
 		$userId=(int)$data['usr_user'];
 		$isNew = $userId ? false : true;
 		$usernotes=$data['usernotes'];
@@ -211,13 +212,13 @@ class MUEModelUser extends JModelAdmin
 			$query->from('#__mue_usergroup');
 			$query->where('userg_user = '.$user->id);
 			$db->setQuery((string)$query);
-			$db->query();
+			$db->execute();
 
 			$usernotes = $date->toSql(true)." User Added by Admin\r\n";
 			if (!empty($data['usergroup'])) {
 				$qc = 'INSERT INTO #__mue_usergroup (userg_user,userg_group,userg_notes,userg_siteurl,userg_update) VALUES ('.$user->id.','.(int)$data['usergroup'].',"'.$usernotes.'","'.$item->site_url.'","'.$date->toSql(true).'")';
 				$db->setQuery($qc);
-				if (!$db->query()) {
+				if (!$db->execute()) {
 					$this->setError($db->getErrorMsg());
 					return false;
 				} 
@@ -231,14 +232,14 @@ class MUEModelUser extends JModelAdmin
 			if ($hasuserg) {
 				$qud = 'UPDATE #__mue_usergroup SET userg_group = '.(int)$data['usergroup'].', userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
 				$db->setQuery($qud);
-				if (!$db->query()) {
+				if (!$db->execute()) {
 					$this->setError($db->getErrorMsg());
 					return false;
 				}
 			} else {
 				$qc = 'INSERT INTO #__mue_usergroup (userg_user,userg_group,userg_notes,userg_siteurl,userg_update) VALUES ('.$user->id.','.(int)$data['usergroup'].',"'.$usernotes.'","'.$item->site_url.'","'.$date->toSql(true).'")';
 				$db->setQuery($qc);
-				if (!$db->query()) {
+				if (!$db->execute()) {
 					$this->setError($db->getErrorMsg());
 					return false;
 				}
@@ -264,12 +265,12 @@ class MUEModelUser extends JModelAdmin
 					$qd->where("usr_user = ".$user->id);
 					$qd->where('usr_field = '.$fl->uf_id);
 					$db->setQuery($qd);
-					$db->query();
+					$db->execute();
 				}
 				$qf = 'INSERT INTO #__mue_users (usr_user,usr_field,usr_data) VALUES ("'.$user->id.'","'.$fl->uf_id.'","'.$item->$fieldname.'")';
 				
 				$db->setQuery($qf);
-				if (!$db->query()) {
+				if (!$db->execute()) {
 					$this->setError($db->getErrorMsg());
 					return false;
 				}
@@ -413,7 +414,7 @@ class MUEModelUser extends JModelAdmin
 			//Update usernotes
 			$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
 			$db->setQuery($qud);
-			if (!$db->query()) {
+			if (!$db->execute()) {
 				$this->setError($db->getErrorMsg());
 				return false;
 			}
@@ -424,7 +425,7 @@ class MUEModelUser extends JModelAdmin
 				$qf = 'INSERT INTO #__mue_users (usr_user,usr_field,usr_data) VALUES ("'.$user->id.'","'.$l->uf_id.'","0")';
 				
 				$db->setQuery($qf);
-				if (!$db->query()) {
+				if (!$db->execute()) {
 					$this->setError($db->getErrorMsg());
 					return false;
 				}
@@ -440,13 +441,6 @@ class MUEModelUser extends JModelAdmin
 		$this->_db->setQuery($query);
 		$this->_db->execute();
 		
-		// Check for a database error.
-		if ($this->_db->getErrorNum())
-		{
-			$this->setError($this->_db->getErrorMsg());
-			return false;
-		}
-		
 		// Set the new user group maps.
 		$query->clear();
 		$query->insert($this->_db->quoteName('#__user_usergroup_map'));
@@ -454,13 +448,7 @@ class MUEModelUser extends JModelAdmin
 		$query->values($user->id . ', ' . implode('), (' . $user->id . ', ', $data['groups']));
 		$this->_db->setQuery($query);
 		$this->_db->execute();
-		
-		// Check for a database error.
-		if ($this->_db->getErrorNum())
-		{
-			$this->setError($this->_db->getErrorMsg());
-			return false;
-		}
+
 		return true;
 	}
 	
@@ -517,12 +505,6 @@ class MUEModelUser extends JModelAdmin
 		// Filter and validate the form data.
 		$return	= true; //$form->validate($data, $group);
 
-		// Check for an error.
-		if (JError::isError($return)) {
-			$this->setError($return->getMessage());
-			return false;
-		}
-
 		// Check the validation results.
 		if ($return === false) {
 			// Get the validation messages from the form.
@@ -555,7 +537,6 @@ class MUEModelUser extends JModelAdmin
 			{
 				// Cannot block yourself.
 				unset($pks[$i]);
-				JError::raiseWarning(403, JText::_('COM_USERS_USERS_ERROR_CANNOT_BLOCK_SELF'));
 
 			}
 			else 
@@ -570,7 +551,7 @@ class MUEModelUser extends JModelAdmin
 				{
 					$sql = 'UPDATE #__users SET block = '.$value.' WHERE id = '.$pk;
 					$this->_db->setQuery($sql);
-					if (!$this->_db->query()) {
+					if (!$this->_db->execute()) {
 						return false;
 					}
 				}
@@ -578,7 +559,6 @@ class MUEModelUser extends JModelAdmin
 				{
 					// Prune items that you can't change.
 					unset($pks[$i]);
-					JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'));
 				}
 			}
 		}
@@ -730,7 +710,7 @@ class MUEModelUser extends JModelAdmin
 			$db->setQuery($query);
 	
 			// Check for database errors.
-			if (!$db->query())
+			if (!$db->execute())
 			{
 				$this->setError($db->getErrorMsg());
 				return false;
@@ -773,7 +753,7 @@ class MUEModelUser extends JModelAdmin
 			$db->setQuery($query);
 	
 			// Check for database errors.
-			if (!$db->query())
+			if (!$db->execute())
 			{
 				$this->setError($db->getErrorMsg());
 				return false;

@@ -7,11 +7,7 @@ abstract class MUEHelper
 {
 	public static function addSubmenu($submenu,$title='')
 	{
-		if ($submenu == 'uopts') {
-            JHtmlSidebar::addEntry(JText::_('COM_MUE_SUBMENU_FIELDSRETURN'),'index.php?option=com_mue&view=ufields',$submenu == 'ufields');
-            JHtmlSidebar::addEntry('<span class="nav-header">'.$title.'</span>');
-        }
-        JHtmlSidebar::addEntry(JText::_('COM_MUE_SUBMENU_MUE'), 'index.php?option=com_mue', $submenu == 'mue');
+		JHtmlSidebar::addEntry(JText::_('COM_MUE_SUBMENU_MUE'), 'index.php?option=com_mue', $submenu == 'mue');
 		JHtmlSidebar::addEntry(JText::_('COM_MUE_SUBMENU_UGROUPS'), 'index.php?option=com_mue&view=ugroups', $submenu == 'ugroups');
 		JHtmlSidebar::addEntry(JText::_('COM_MUE_SUBMENU_UFIELDS'), 'index.php?option=com_mue&view=ufields', $submenu == 'ufields');
 		JHtmlSidebar::addEntry(JText::_('COM_MUE_SUBMENU_TALLY'), 'index.php?option=com_mue&view=tally', $submenu == 'tally');

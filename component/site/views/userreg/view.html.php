@@ -2,6 +2,7 @@
 
 jimport( 'joomla.application.component.view');
 
+use Joomla\CMS\Session\Session;
 
 class MUEViewUserreg extends JViewLegacy
 {
@@ -11,13 +12,13 @@ class MUEViewUserreg extends JViewLegacy
 	{
 
 		$config=MUEHelper::getConfig();
+		$this->input = JFactory::getApplication()->input;
 		if ($config->rc_config == "visible" || $config->rc_config == "invisible") {
 			$doc = JFactory::getDocument();
 			$doc->addScript('https://www.google.com/recaptcha/api.js');
 		}
 		$layout = $this->getLayout();
-		//$this->return = base64_decode(JRequest::getVar('return', '', 'POST', 'BASE64'));
-		$this->return = base64_decode(JRequest::getVar('return', null));
+		$this->return = base64_decode(JFactory::getApplication()->input->get('return', '', 'POST', 'BASE64'));
 		$this->params	= JFactory::getApplication()->getParams('com_mue');
 		switch($layout) {
 			case "default": 
@@ -56,9 +57,9 @@ class MUEViewUserreg extends JViewLegacy
 	}
 	
 	protected function setGroup() {
-		JRequest::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$this->checkToken() or die(JText::_('JINVALID_TOKEN'));
 		$app=Jfactory::getApplication();
-		$app->setUserState('mue.userreg.groupid',JRequest::getInt('groupid')); 
+		$app->setUserState('mue.userreg.groupid',$this->input->get('groupid'));
 		$app->setUserState('mue.userreg.return',$this->return); 
 		$app->redirect(JRoute::_('index.php?option=com_mue&view=userreg&layout=regform'));
 		
@@ -80,7 +81,7 @@ class MUEViewUserreg extends JViewLegacy
 			$this->groupinfo=$groupinfo;
 			$this->groupid=$groupid;
 			$this->userfields=$userfields;
-			$this->retry=JRequest::getInt('retry');
+			$this->retry=$this->input->get('retry');
 		} else {
 			$app->redirect(JRoute::_('index.php?option=com_mue&view=userreg'));
 		}
@@ -90,11 +91,12 @@ class MUEViewUserreg extends JViewLegacy
 		$model = $this->getModel();
 		$app=Jfactory::getApplication();
 		$muecfg = MUEHelper::getConfig();
-		$data = JRequest::getVar('jform', array(), 'post', 'array');
+		$data = $this->input->get('jform', [], 'post', 'array');
 		$groupid = $data['userGroupID'];
 		if (!$status = $model->save()) {
-			$app->setUserState('mue.userreg.groupid',$groupid); 
-			$app->redirect(JRoute::_('index.php?option=com_mue&view=userreg&layout=regform&retry=1&groupid='.$groupid),$model->getError(),'error');
+			$app->setUserState('mue.userreg.groupid',$groupid);
+			$app->enqueueMessage($model->getError(), 'error');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=userreg&layout=regform&retry=1&groupid='.$groupid));
 		} else {
 			if ($status == 'userlink') {
 				$this->setLayout('complete');
@@ -118,13 +120,15 @@ class MUEViewUserreg extends JViewLegacy
 
 	protected function activateUser() {
 		$model = $this->getModel();
-		$token = JRequest::getVar('token');
+		$token = $this->input->get('token');
 		$app=Jfactory::getApplication();
 		if (!$status = $model->activateUser($token)) {
-			$app->redirect(JRoute::_('index.php?option=com_mue&view=userreg&layout=complete', false),$this->getError(),'error');
+			$app->enqueueMessage(JText::_('COM_MUE_REGISTRATION_ACTIVATE_SUCCESS'));
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=userreg&layout=complete', false));
 		} else {
 			if ($status == 'active') {
-				$app->redirect(JRoute::_('index.php?option=com_mue&view=login&layout=login', false),JText::_('COM_MUE_REGISTRATION_ACTIVATE_SUCCESS'));
+				$app->enqueueMessage($model->getError(), 'error');
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=login&layout=login', false));
 			} else if ($status == 'adminactivate') {
 				$this->setLayout('complete');
 				$this->completeMessage = JText::_('COM_MUE_REGISTRATION_VERIFY_SUCCESS');
@@ -135,15 +139,23 @@ class MUEViewUserreg extends JViewLegacy
 
 	protected function adminActivateUser() {
 		$model = $this->getModel();
-		$token = JRequest::getVar('token');
+		$token = $this->input->get('token');
 		$app=Jfactory::getApplication();
 		if (!$status = $model->adminActivateUser($token)) {
-			$app->redirect(JRoute::_('index.php?option=com_mue&view=userreg&layout=complete', false),$this->getError(),'error');
+			$app->enqueueMessage($model->getError(), 'error');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=userreg&layout=complete', false),);
 		} else {
 			$this->setLayout('complete');
 			$this->completeMessage = JText::_('COM_MUE_REGISTRATION_ADMINACTIVATE_SUCCESS');
 		}
 
+	}
+
+	public function checkToken($method = 'post', $redirect = true)
+	{
+		$valid = Session::checkToken($method);
+
+		return $valid;
 	}
 }
 ?>

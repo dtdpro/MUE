@@ -19,10 +19,22 @@ class MUEViewCmlist extends JViewLegacy
 		}
 
 
-		$this->document->setTitle($this->list->list_info->name);
+		$this->addToolBar();
 
 		parent::display($tpl);
-		JRequest::setVar('hidemainmenu', true);
+	}
+
+	protected function addToolBar()
+	{
+		$jinput = JFactory::getApplication()->input;
+		$jinput->set('hidemainmenu', true);
+		$user = JFactory::getUser();
+		JToolBarHelper::title('Manage Campaign Monitor List Options: '.$this->list->list_info->name, 'mue');
+		// Built the actions for new and existing records.
+		JToolBarHelper::apply('cmlist.apply', 'JTOOLBAR_APPLY');
+		JToolBarHelper::save('cmlist.save', 'JTOOLBAR_SAVE');
+		JToolBarHelper::cancel('cmlist.cancel', 'JTOOLBAR_CLOSE');
+
 	}
 }
 

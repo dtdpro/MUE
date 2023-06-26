@@ -12,7 +12,7 @@ class MUEControllerPMs extends JControllerAdmin
 
 	protected $text_prefix = "COM_MUE_PM";
 	
-	public function getModel($name = 'PM', $prefix = 'MUEModel')
+	public function getModel($name = 'PM', $prefix = 'MUEModel', $config = [])
 	{
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 		return $model;
@@ -26,7 +26,7 @@ class MUEControllerPMs extends JControllerAdmin
 		$cid = $this->input->get('cid', array(), 'array');
 
 		if (empty($cid)) {
-			\JLog::add(\JText::_("No Messages selected"), \JLog::WARNING, 'jerror');
+			return false;
 		}
 		else
 		{
@@ -52,7 +52,7 @@ class MUEControllerPMs extends JControllerAdmin
 		$cid = $this->input->get('cid', array(), 'array');
 
 		if (empty($cid)) {
-			\JLog::add(\JText::_("No Messages selected"), \JLog::WARNING, 'jerror');
+			return false;
 		}
 		else
 		{

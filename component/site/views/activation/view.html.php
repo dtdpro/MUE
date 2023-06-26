@@ -20,7 +20,6 @@ class MUEViewActivation extends JViewLegacy
 				$this->adminActivateUser();
 				break;
 			case "complete":
-				$this->setLayout("deault");
 				break;
 		}
 		parent::display($tpl);
@@ -28,15 +27,25 @@ class MUEViewActivation extends JViewLegacy
 
 	protected function activateUser() {
 		$model = $this->getModel();
-		$token = JRequest::getVar('token');
+		$token = JFactory::getApplication()->input->get('token');
 		$app=Jfactory::getApplication();
+		$muecfg = MUEHelper::getConfig();
 		if (!$status = $model->activateUser($token)) {
-			$app->redirect(JRoute::_('index.php?option=com_mue&view=activation&layout=complete', false),$this->getError(),'error');
+			$app->enqueueMessage($model->getError(),'error');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=login&layout=login', false));
 		} else {
 			if ($status == 'active') {
-				$app->redirect(JRoute::_('index.php?option=com_mue&view=login&layout=login', false),JText::_('COM_MUE_REGISTRATION_ACTIVATE_SUCCESS'));
+				$return = "";
+				if ( $muecfg->subscribe ) {
+					$return = JRoute::_( 'index.php?option=com_mue&view=subscribe' );
+				}
+				$app->enqueueMessage(JText::_('COM_MUE_REGISTRATION_ACTIVATE_SUCCESS'));
+				$redirectUrl = 'index.php?option=com_mue&view=login&layout=login';
+				if ($return) {
+					$redirectUrl = $redirectUrl.'&return='.base64_encode($return);
+				}
+				$app->redirect(JRoute::_($redirectUrl, false));
 			} else if ($status == 'adminactivate') {
-				$this->setLayout('default');
 				$this->completeMessage = JText::_('COM_MUE_REGISTRATION_VERIFY_SUCCESS');
 			}
 		}
@@ -45,12 +54,12 @@ class MUEViewActivation extends JViewLegacy
 
 	protected function adminActivateUser() {
 		$model = $this->getModel();
-		$token = JRequest::getVar('token');
+		$token = JFactory::getApplication()->input->get('token');
 		$app=Jfactory::getApplication();
 		if (!$status = $model->adminActivateUser($token)) {
-			$app->redirect(JRoute::_('index.php?option=com_mue&view=activation&layout=complete', false),$this->getError(),'error');
+			$app->enqueueMessage($model->getError(),'error');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=activation&layout=complete', false));
 		} else {
-			$this->setLayout('default');
 			$this->completeMessage = JText::_('COM_MUE_REGISTRATION_ADMINACTIVATE_SUCCESS');
 		}
 

@@ -6,13 +6,14 @@ defined('_JEXEC') or die('Restricted access');
 // import Joomla controlleradmin library
 jimport('joomla.application.component.controlleradmin');
 
+use Joomla\Utilities\ArrayHelper;
 
 class MUEControllerUfields extends JControllerAdmin
 {
 
 	protected $text_prefix = "COM_MUE_UFIELD";
 	
-	public function getModel($name = 'Ufield', $prefix = 'MUEModel') 
+	public function getModel($name = 'Ufield', $prefix = 'MUEModel', $config = [])
 	{
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 		return $model;
@@ -21,14 +22,14 @@ class MUEControllerUfields extends JControllerAdmin
 	function copy()
 	{
 		// Check for request forgeries
-		JRequest::checkToken() or die(JText::_('JINVALID_TOKEN'));
+		$this->checkToken();
 		
 		// Get items to remove from the request.
-		$cid = JRequest::getVar('cid', array(), '', 'array');
+		$cid = $this->input->get('cid', array(), '', 'array');
 		
 		if (!is_array($cid) || count($cid) < 1)
 		{
-			JError::raiseWarning(500, JText::_($this->text_prefix . '_NO_ITEM_SELECTED'));
+			return false;
 		}
 		else
 		{
@@ -37,7 +38,7 @@ class MUEControllerUfields extends JControllerAdmin
 			
 			// Make sure the item ids are integers
 			jimport('joomla.utilities.arrayhelper');
-			JArrayHelper::toInteger($cid);
+			ArrayHelper::toInteger($cid);
 			
 			// Remove the items.
 			if ($model->copy($cid))

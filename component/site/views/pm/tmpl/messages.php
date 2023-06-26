@@ -1,15 +1,16 @@
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
-if ($this->params->get('divwrapper',1)) {
-	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
-}
+
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+
 $config = MUEHelper::getConfig();
 	?>
 <h2 class="componentheading uk-article-title"><?php echo "User Messages"; ?></h2>
 <?php
 
 echo '<p>';
-echo '<a href="'.JRoute::_("index.php?option=com_mue&view=userdir").'" class="button uk-button">'.JText::_('COM_MUE_USER_DIRECTORY_BUTTON').'</a> ';
+echo '<a href="'.JRoute::_("index.php?option=com_mue&view=userdir").'" class="button uk-button uk-button-primary">'.$config->userdir_title.'</a> ';
 echo '</p>';
 
 ?>
@@ -28,7 +29,7 @@ if ($this->messages) {
 		echo '</a>';
 		if ($message->msg_status == "new") echo ' <div class="uk-badge">New</div>';
 		echo '</td><td>';
-		echo date("M j, Y g:i A", strtotime($message->msg_date));
+		echo HTMLHelper::_('date', $message->msg_date, "M j, Y g:i A");
 		echo '</td></tr>';
 	}
 	echo '</tbody>';
@@ -49,12 +50,11 @@ if ($this->sentMessages) {
 		echo $message->msg_subject;
 		echo '</a>';
 		echo '</td><td>';
-		echo date("M j, Y g:i A", strtotime($message->msg_date));
+		echo HTMLHelper::_('date', $message->msg_date, "M j, Y g:i A");
 		echo '</td></tr>';
 	}
 	echo '</tbody>';
 	echo '</table>';
 } else echo '<p>At this time, you do not have any messages.</p>';
 
-if ($this->params->get('divwrapper',1)) { echo '</div>'; }
 ?>

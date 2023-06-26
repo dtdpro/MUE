@@ -1,8 +1,6 @@
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
-if ($this->params->get('divwrapper',1)) {
-	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
-}
+
 $user=JFactory::getUser();
 ?>
 
@@ -49,10 +47,8 @@ echo '<div class=""><input name="newemail" id="newemail" class="form-control uf_
 		
 			echo ' data-rule-required="true"';
 			echo ' data-rule-email="true"';
-			echo ' data-rule-remote="'.JURI::base( true ).'/components/com_mue/helpers/chkemail.php"';
 			echo ' data-msg-required="This Field is required"';
 			echo ' data-msg-email="Email address must be valid"';
-			echo ' data-msg-remote="Email Already registered"';
 		
 		echo '></div>';
 
@@ -84,7 +80,7 @@ echo '<div class="uk-form-row uk-margin-top uk-margin-bottom mue-user-edit-row">
 echo '<div class="uk-form-label mue-user-edit-label">';
 echo '</div>';
 echo '<div class="uk-form-controls mue-user-edit-submit">';
-echo '<input name="saveprofile" id="saveprofile" value="'.JText::_('COM_MUE_USER_CHGEMAIL_BUTTON_SAVE').'" type="submit" class="button uk-button">';
+echo '<input name="saveprofile" id="saveprofile" value="'.JText::_('COM_MUE_USER_CHGEMAIL_BUTTON_SAVE').'" type="submit" class="button uk-button uk-button-primary">';
 echo '</div></div>';
 echo '<input type="hidden" name="option" value="com_mue">';
 echo '<input type="hidden" name="view" value="user">';
@@ -93,5 +89,4 @@ echo JHtml::_('form.token');
 echo '</form>';
 echo '<div style="clear:both;"></div>';
 echo '</div>';
-if ($this->params->get('divwrapper',1)) { echo '</div>'; }
 ?>

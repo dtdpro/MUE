@@ -24,7 +24,10 @@ class MUEViewUserdir extends JViewLegacy
 			}
 		}
 		$app=Jfactory::getApplication();
-		if (!$canview) $app->redirect('index.php?option=com_mue&view=user&layout=profile',"Subscription Requried");
+		if (!$canview) {
+			$app->enqueueMessage("Subscription Requried");
+			$app->redirect('index.php?option=com_mue&view=user&layout=profile');
+		}
 		else {
 			$model = $this->getModel();
 			$this->sfields = $model->getSearchFields();

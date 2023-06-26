@@ -3,10 +3,10 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 // load tooltip behavior
-JHtml::_('behavior.tooltip');
-JHtml::_('behavior.multiselect');
-JHtml::_('dropdown.init');
-JHtml::_('formbehavior.chosen', 'select');
+if (JVersion::MAJOR_VERSION == 3) {
+	JHtml::_('bootstrap.tooltip');
+	JHtml::_('formbehavior.chosen', 'select');
+}
 
 $listOrder	= $this->escape($this->state->get('list.ordering'));
 $listDirn	= $this->escape($this->state->get('list.direction'));

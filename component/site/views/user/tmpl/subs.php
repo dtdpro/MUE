@@ -1,8 +1,5 @@
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
-if ($this->params->get('divwrapper',1)) {
-	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
-}
 $config = MUEHelper::getConfig();
 
 echo '<h2 class="componentheading uk-article-title">'.JText::_('COM_MUE_USER_SUBS_PAGE_TITLE').'</h2>';
@@ -80,5 +77,4 @@ if ($this->usersubs) {
 	}
 	echo '</tbody></table>';
 } else echo JText::_('COM_MUE_USER_SUBS_MESSAGE_NO_SUBS');
-if ($this->params->get('divwrapper',1)) { echo '</div>'; }
 ?>

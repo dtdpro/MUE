@@ -11,6 +11,7 @@ class MUEViewUopts extends JViewLegacy
 	
 	function display($tpl = null) 
 	{
+		$jinput = JFactory::getApplication()->input;
 		// Get data from the model
         $this->state = $this->get('State');
         $this->items = $this->get('Items');
@@ -27,7 +28,7 @@ class MUEViewUopts extends JViewLegacy
 		}
 
         // Set the submenu
-        MUEHelper::addSubmenu(JRequest::getVar('view'),$this->field->uf_name);
+		if (JVersion::MAJOR_VERSION == 3) MUEHelper::addSubmenu($jinput->getVar('view'));
         $this->sidebar = JHtmlSidebar::render();
 
 		// Set the toolbar
@@ -56,6 +57,7 @@ class MUEViewUopts extends JViewLegacy
 		} else  {
 			JToolBarHelper::trash('uopts.trash');
 		}
+		JToolbarHelper::link('index.php?option=com_mue&view=ufields','Return to Fields','chevron-left');
 	}
 	
 	protected function setDocument() 

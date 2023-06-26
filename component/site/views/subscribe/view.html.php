@@ -29,11 +29,12 @@ class MUEViewSubscribe extends JViewLegacy
 	function display($tpl = null)
 	{
 		$layout = $this->getLayout();
+		$this->input = JFactory::getApplication()->input;
 		$app=Jfactory::getApplication();
 		$this->params	= $app->getParams('com_mue');
 		$this->discountcode = $app->getUserState('com_mue.discountcode',"");
 		$model = $this->getModel();
-		$planid = JRequest::getVar( 'plan' );
+		$planid = $this->input->get( 'plan' );
 		$user = JFactory::getUser();
 		$hadTrial = MUEHelper::userHadTrial();
 		$this->subCount = count(MUEHelper::getUserSubs());
@@ -99,7 +100,7 @@ class MUEViewSubscribe extends JViewLegacy
 	}
 	
 	function checkInfo() {
-		$this->print = JRequest::getVar('print',0);
+		$this->print = $this->input->get('print',0);
 	}
 	
 	function ppSubmitPayment() {	
@@ -115,11 +116,13 @@ class MUEViewSubscribe extends JViewLegacy
 		include_once 'components/com_mue/helpers/paypal.php';
 		/*if ($sub->usrsub_coupon && $app->getUserState('com_mue.discountcode')) {
 			$app->setUserState('com_mue.discountcode',"");
-			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id),'You may only use one active coupon at a time.');
+			$app->enqueueMessage('You may only use one active coupon at a time.');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 		}*/
 		$paypal = new PayPalAPI($muecfg->paypal_mode,$muecfg->paypal_username,$muecfg->paypal_password,$muecfg->paypal_signature);
 		if (!$paypal->submitPayment($this->pinfo,$end)) {
-			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id),$paypal->error,'error');
+			$app->enqueueMessage($paypal->error,'error');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 		}
 	}
 	
@@ -127,15 +130,16 @@ class MUEViewSubscribe extends JViewLegacy
 		$user = JFactory::getUser();
 		$app=Jfactory::getApplication();
 		$muecfg = MUEHelper::getConfig();
-		$this->usid = JRequest::getVar( 'purchaseid' );
-		$token = JRequest::getVar( 'token' );
+		$this->usid = $this->input->get( 'purchaseid' );
+		$token = $this->input->get( 'token' );
 		if (!$user->id ) {
 			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 		}
 		include_once 'components/com_mue/helpers/paypal.php';
 		$paypal = new PayPalAPI($muecfg->paypal_mode,$muecfg->paypal_username,$muecfg->paypal_password,$muecfg->paypal_signature);
 		if (!$paypal->confirmPayment($this->pinfo,$this->usid,$token)) {
-			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id),$paypal->error,'error');
+			$app->enqueueMessage($paypal->error,'error');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 		}
 	}
 	
@@ -144,18 +148,20 @@ class MUEViewSubscribe extends JViewLegacy
 		$app=Jfactory::getApplication();
 		$muecfg = MUEHelper::getConfig();
 		$model = $this->getModel();
-		$this->usid = JRequest::getVar( 'purchaseid' );
+		$this->usid = $this->input->get( 'purchaseid' );
 		if (!$user->id ) {
 			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 		}
 		include_once 'components/com_mue/helpers/paypal.php';
 		$paypal = new PayPalAPI($muecfg->paypal_mode,$muecfg->paypal_username,$muecfg->paypal_password,$muecfg->paypal_signature);
 		if (!$paypal->verifyPayment($this->pinfo,$this->usid)) {
-			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id),$paypal->error,'error');
+			$app->enqueueMessage($paypal->error,'error');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 		} else {
 			$model->sendSubedEmail($this->pinfo);
 			$model->updateProfile();
-			$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'),'Thank you, your subscription has been completed. Once you have received your PayPal receipt please log out and log back in to access all features of the site. ');
+			$app->enqueueMessage('Thank you, your subscription has been completed. Once you have received your PayPal receipt please log out and log back in to access all features of the site. ');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'));
 			
 		}
 	}
@@ -164,14 +170,15 @@ class MUEViewSubscribe extends JViewLegacy
 		$user = JFactory::getUser();
 		$app=Jfactory::getApplication();
 		$muecfg = MUEHelper::getConfig();
-		$this->usid = JRequest::getVar( 'purchaseid' );
+		$this->usid = $this->input->get( 'purchaseid' );
 		if (!$user->id ) {
 			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 		}
 		include_once 'components/com_mue/helpers/paypal.php';
 		$paypal = new PayPalAPI($muecfg->paypal_mode,$muecfg->paypal_username,$muecfg->paypal_password,$muecfg->paypal_signature);
 		$paypal->cancelPayment($this->pinfo,$this->usid);
-		$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id),'Canceled');
+		$app->enqueueMessage('Canceled');
+		$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 	}
 
 	function freeOfCharge() {
@@ -186,11 +193,13 @@ class MUEViewSubscribe extends JViewLegacy
 		}
 		if ($this->pinfo->sub_cost == 0 || $this->pinfo->discounted == 0) {
 			if (!$subid = $model->freeOfCharge($this->pinfo,$end)) {
-				$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id),"Free subscription not available",'error');
+				$app->enqueueMessage("Free subscription not available",'error');
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 			} else {
 				$model->sendSubedEmail($this->pinfo);
 				$model->updateProfile();
-				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'),'Thank you, your subscription has been activated.');
+				$app->enqueueMessage('Thank you, your subscription has been activated.');
+				$app->redirect(JRoute::_('index.php?option=com_mue&view=user&layout=profile'));
 			}
 		} else {
 			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
@@ -208,11 +217,13 @@ class MUEViewSubscribe extends JViewLegacy
 			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 		}
 		if (!$subid = $model->payByCheck($this->pinfo,$end)) {
-			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id),"Could Not Pay by Check",'error');
+			$app->enqueueMessage("Could Not Pay by Check",'error');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 		} else {
 			$model->sendSubedEmail($this->pinfo);
 			$model->updateProfile();
-			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id.'&layout=check'),'Thank you, Please see details below.');
+			$app->enqueueMessage('Thank you, Please see details below.');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id.'&layout=check'));
 				
 		}
 	}
@@ -222,9 +233,10 @@ class MUEViewSubscribe extends JViewLegacy
 		$app=Jfactory::getApplication();
 		/*if ($sub->usrsub_coupon) {
 			$app->setUserState('com_mue.discountcode',"");
-			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id),'You may only use one active coupon at a time.');
+			$app->enqueueMessage('You may only use one active coupon at a time.');
+			$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 		}*/
-		$this->discountcode = JRequest::getVar( 'discountcode' );
+		$this->discountcode = $this->input->get( 'discountcode' );
 		$app->setUserState('com_mue.discountcode',$this->discountcode);
 		$app->redirect(JRoute::_('index.php?option=com_mue&view=subscribe&plan='.$this->pinfo->sub_id));
 	}

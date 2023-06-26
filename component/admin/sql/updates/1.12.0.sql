@@ -1,0 +1,9 @@
+ALTER TABLE `#__mue_usergroup` CHANGE `userg_user` `userg_user` INT NOT NULL DEFAULT '0', CHANGE `userg_group` `userg_group` INT NOT NULL DEFAULT '0';
+ALTER TABLE `#__mue_usergroup` CHANGE `userg_subsince` `userg_subsince` DATE NULL, CHANGE `userg_subexp` `userg_subexp` DATE NULL;
+ALTER TABLE `#__mue_usergroup` CHANGE `userg_lastpaidvia` `userg_lastpaidvia` VARCHAR(50) NOT NULL DEFAULT '', CHANGE `userg_subendplanname` `userg_subendplanname` VARCHAR(255) NOT NULL DEFAULT '';
+ALTER TABLE `#__mue_usersubs` CHANGE `usrsub_type` `usrsub_type` VARCHAR(25) NULL, CHANGE `usrsub_transid` `usrsub_transid` VARCHAR(255) NULL, CHANGE `usrsub_email` `usrsub_email` VARCHAR(255) NULL, CHANGE `usrsub_rpprofile` `usrsub_rpprofile` VARCHAR(255) NULL, CHANGE `usrsub_ip` `usrsub_ip` VARCHAR(20) NULL, CHANGE `usrsub_status` `usrsub_status` VARCHAR(100) NULL, CHANGE `usrsub_start` `usrsub_start` DATE NULL, CHANGE `usrsub_end` `usrsub_end` DATE NULL, CHANGE `usrsub_coupon` `usrsub_coupon` VARCHAR(50) NULL, CHANGE `usrsub_cost` `usrsub_cost` VARCHAR(50) NULL;
+ALTER TABLE `#__mue_usersubs` CHANGE `usrsub_rpstatus` `usrsub_rpstatus` VARCHAR(100) NULL;
+ALTER TABLE `#__mue_usersubs_log` CHANGE `usl_usid` `usl_usid` INT NOT NULL DEFAULT '0', CHANGE `usl_user` `usl_user` INT NOT NULL DEFAULT '0', CHANGE `usl_sub` `usl_sub` INT NOT NULL DEFAULT '0';
+ALTER TABLE `#__mue_messages` CHANGE `msg_from` `msg_from` INT NOT NULL DEFAULT '0', CHANGE `msg_to` `msg_to` INT NOT NULL DEFAULT '0', CHANGE `msg_status` `msg_status` VARCHAR(25) NULL;
+ALTER TABLE `#__mue_ufields` CHANGE `uf_cms` `uf_cms` TINYINT(1) NOT NULL DEFAULT '0';
+ALTER TABLE `#__mue_ufields` CHANGE `params` `params` TEXT NULL;

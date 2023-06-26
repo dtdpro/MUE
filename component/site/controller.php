@@ -6,11 +6,11 @@ class MUEController extends JControllerLegacy {
 	public function display($cachable = false, $urlparams = false) {
 		// Get the document object.
 		$document	= JFactory::getDocument();
-
+		$app = JFactory::getApplication();
 		// Set the default view name and format from the Request.
-		$vName	 = JRequest::getCmd('view', 'mue');
+		$vName	 = JFactory::getApplication()->input->get('view', 'mue');
 		$vFormat = $document->getType();
-		$lName	 = JRequest::getCmd('layout', 'default');
+		$lName	 = JFactory::getApplication()->input->get('layout', 'default');
 		$user = JFactory::getUser();
 			
 		if ($view = $this->getView($vName, $vFormat)) {
@@ -85,7 +85,10 @@ class MUEController extends JControllerLegacy {
 					break;
 
 				case 'login':
-
+					// no default layout, use login instead
+					if ($lName == 'default') {
+						$lName = 'login';
+					}
 					// If the user is a guest, redirect to the login page.
 					if ($lName == 'login' && $user->id) {
 						// Redirect to login page.
@@ -103,9 +106,6 @@ class MUEController extends JControllerLegacy {
 			// Push the model into the view (as default).
 			$view->setModel($model, true);
 			$view->setLayout($lName);
-
-			// Push document object into the view.
-			$view->assignRef('document', $document);
 			
 			if ($vName != "subscribe") {
 				$config=MUEHelper::getConfig();
@@ -114,14 +114,14 @@ class MUEController extends JControllerLegacy {
 					if ($numsubs) {
 						$sub=MUEHelper::getActiveSub();
 						if (!$sub) {
-							JError::raiseWarning('muesubexpired','Subscription Expired');
+							$app->enqueueMessage('Subscription Expired','error');
 						} else {
 							if ((!$sub->sub_recurring || $sub->usrsub_rpstatus != "ActiveProfile") && $sub->daysLeft <= 10) {
-								JError::raiseNotice('muesubexpiressoon','Subscription Expires in '.$sub->daysLeft. ' day(s)');
+								$app->enqueueMessage('Subscription Expires in '.$sub->daysLeft. ' day(s)','warning');
 							}
 						}
 					} else {
-						JError::raiseNotice('muesubexpiressoon','Subscription Required');
+						$app->enqueueMessage('Subscription Required','error');
 					}
 				}
 			}

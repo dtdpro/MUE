@@ -2,10 +2,15 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 // load tooltip behavior
-JHtml::_('bootstrap.tooltip');
-JHtml::_('behavior.multiselect');
-JHtml::_('dropdown.init');
-JHtml::_('formbehavior.chosen', 'select');
+if (JVersion::MAJOR_VERSION == 3) {
+	JHtml::_('bootstrap.tooltip');
+	JHtml::_('formbehavior.chosen', 'select');
+}
+
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Session\Session;
+use Joomla\CMS\Layout\LayoutHelper;
+
 JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 
 $app	= JFactory::getApplication();
@@ -19,8 +24,13 @@ $published = $this->state->get('filter.published');
 $saveOrder = ($listOrder == 'f.ordering');
 $sortFields = $this->getSortFields();
 if ($saveOrder) {
-    $saveOrderingUrl = 'index.php?option=com_mue&task=ufields.saveOrderAjax&tmpl=component';
-    JHtml::_('sortablelist.sortable', 'MUEFieldList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
+	if (JVersion::MAJOR_VERSION == 3) {
+		$saveOrderingUrl = 'index.php?option=com_mue&task=ufields.saveOrderAjax&tmpl=component';
+		JHtml::_('sortablelist.sortable', 'MAMSArtList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
+	} else {
+		$saveOrderingUrl = 'index.php?option=com_mue&task=ufields.saveOrderAjax&tmpl=component&' . Session::getFormToken() . '=1';
+		HTMLHelper::_('draggablelist.draggable');
+	}
 }
 
 ?>
@@ -69,7 +79,7 @@ if ($saveOrder) {
                     <?php echo JHtml::_('searchtools.sort', '', 'f.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING', 'icon-menu-2'); ?>
                 </th>
                 <th width="1%">
-					<input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($this->items); ?>);" />
+					<input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" />
 				</th>	
 				<th width="1%">
 					<?php echo JText::_('JSTATUS'); ?>
@@ -108,22 +118,20 @@ if ($saveOrder) {
 				<td colspan="12"><?php echo $this->pagination->getListFooter(); ?></td>
 			</tr>
 		</tfoot>
-		<tbody>
+		<tbody <?php if (JVersion::MAJOR_VERSION == 4) { ?>class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" data-nested="true"<?php } ?>>
 		<?php foreach($this->items as $i => $item): ?>
-            <tr class="row<?php echo $i % 2; ?>" sortable-group-id="muefields">
+            <tr class="row<?php echo $i % 2; ?>" <?php if (JVersion::MAJOR_VERSION == 3) { ?>sortable-group-id="muefields" <?php } else { ?>data-draggable-group="muefields"<?php } ?>>
                 <td class="order nowrap center hidden-phone">
                     <?php
-                    $disableClassName = '';
+	                $disableClassName = '';
                     $disabledLabel	  = '';
-                    if (!$saveOrder) :
-                        $disabledLabel    = JText::_('JORDERINGDISABLED');
-                        $disableClassName = 'inactive tip-top';
-                    endif; ?>
-                    <span class="sortable-handler hasTooltip <?php echo $disableClassName?>" title="<?php echo $disabledLabel?>">
-							<i class="icon-menu"></i>
-						</span>
+                    if (!$saveOrder) {
+	                    $disabledLabel    = JText::_( 'JORDERINGDISABLED' );
+	                    $disableClassName = 'inactive tip-top';
+                    }
+                    ?>
+                    <span class="sortable-handler hasTooltip <?php echo $disableClassName?>" title="<?php echo $disabledLabel?>"><i class="icon-menu"></i></span>
                     <input type="text" style="display:none" name="order[]" size="5" value="<?php echo $item->ordering;?>" class="width-20 text-area-order " />
-
                 </td>
 				<td>
 					<?php echo JHtml::_('grid.id', $i, $item->uf_id); ?>
@@ -156,6 +164,7 @@ if ($saveOrder) {
 						case "mailchimp": echo "MailChimp List"; break;
 						case "cmlist": echo 'Campaign Monitor List'; break;
                         case "aclist": echo 'Active Campaign List'; break;
+						case "timezone": echo 'Timezone'; break;
 					}
 					?>
 				</td>
@@ -198,29 +207,18 @@ if ($saveOrder) {
 						$db->setQuery( $query );
 						echo ' ['.$db->loadResult().']</a>'; 
 					}
-					if ($item->uf_type=="mailchimp") {
-						if ($item->uf_default) {
-							JHtml::_('behavior.modal', 'a.modal');
-							$link = 'index.php?option=com_mue&amp;view=mclist&amp;tmpl=component&amp;field='.$item->uf_id;
-							echo '<a class="modal" title="Edit List Options"  href="'.$link.'" rel="{handler: \'iframe\', size: {x: 800, y: 450}}">List Options</a>';
-						} else {
-							echo "LIST NOT SET";
-						}
-					}
 					if ($item->uf_type=="cmlist") {
 						if ($item->uf_default) {
-							JHtml::_('behavior.modal', 'a.modal');
-							$link = 'index.php?option=com_mue&amp;view=cmlist&amp;tmpl=component&amp;field='.$item->uf_id;
-							echo '<a class="modal" title="Edit List Options"  href="'.$link.'" rel="{handler: \'iframe\', size: {x: 800, y: 450}}">List Options</a>';
+							$link = 'index.php?option=com_mue&amp;view=cmlist&amp;field='.$item->uf_id;
+							echo '<a title="Edit List Options"  href="'.$link.'">List Options</a>';
 						} else {
 							echo "LIST NOT SET";
 						}
 					}
                     if ($item->uf_type=="aclist") {
                         if ($item->uf_default) {
-                            JHtml::_('behavior.modal', 'a.modal');
-                            $link = 'index.php?option=com_mue&amp;view=aclist&amp;tmpl=component&amp;field='.$item->uf_id;
-                            echo '<a class="modal" title="Edit List Options"  href="'.$link.'" rel="{handler: \'iframe\', size: {x: 800, y: 450}}">List Options</a>';
+	                        $link = 'index.php?option=com_mue&amp;view=aclist&amp;field='.$item->uf_id;
+	                        echo '<a title="Edit List Options"  href="'.$link.'">List Options</a>';
                         } else {
                             echo "LIST NOT SET";
                         }

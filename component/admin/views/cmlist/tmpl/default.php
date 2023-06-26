@@ -6,41 +6,36 @@ defined('_JEXEC') or die;
 $template = JFactory::getApplication()->getTemplate();
 
 // Load the tooltip behavior.
-JHtml::_('behavior.tooltip');
-JHtml::_('behavior.formvalidation');
+JHtml::_('bootstrap.tooltip');
+JHtml::_('behavior.formvalidator');
+
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 ?>
 <script type="text/javascript">
-	Joomla.submitbutton = function(task)
-	{
-		if (document.formvalidator.isValid(document.id('component-form'))) {
-			Joomla.submitform(task, document.getElementById('component-form'));
-		}
-	}
+    Joomla.submitbutton = function(task)
+    {
+        if (task == 'cmlist.cancel' || document.formvalidator.isValid(document.getElementById('mue-form'))) {
+            Joomla.submitform(task, document.getElementById('mue-form'));
+        }
+    }
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_mue');?>" id="mue-form" method="post" name="adminForm" class="form-validate">
-	<fieldset>
-		<div class="fltrt">
-			<button type="button" onclick="Joomla.submitform('cmlist.apply', this.form);">
-				<?php echo JText::_('JAPPLY');?></button>
-			<button type="button" onclick="Joomla.submitform('cmlist.save', this.form);">
-				<?php echo JText::_('JSAVE');?></button>
-			<button type="button" onclick="<?php echo JRequest::getBool('refresh', 0) ? 'window.parent.location.href=window.parent.location.href;' : '';?>  window.parent.SqueezeBox.close();">
-				<?php echo JText::_('JCANCEL');?></button>
-		</div>
-		<div class="configuration" >
-			<?php echo 'Campaign Monitor List Configuration - '.$this->list->list_info->Title; ?>
-		</div>
-	</fieldset>
-
 	<?php
-	echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'cmlist-membership'));
-	echo JHtml::_('bootstrap.addTab', 'myTab', 'cmlist-membership', "Subscription");
+	if (JVersion::MAJOR_VERSION == 4) {
+		echo '<div class="form-horizontal main-card">';
+		echo HTMLHelper::_('uitab.startTabSet', 'myTab', array( 'active' => 'details', 'recall' => true, 'breakpoint' => 768 ) );
+		echo HTMLHelper::_('uitab.addTab', 'myTab', 'general', 'Subscription');
+	} else {
+		echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'general'));
+		echo JHtml::_('bootstrap.addTab', 'myTab', 'general', 'Subscription');
+	}
 	
 	//Membership Grouping
 	echo '<div class="form-horizontal">';
 	
 	//Root Group
-	echo '<div class="control-group"><div class="control-label"><label for="jform_msgroup_field" id="jform_msgroup_field-lbl">Subscription Field</label></div>';
+	echo '<div class="control-group"><div class="control-label"><label for="jform_msgroup_field" id="jform_msgroup_field-lbl">Subscription Status Field</label></div>';
 	echo '<div class="controls"><select name="jform[msgroup][field]" id="jform_msgroup_field" class="inputbox">';
 	echo '<option value="">None</option>';
 	echo JHtml::_('select.options', $this->list->list_msfields, 'Key', 'FieldName', $this->list->params->msgroup->field, true);
@@ -90,8 +85,13 @@ JHtml::_('behavior.formvalidation');
 	echo '<div class="clr"></div>';
 
 	//CM Fields
-	echo JHtml::_('bootstrap.endTab');
-	echo JHtml::_('bootstrap.addTab', 'myTab', 'cmlist-fields', "Fields");
+	if ( JVersion::MAJOR_VERSION == 4 ) {
+		echo HTMLHelper::_('uitab.endTab');
+		echo HTMLHelper::_('uitab.addTab', 'myTab', 'fields', 'Fields');
+	} else {
+		echo JHtml::_('bootstrap.endTab');
+		echo JHtml::_('bootstrap.addTab', 'myTab', 'fields', 'Fields');
+	}
 
 	echo '<table class="adminlist table table-striped">';
 	echo '<thead><tr><th>CM Field</th><th>Type</th><th>MUE Field</th></tr></thead><tbody>';
@@ -132,17 +132,26 @@ JHtml::_('behavior.formvalidation');
 	echo '<div class="clr"></div>';
 	
 	//Ops
-
-	echo JHtml::_('bootstrap.endTab');
-	echo JHtml::_('bootstrap.addTab', 'myTab', 'cmlist-ops', "Operations");
+	if ( JVersion::MAJOR_VERSION == 4 ) {
+		echo HTMLHelper::_('uitab.endTab');
+		echo HTMLHelper::_('uitab.addTab', 'myTab', 'ops', 'Operations');
+	} else {
+		echo JHtml::_('bootstrap.endTab');
+		echo JHtml::_('bootstrap.addTab', 'myTab', 'ops', 'Operations');
+	}
 
 	echo '<p><button type="button" onclick="Joomla.submitform(\'cmlist.syncField\', this.form);">Sync MUE Field</button> This Process is very DB Intensive, use with care</p>';
 	echo '<p><button type="button" onclick="Joomla.submitform(\'cmlist.syncList\', this.form);">Sync CM List</button> This Process is very DB Intensive, use with care. You should run Sync MUE Field First.</p>';
 	echo '<div class="clr"></div>';
 	
 	//Webhooks
-	echo JHtml::_('bootstrap.endTab');
-	echo JHtml::_('bootstrap.addTab', 'myTab', 'cmlist-webhooks', "Webhooks");
+	if ( JVersion::MAJOR_VERSION == 4 ) {
+		echo HTMLHelper::_('uitab.endTab');
+		echo HTMLHelper::_('uitab.addTab', 'myTab', 'webhooks', 'Webhooks');
+	} else {
+		echo JHtml::_('bootstrap.endTab');
+		echo JHtml::_('bootstrap.addTab', 'myTab', 'webhooks', 'Webhooks');
+	}
 
 	if ($this->list->list_webhooks) {
 		echo '<p>';
@@ -160,8 +169,15 @@ JHtml::_('behavior.formvalidation');
 	}
 	echo '<div class="clr"></div>';
 
-	echo JHtml::_('bootstrap.endTab');
-	echo JHtml::_('bootstrap.endTabSet');
+
+	if ( JVersion::MAJOR_VERSION == 4 ) {
+		echo HTMLHelper::_('uitab.endTab');
+		echo HTMLHelper::_( 'uitab.endTabSet' );
+		echo '</div>';
+	} else {
+		echo JHtml::_('bootstrap.endTab');
+		echo JHtml::_( 'bootstrap.endTabSet' );
+	}
 	?>
 	<div>
 		<input type="hidden" name="field" value="<?php echo $this->list->uf_id;?>" />

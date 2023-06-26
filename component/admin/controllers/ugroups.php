@@ -12,7 +12,7 @@ class MUEControllerUgroups extends JControllerAdmin
 
 	protected $text_prefix = "COM_MUE_UGROUP";
 	
-	public function getModel($name = 'Ugroup', $prefix = 'MUEModel') 
+	public function getModel($name = 'Ugroup', $prefix = 'MUEModel', $config = [])
 	{
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 		return $model;

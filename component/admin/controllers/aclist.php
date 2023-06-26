@@ -11,21 +11,27 @@ class MUEControllerAclist extends JControllerLegacy
 		$this->registerTask('apply', 'save');
 	}
 
+	public function cancel($key = null) {
+		$this->checkToken();
+		$this->setRedirect('index.php?option=com_mue&view=ufields');
+		return true;
+	}
+
 	function save()
 	{
 		// Check for request forgeries.
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$this->checkToken();
 
 		// Initialise variables.
 		$app	= JFactory::getApplication();
 		$model	= $this->getModel('Aclist');
-		$data	= JRequest::getVar('jform', array(), 'post', 'array');
-		$field	= JRequest::getInt('field');
+		$data	= $this->input->get('jform', array(), 'post', 'array');
+		$field	= $this->input->get('field');
 
 		// Check if the user is authorized to do this.
 		if (!JFactory::getUser()->authorise('core.admin', $field))
 		{
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 			return;
 		}
 
@@ -37,7 +43,8 @@ class MUEControllerAclist extends JControllerLegacy
 		{
 			// Save failed, go back to the screen and display a notice.
 			$message = JText::sprintf('JERROR_SAVE_FAILED', $model->getError());
-			$this->setRedirect('index.php?option=com_mue&view=aclist&field='.$field.'&tmpl=component', $message, 'error');
+			$app->enqueueMessage($message, 'error');
+			$this->setRedirect('index.php?option=com_mue&view=aclist&field='.$field);
 			return false;
 		}
 
@@ -46,12 +53,13 @@ class MUEControllerAclist extends JControllerLegacy
 		{
 			case 'apply':
 				$message = JText::_('COM_MUE_ACLIST_SAVE_SUCCESS');
-				$this->setRedirect('index.php?option=com_mue&view=aclist&field='.$field.'&tmpl=component&refresh=1', $message);
+				$app->enqueueMessage($message);
+				$this->setRedirect('index.php?option=com_mue&view=aclist&field='.$field);
 				break;
 
 			case 'save':
 			default:
-				$this->setRedirect('index.php?option=com_config&view=close&tmpl=component');
+				$this->setRedirect('index.php?option=com_mue&view=ufields');
 				break;
 		}
 

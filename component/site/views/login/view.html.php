@@ -34,7 +34,7 @@ class MUEViewLogin extends JViewLegacy
 	protected function userLogIn() {
 		$app=Jfactory::getApplication();
 		$ufdata=$app->getUserState( 'users.login.form.data',array());
-		$redir = base64_decode(JRequest::getVar('return', null));
+		$redir = base64_decode(JFactory::getApplication()->input->get('return', null));
 		if (!$redir && isset($ufdata['return'])) $redir = $ufdata['return'];
 		if (!$redir) $redir = $this->params->get('login_redirect_url');
 		$this->redirurl = $redir;
@@ -45,7 +45,7 @@ class MUEViewLogin extends JViewLegacy
 		$app=Jfactory::getApplication();
 		$app->logout();
 		
-		$redir = base64_decode(JRequest::getVar('return', '', 'POST', 'BASE64'));
+		$redir = base64_decode(JFactory::getApplication()->input->get('return', '', 'POST', 'BASE64'));
 		if (!$redir) $redir="/";
 		
 		$app->redirect($redir);
@@ -56,18 +56,19 @@ class MUEViewLogin extends JViewLegacy
 		$model = $this->getModel();
 		$app=Jfactory::getApplication();
 		
-		$redir = base64_decode(JRequest::getVar('return', '', 'POST', 'BASE64'));
+		$redir = base64_decode(JFactory::getApplication()->input->get('return', '', 'POST', 'BASE64'));
 		if (!$redir) $redir='index.php?option=com_mue&view=user&layout=profile';
 		
 		if ($model->loginUser()) {
 			$user=MUEHelper::getUserInfo();
 			if ($user->lastUpdated == "0000-00-00 00:00:00") {
-				$app->redirect($redir,'Please update your <a href="'.JRoute::_("index.php?option=com_mue&view=user&layout=profile").'">profile</a>');
+				$app->enqueueMessage('Please update your <a href="'.JRoute::_("index.php?option=com_mue&view=user&layout=profile").'">profile</a>', 'error');
+				$app->redirect($redir);
 			} else {
 				$app->redirect($redir);
 			}
 		} else {
-			$app->redirect('index.php?option=com_mue&view=login&layout=login',$model->getError());
+			$app->redirect('index.php?option=com_mue&view=login&layout=login');
 		}
 	}
 	

@@ -27,8 +27,9 @@ class MUEHelper {
 		}
 	}
 
-	public static function getUserInfo($useids = false) {
+	public static function getUserInfo($useids = false, $checkExternal = true) {
 		$cfg = MUEHelper::getConfig();
+		$jconfig = JFactory::getConfig();
 		$user = JFactory::getUser();
 		$userid = $user->id;
 		$db = JFactory::getDBO();
@@ -64,7 +65,7 @@ class MUEHelper {
 				} else if ($u->uf_type == 'cbox' || $u->uf_type == 'yesno') {
 					if ($useids && $u->uf_change) $user->$fn=$u->usr_data;
 					else $user->$fn = ($u->usr_data == "1") ? "Yes" : "No";
-				} else if ($u->uf_type == 'cmlist') {
+				} else if ($u->uf_type == 'cmlist' && $checkExternal) {
 					include_once JPATH_BASE.'/components/com_mue/lib/campaignmonitor.php';
 					$cm = new CampaignMonitor($cfg->cmkey,$cfg->cmclient);
 					$cmresult = $cm->getSubscriberDetails($u->uf_default,$user->email);
@@ -72,7 +73,7 @@ class MUEHelper {
 					else $onlist=false;
 					if ($useids && $u->uf_change) $user->$fn=$onlist;
 					else $user->$fn = ($onlist) ? "Yes" : "No";
-				} else if ($u->uf_type == 'aclist') {
+				} else if ($u->uf_type == 'aclist' && $checkExternal) {
 					require_once(JPATH_ROOT.'/components/com_mue/lib/activecampaign.php');
 					$acClient = new ActiveCampaign($cfg->ackey,$cfg->acurl);
 					$contact = $acClient->getContact($user->email);
@@ -97,10 +98,16 @@ class MUEHelper {
                 } else if ($u->uf_type == 'birthday') {
 					if ($useids && $u->uf_change) $user->$fn=$u->usr_data;
 					else $user->$fn = date("F j",strtotime('2000-'.substr($u->usr_data,0,2)."-".substr($u->usr_data,2,2).''));
-				} else{
+				} else if ($u->uf_type == 'timezone') {
+					if (!$useids) {
+						$user->$fn = json_decode($user->params)->timezone;
+						if (!$user->$fn) $user->$fn = $jconfig->get( 'offset' );
+					}
+				} else {
 					$user->$fn=$u->usr_data;
 				}
 			}
+			if ($useids) $user->timezone = json_decode($user->params)->timezone;
 		}
 		return $user;
 	}
@@ -192,7 +199,7 @@ class MUEHelper {
 			if ($member_since) $qud->set('userg_subsince = "'.$member_since.'"');
 			$qud->where('userg_user = '.$userid);
 			$db->setQuery($qud);
-			$db->query();
+			$db->execute();
 			return $sub;
 		} else {
 			return false;
@@ -231,7 +238,7 @@ class MUEHelper {
 			if ($member_since) $qud->set('userg_subsince = "'.$member_since.'"');
 			$qud->where('userg_user = '.$userid);
 			$db->setQuery($qud);
-			$db->query();
+			$db->execute();
 		}
 
 		$ugq = "SELECT * FROM #__mue_usergroup WHERE userg_user = ".$userid;
@@ -367,7 +374,7 @@ class MUEHelper {
 				$query->columns(array($db->quoteName('user_id'), $db->quoteName('group_id')));
 				$query->values((int) $userid . ',' . $cfg->subgroup);
 				$db->setQuery($query);
-				$db->query();
+				$db->execute();
 			}
 			$usernotes .= $date->toSql(true)." Added to Membership Group\r\n";
 		} else {
@@ -378,14 +385,14 @@ class MUEHelper {
 			$query->where($db->quoteName('user_id') . ' = ' . (int) $userid);
 			$query->where($db->quoteName('group_id') . ' = ' . (int) $cfg->subgroup);
 			$db->setQuery($query);
-			$db->query();
+			$db->execute();
 			$usernotes .= $date->toSql(true)." Removed from Membership Group\r\n";
 		}
 
 		//Update update date
 		$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
 		$db->setQuery($qud);
-		$db->query();
+		$db->execute();
 	}
 
 	public static function updateSubJoomlaGroup($userid=0) {
@@ -419,7 +426,7 @@ class MUEHelper {
 			if ($member_since) $qud->set('userg_subsince = "'.$member_since.'"');
 			$qud->where('userg_user = '.$userid);
 			$db->setQuery($qud);
-			$db->query();
+			$db->execute();
 			//return $sub;
 		}
 
@@ -439,7 +446,7 @@ class MUEHelper {
 				$query->columns(array($db->quoteName('user_id'), $db->quoteName('group_id')));
 				$query->values((int) $userid . ',' . $cfg->subgroup);
 				$db->setQuery($query);
-				$db->query();
+				$db->execute();
 			}
 		} else {
 			$query = $db->getQuery(true);
@@ -449,7 +456,7 @@ class MUEHelper {
 			$query->where($db->quoteName('user_id') . ' = ' . (int) $userid);
 			$query->where($db->quoteName('group_id') . ' = ' . (int) $cfg->subgroup);
 			$db->setQuery($query);
-			$db->query();
+			$db->execute();
 		}
 	}
 }

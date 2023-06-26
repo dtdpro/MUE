@@ -1,8 +1,5 @@
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
-if ($this->params->get('divwrapper',1)) {
-	echo '<div id="system" class="'.$this->params->get('wrapperclass','uk-article').'">';
-}
 $config = MUEHelper::getConfig();
 
 $session=JFactory::getSession();
@@ -30,9 +27,6 @@ if ($config->show_progbar) {
 			
 			
 			<br /><br />
-			<input type="submit" value="<?php  echo $btntext; ?>" class="button uk-button"  /><br /><br /></p>
+			<input type="submit" value="<?php  echo $btntext; ?>" class="button uk-button uk-button-primary uk-button-large"  /><br /><br /></p>
 		</form>
 
-<?php 
-if ($this->params->get('divwrapper',1)) { echo '</div>'; }
-?>

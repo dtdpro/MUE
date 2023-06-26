@@ -19,10 +19,6 @@ JLoader::register('MUEHelper', dirname(__FILE__) . '/helpers/mue.php');
 // load composer packages
 require JPATH_ROOT.'/components/com_mue/vendor/autoload.php';
 
-//Load Bronto
-JLoader::registerNamespace('Bronto_Api', JPATH_ROOT . '/components/com_mue/lib/bronto/src');
-JLoader::registerNamespace('Bronto_SoapClient', JPATH_ROOT . '/components/com_mue/lib/bronto/src');
-
 //icon
 $document = JFactory::getDocument();
 $document->addStyleDeclaration('.icon-48-mue {background-image: url(../media/com_mue/images/mue-48x48.png);}');
@@ -34,7 +30,8 @@ jimport('joomla.application.component.controller');
 $controller = JControllerLegacy::getInstance('mue');
 
 // Perform the Request task
-$controller->execute(JRequest::getCmd('task'));
+$controller->execute(JFactory::getApplication()->input->get('task'));
+
 
 // Redirect if set by the controller
 $controller->redirect();

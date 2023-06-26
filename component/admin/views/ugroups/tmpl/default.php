@@ -3,10 +3,14 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 // load tooltip behavior
-JHtml::_('bootstrap.tooltip');
-JHtml::_('behavior.multiselect');
-JHtml::_('dropdown.init');
-JHtml::_('formbehavior.chosen', 'select');
+if (JVersion::MAJOR_VERSION == 3) {
+	JHtml::_('bootstrap.tooltip');
+	JHtml::_('formbehavior.chosen', 'select');
+}
+
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Session\Session;
+use Joomla\CMS\Layout\LayoutHelper;
 
 $listOrder	= $this->escape($this->state->get('list.ordering'));
 $listDirn	= $this->escape($this->state->get('list.direction'));
@@ -14,8 +18,13 @@ $saveOrder	= $listOrder == 'ug.ordering';
 $ordering	= ($listOrder == 'ug.ordering');
 $sortFields = $this->getSortFields();
 if ($saveOrder) {
-    $saveOrderingUrl = 'index.php?option=com_mue&task=ugroups.saveOrderAjax&tmpl=component';
-    JHtml::_('sortablelist.sortable', 'MUEGroupList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
+	if (JVersion::MAJOR_VERSION == 3) {
+		$saveOrderingUrl = 'index.php?option=com_mue&task=ugroups.saveOrderAjax&tmpl=component';
+		JHtml::_('sortablelist.sortable', 'MUEGroupList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
+	} else {
+		$saveOrderingUrl = 'index.php?option=com_mue&task=ugroups.saveOrderAjax&tmpl=component&' . Session::getFormToken() . '=1';
+		HTMLHelper::_('draggablelist.draggable');
+	}
 }
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_mue&view=ugroups'); ?>" method="post" name="adminForm" id="adminForm">
@@ -62,9 +71,9 @@ if ($saveOrder) {
 				<td colspan="6"><?php echo $this->pagination->getListFooter(); ?></td>
 			</tr>
 		</tfoot>
-		<tbody>
+        <tbody <?php if (JVersion::MAJOR_VERSION == 4) { ?>class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" data-nested="true"<?php } ?>>
 		<?php foreach($this->items as $i => $item): ?>
-			<tr class="row<?php echo $i % 2; ?>" sortable-group-id="mamsgroup">
+            <tr class="row<?php echo $i % 2; ?>" <?php if (JVersion::MAJOR_VERSION == 3) { ?>sortable-group-id="muegroup" <?php } else { ?>data-draggable-group="muegroup"<?php } ?>>
                 <td class="order nowrap center hidden-phone">
                     <?php
                     $disableClassName = '';

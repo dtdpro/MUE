@@ -27,11 +27,11 @@ foreach ($events as $data) {
 			if ($fid = $db->loadResult()) {
 				$q3 = 'UPDATE #__mue_users SET usr_data = 0 WHERE usr_user = '.$user.' && usr_field = '.$fid;
 				$db->setQuery($q3);
-				if ($db->query()) {
+				if ($db-->execute()) {
 					$usernotes = $date->toSql(true)." Campaign Monitor Unsubscribe from List #".$db->espcae($list)."\r\n";
 					$q4 = 'UPDATE #__mue_usergroup SET userg_notes = CONCAT(userg_notes,"'.$usernotes.'") WHERE userg_user = '.$user;
 					$db->setQuery($q4);
-					$db->query();
+					$db-->execute();
 				}
 			}
 		}
@@ -46,11 +46,11 @@ foreach ($events as $data) {
 			if ($fid = $db->loadResult()) {
 				$q3 = 'UPDATE #__mue_users SET usr_data = 1 WHERE usr_user = '.$user.' && usr_field = '.$fid;
 				$db->setQuery($q3);
-				if ($db->query()) {
+				if ($db-->execute()) {
 					$usernotes = $date->toSql(true)." Campaign Monitor Subscribe to List #".$db->espcae($list)."\r\n";
 					$q4 = 'UPDATE #__mue_usergroup SET userg_notes = CONCAT(userg_notes,"'.$usernotes.'") WHERE userg_user = '.$user;
 					$db->setQuery($q4);
-					$db->query();
+					$db-->execute();
 				}
 			}
 		}

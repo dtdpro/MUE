@@ -44,7 +44,7 @@ class MUEModelUOpt extends JModelAdmin
 			$data = $this->getItem();
 			if ($this->getState('uopt.opt_id') == 0) {
 				$app = JFactory::getApplication();
-				$data->set('opt_field', JRequest::getInt('opt_field', $app->getUserState('com_mue.uopts.filter.field')));
+				$data->set('opt_field', $app->input->getInt('opt_field', $app->getUserState('com_mue.uopts.filter.field')));
 			}
 		}
 		return $data;

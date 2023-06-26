@@ -76,7 +76,7 @@ class MUEModelUsersub extends JModelAdmin
 					$query->columns(array($db->quoteName('user_id'), $db->quoteName('group_id')));
 					$query->values((int) $data['usrsub_user'] . ',' . $cfg->subgroup);
 					$db->setQuery($query);
-					$db->query();
+					$db->execute();
 				}
 			}
 		} else {
@@ -88,7 +88,7 @@ class MUEModelUsersub extends JModelAdmin
 				$query->where($db->quoteName('user_id') . ' = ' . (int) $data['usrsub_user']);
 				$query->where($db->quoteName('group_id') . ' = ' . (int) $cfg->subgroup);
 				$db->setQuery($query);
-				$db->query();
+				$db->execute();
 			}
 		}
 		$saved = parent::save($data);
@@ -250,7 +250,7 @@ class MUEModelUsersub extends JModelAdmin
 			if ($member_since) $qud->set('userg_subsince = "'.$member_since.'"');
 			$qud->where('userg_user = '.$userid);
 			$db->setQuery($qud);
-			$db->query();
+			$db->execute();
 			return true;
 		} else {
 			return false;
@@ -330,7 +330,7 @@ class MUEModelUsersub extends JModelAdmin
 		//Update update date
 		$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
 		$db->setQuery($qud);
-		if (!$db->query()) {
+		if (!$db->execute()) {
 			$this->setError($db->getErrorMsg());
 			return false;
 		}
@@ -369,7 +369,7 @@ class MUEModelUsersub extends JModelAdmin
 		//Update update date
 		$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
 		$db->setQuery($qud);
-		if (!$db->query()) {
+		if (!$db->execute()) {
 			$this->setError($db->getErrorMsg());
 			return false;
 		}

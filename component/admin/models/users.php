@@ -120,13 +120,6 @@ class MUEModelUsers extends JModelList
 		$query = $this->_getListQuery();
 		$items = $this->_getList($query, $this->getStart(), $this->getState('list.limit'));
 	
-		// Check for a database error.
-		if ($this->_db->getErrorNum())
-		{
-			$this->setError($this->_db->getErrorMsg());
-			return false;
-		}
-	
 		//Get Subscription Information if enabled
 		if ($cfg->subscribe) {
 			$items=$this->getSubStatus($items);
@@ -139,9 +132,7 @@ class MUEModelUsers extends JModelList
 	
 		return $this->cache[$store];
 	}
-	
-	
-	
+
 	protected function getListQuery($ulist = Array()) 
 	{
 		// Create a new query object.
@@ -317,7 +308,7 @@ class MUEModelUsers extends JModelList
 			else $qud->set('userg_subsince = "0000-00-00"');
 			$qud->where('userg_user = '.$i->id);
 			$db->setQuery($qud);
-			if (!$db->query()) return false;
+			if (!$db->execute()) return false;
 		}
 		return true;
 	}
@@ -499,6 +490,7 @@ class MUEModelUsers extends JModelList
 	
 	public function getUserData($fdata) {
 		$db = JFactory::getDBO();
+		$udata = new stdClass();
 		foreach ($fdata as $f) {
 			if (!$f->uf_cms) { 
 				$sname = $f->uf_sname;

@@ -2,7 +2,6 @@
 defined('_JEXEC') or die('Restricted access');
 $cfg = MUEHelper::getConfig();
 JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
-if (($this->retry) && $this->params->get('divwrapper',1)) echo '<div id="system" class="uk-article">';
 ?>
 
 <script type="text/javascript">
@@ -170,7 +169,7 @@ echo '<div class="uk-form-row mue-user-reg-row uk-margin-top uk-margin-bottom">'
 echo '<div class="uk-form-label mue-user-reg-label">';
 echo '</div>';
 echo '<div class="uk-form-controls mue-user-reg-submit">';
-echo '<input name="saveprofile" id="savereg" value="'.JText::_('COM_MUE_USERREG_BUTTON_SUBMIT').'" type="submit" class="button uk-button">';
+echo '<input name="saveprofile" id="savereg" value="'.JText::_('COM_MUE_USERREG_BUTTON_SUBMIT').'" type="submit" class="button uk-button uk-button-primary">';
 echo '</div></div>';
 
 
@@ -183,8 +182,7 @@ echo JHtml::_('form.token');
 echo '</form>';
 echo '<div style="clear:both;"></div>';
 
-if ($this->retry) {
+//if ($this->retry) {
 	echo '</div>';
-	if ($this->params->get('divwrapper',1)) echo '</div>';
-}
+//}
 ?>

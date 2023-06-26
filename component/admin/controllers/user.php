@@ -9,46 +9,22 @@ jimport('joomla.application.component.controllerform');
 class MUEControllerUser extends JControllerForm
 {
 	protected $text_prefix = "COM_MUE_USER";
-	
+
 	public function cancel($key = null)
 	{
-		JRequest::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$this->checkToken();
 
 		// Initialise variables.
 		$app		= JFactory::getApplication();
+		$input      = JFactory::getApplication()->input;
 		$model		= $this->getModel();
-		$checkin	= property_exists($table, 'checked_out');
 		$context	= "$this->option.edit.$this->context";
 
 		if (empty($key)) {
 			$key = 'usr_user';
 		}
 
-		$recordId	= JRequest::getInt($key);
-
-		// Attempt to check-in the current record.
-		if ($recordId) {
-			// Check we are holding the id in the edit list.
-			if (!$this->checkEditId($context, $recordId)) {
-				// Somehow the person just went to the form - we don't allow that.
-				$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $recordId));
-				$this->setMessage($this->getError(), 'error');
-				$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_list.$this->getRedirectToListAppend(), false));
-
-				return false;
-			}
-
-			if ($checkin) {
-				if ($model->checkin($recordId) === false) {
-					// Check-in failed, go back to the record and display a notice.
-					$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError()));
-					$this->setMessage($this->getError(), 'error');
-					$this->setRedirect('index.php?option='.$this->option.'&view='.$this->view_item.$this->getRedirectToItemAppend($recordId, $key));
-
-					return false;
-				}
-			}
-		}
+		$recordId	= $input->get($key);
 
 		// Clean the session data and redirect.
 		$this->releaseEditId($context, $recordId);
@@ -62,8 +38,9 @@ class MUEControllerUser extends JControllerForm
 	{
 		// Initialise variables.
 		$app		= JFactory::getApplication();
+		$input      = JFactory::getApplication()->input;
 		$model		= $this->getModel();
-		$cid		= JRequest::getVar('cid', array(), 'post', 'array');
+		$cid		= $input->get('cid', array(), 'post', 'array');
 		$context	= "$this->option.edit.$this->context";
 		$append		= '';
 
@@ -77,13 +54,12 @@ class MUEControllerUser extends JControllerForm
 			$urlVar = 'id';
 		}
 		// Get the previous record id (if any) and the current record id.
-		$recordId	= (int) (count($cid) ? $cid[0] : JRequest::getInt($urlVar));
+		$recordId	= (int) (count($cid) ? $cid[0] : $input->get($urlVar));
 		
 	
 		// Access check.
 		if (!$this->allowEdit(array($key => $recordId), $key)) {
-			$this->setError(JText::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'));
-			$this->setMessage($this->getError(), 'error');
+			$app->enqueueMessage(JText::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'), 'error');
 			$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_list.$this->getRedirectToListAppend(), false));
 
 			return false;
@@ -99,13 +75,14 @@ class MUEControllerUser extends JControllerForm
 	public function save($key = null, $urlVar = null)
 	{
 		// Check for request forgeries.
-		JRequest::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$this->checkToken();
 
 		// Initialise variables.
 		$app		= JFactory::getApplication();
 		$lang		= JFactory::getLanguage();
+		$input      = JFactory::getApplication()->input;
 		$model		= $this->getModel();
-		$data		= JRequest::getVar('jform', array(), 'post', 'array');
+		$data		= $input->get('jform', array(), 'post', 'array');
 		$context	= "$this->option.edit.$this->context";
 		$task		= $this->getTask();
 
@@ -118,15 +95,14 @@ class MUEControllerUser extends JControllerForm
 			$urlVar = $key;
 		}
 
-		$recordId	= JRequest::getInt($urlVar);
+		$recordId	= $input->get($urlVar);
 
 		$session	= JFactory::getSession();
 		$registry	= $session->get('registry');
 
 		if (!$this->checkEditId($context, $recordId)) {
 			// Somehow the person just went to the form and tried to save it. We don't allow that.
-			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $recordId));
-			$this->setMessage($this->getError(), 'error');
+			$app->enqueueMessage(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $recordId), 'error');
 			$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_list.$this->getRedirectToListAppend(), false));
 
 			return false;
@@ -137,8 +113,7 @@ class MUEControllerUser extends JControllerForm
 
 		// Access check.
 		if (!$this->allowSave($data, $key)) {
-			$this->setError(JText::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED'));
-			$this->setMessage($this->getError(), 'error');
+			$app->enqueueMessage(JText::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED'), 'error');
 			$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_list.$this->getRedirectToListAppend(), false));
 
 			return false;
@@ -178,8 +153,7 @@ class MUEControllerUser extends JControllerForm
 			$app->setUserState($context.'.data', $validData);
 
 			// Redirect back to the edit screen.
-			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
-			$this->setMessage($this->getError(), 'error');
+			$app->enqueueMessage(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()), 'error');
 			$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_item.$this->getRedirectToItemAppend($recordId, "id"), false));
 
 			return false;

@@ -10,6 +10,7 @@ class MUEViewUgroups extends JViewLegacy
 {
 	function display($tpl = null) 
 	{
+		$jinput = JFactory::getApplication()->input;
 		// Get data from the model
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
@@ -26,10 +27,9 @@ class MUEViewUgroups extends JViewLegacy
 		// Assign data to the view
 		$this->items = $items;
 		$this->pagination = $pagination;
-		$this->qlist = $qlist;
 
         // Set the submenu
-        MUEHelper::addSubmenu(JRequest::getVar('view'));
+		if (JVersion::MAJOR_VERSION == 3) MUEHelper::addSubmenu($jinput->getVar('view'));
         $this->sidebar = JHtmlSidebar::render();
 
         // Set the toolbar

@@ -68,6 +68,7 @@
 			<option value="birthday">Birthday</option>
 			<option value="cmlist">Campaign Monitor List</option>
 			<option value="aclist">Active Campaign List</option>
+			<option value="timezone">Timezone</option>
 		</field>
 		<field
 			name="uf_req"

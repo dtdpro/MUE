@@ -23,7 +23,7 @@ class ActiveCampaign {
 	}
 
 	public function getListsById() {
-		$data = $this->getData('/api/3/lists');
+		$data = $this->getData('/api/3/lists?limit=100');
 
 		$listsById = [];
 

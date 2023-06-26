@@ -12,7 +12,7 @@ class MUEModelPMs extends JModelList
 		
 		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
-				'm.msg_status','msg_status'
+				'm.msg_status','msg_status','status'
 			);
 		}
 		parent::__construct($config);
@@ -22,6 +22,9 @@ class MUEModelPMs extends JModelList
 	{
 		// Initialise variables.
 		$app = JFactory::getApplication('administrator');
+
+		$search = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
+		$this->setState('filter.search', $search);
 
 		$published = $this->getUserStateFromRequest($this->context.'.filter.status', 'filter_status', '', 'string');
 		$this->setState('filter.status', $published);
@@ -50,6 +53,17 @@ class MUEModelPMs extends JModelList
 		$status = $this->getState('filter.status');
 		if ($status) {
 			$query->where('m.msg_status = "'.$db->escape($status).'"');
+		}
+
+		// Filter by search in title
+		$search = $this->getState('filter.search');
+		if (!empty($search)) {
+			if (stripos($search, 'id:') === 0) {
+				$query->where('m.msg_id = '.(int) substr($search, 3));
+			} else {
+				$search = $db->Quote('%'.$db->escape($search, true).'%');
+				$query->where('(m.msg_subject LIKE '.$search.' )');
+			}
 		}
 
 		// Add the list ordering clause.

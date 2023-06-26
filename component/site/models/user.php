@@ -4,9 +4,8 @@ defined('_JEXEC') or die();
 
 jimport( 'joomla.application.component.model' );
 
-/**
- *
- */
+use Joomla\CMS\Session\Session;
+
 class MUEModelUser extends JModelLegacy
 {
 	function getGroups() {
@@ -34,6 +33,7 @@ class MUEModelUser extends JModelLegacy
 		//Update Joomla User Info
 		$udata['email']=$newemail;
 		$udata['block']=$user->block;
+
 		if (!$user->bind($udata)) {
 			$this->setError($user->getError());
 			return false;
@@ -47,7 +47,7 @@ class MUEModelUser extends JModelLegacy
 		$usernotes = $date->toSql(true)." User Email Changed from ".$oldemail." to ".$user->email."\r\n";
 		$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'" WHERE userg_user = '.$user->id;
 		$db->setQuery($qud);
-		if (!$db->query()) {
+		if (!$db->execute()) {
 			$this->setError($db->getErrorMsg());
 			return false;
 		}
@@ -86,7 +86,7 @@ class MUEModelUser extends JModelLegacy
 		//Update usernotes
 		$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
 		$db->setQuery($qud);
-		if (!$db->query()) {
+		if (!$db->execute()) {
 			$this->setError($db->getErrorMsg());
 			return false;
 		}
@@ -103,7 +103,7 @@ class MUEModelUser extends JModelLegacy
 		$usernotes = $date->toSql(true)." User Group Changed\r\n";
 		$qud = 'UPDATE #__mue_usergroup SET userg_group = '.$groupid.', userg_update = "'.$date->toSql(true).'" WHERE userg_user = '.$user->id;
 		$db->setQuery($qud);
-		if (!$db->query()) {
+		if (!$db->execute()) {
 			$this->setError($db->getErrorMsg());
 			return false;
 		}
@@ -167,7 +167,7 @@ class MUEModelUser extends JModelLegacy
 		//Update usernotes
 		$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
 		$db->setQuery($qud);
-		if (!$db->query()) {
+		if (!$db->execute()) {
 			$this->setError($db->getErrorMsg());
 			return false;
 		}
@@ -254,20 +254,21 @@ class MUEModelUser extends JModelLegacy
 	
 	public function save()
 	{
-		JRequest::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$this->checkToken() or die(JText::_('JINVALID_TOKEN'));
+		$input = JFactory::getApplication()->input;
 		// Initialise variables;
 		$user=JFactory::getUser();
-		$data		= JRequest::getVar('jform', array(), 'post', 'array'); 
-		$dispatcher = JDispatcher::getInstance();
+		$data = $input->get('jform', [], 'post', 'array');
 		$isNew = true;
-		$db		= $this->getDbo();
+		$db	= $this->getDbo();
 		$ugroup = $data['userGroupID'];
-		$ginfo=MUEHelper::getGroupInfo($ugroup);
+		$ginfo = MUEHelper::getGroupInfo($ugroup);
 		$uginfo = $this->getUserGroupInfo($user->id);
 		$date = new JDate('now');
 		$usernotes = $date->toSql(true)." User Profile Updated"."\r\n";
 		$cfg = MUEHelper::getConfig();
 		$substatus=MUEHelper::getActiveSub();
+		$hasTZField = false;
 		
 		JPluginHelper::importPlugin('user');
 		
@@ -284,7 +285,10 @@ class MUEModelUser extends JModelLegacy
 			$flist = $this->getUserFields($ugroup,false,false,false);
 			foreach ($flist as $d) {
 				$fieldname = $d->uf_sname;
-				if ($d->uf_type == 'aclist') {
+				if ($d->uf_type == 'timezone') {
+					$hasTZField = true;
+					$timezone=$db->escape($data[$fieldname]);
+				} else if ($d->uf_type == 'aclist') {
 					$aclists[]=$d;
 				} else if ($d->uf_type == 'cmlist') {
 					$cmlists[]=$d;
@@ -443,6 +447,7 @@ class MUEModelUser extends JModelLegacy
 						$customfields[]=$newcmf;
 					}
 					$cmdata['CustomFields']=$customfields;
+					$cmdata['ConsentToTrack'] = 'yes';
 					$cmd=print_r($cmdata,true);
 					if ($cm->getSubscriberDetails($cmlist->uf_default,$item->email)) {
 						$cmresult = $cm->updateSubscriber($cmlist->uf_default,$item->email,$cmdata);
@@ -468,7 +473,7 @@ class MUEModelUser extends JModelLegacy
 			if ($cfg->userdir && $item->$udf) {
 				$dudsql = "DELETE FROM #__mue_userdir WHERE ud_user = ".$user->id;
 				$db->setQuery($dudsql);
-				$db->query();
+				$db->execute();
 				$af=explode(",",$cfg->userdir_mapfields);
 				$uf=explode(",",$cfg->userdir_userinfo);
 				$sf=explode(",",$cfg->userdir_searchinfo);
@@ -546,7 +551,7 @@ class MUEModelUser extends JModelLegacy
 			} else if ($cfg->userdir && !$item->$udf) {
 				$dudsql = "DELETE FROM #__mue_userdir WHERE ud_user = ".$user->id;
 				$db->setQuery($dudsql);
-				$db->query();
+				$db->execute();
 				$usernotes .= $date->toSql(true)." Removed from User Directory\r\n";
 			}
 				
@@ -557,6 +562,13 @@ class MUEModelUser extends JModelLegacy
 			$udata['password']=$item->password;
 			$udata['password2']=$item->cpassword;
 			$udata['block']=$user->block;
+
+			if ($hasTZField) {
+				$userParams = json_decode( $user->params, true );
+				$userParams['timezone'] = $timezone;
+				$udata['params'] = $userParams;
+			}
+
 			if (!$user->bind($udata)) {
 				$this->setError($user->getError());
 				return false;
@@ -578,7 +590,7 @@ class MUEModelUser extends JModelLegacy
 			$query->where('usr_user = '.$user->id);
 			$query->where('usr_field IN ('.implode(",",$fids).')');
 			$db->setQuery((string)$query);
-			$db->query();
+			$db->execute();
 			
 			$flist = $this->getUserFields($ugroup,false,false,true);
 			foreach ($flist as $fl) {
@@ -587,7 +599,7 @@ class MUEModelUser extends JModelLegacy
 
 					$qf = 'INSERT INTO #__mue_users (usr_user,usr_field,usr_data) VALUES ("'.$user->id.'","'.$fl->uf_id.'","'.$db->escape($item->$fieldname).'")';
 					$db->setQuery($qf);
-					if (!$db->query()) {
+					if (!$db->execute()) {
 						$this->setError($db->getErrorMsg());
 						return false;
 					}
@@ -597,7 +609,7 @@ class MUEModelUser extends JModelLegacy
 			//Update update date
 			$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
 			$db->setQuery($qud);
-			if (!$db->query()) {
+			if (!$db->execute()) {
 				$this->setError($db->getErrorMsg());
 				return false;
 			}
@@ -632,6 +644,12 @@ class MUEModelUser extends JModelLegacy
 		return $db->loadObject();
 	}
 
+	public function checkToken($method = 'post', $redirect = true)
+	{
+		$valid = Session::checkToken($method);
+
+		return $valid;
+	}
 	
 
 }

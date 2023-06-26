@@ -6,6 +6,7 @@ defined('_JEXEC') or die('Restricted access');
 // import Joomla controlleradmin library
 jimport('joomla.application.component.controlleradmin');
 
+use Joomla\Utilities\ArrayHelper;
 
 class MUEControllerUsers extends JControllerAdmin
 {
@@ -19,8 +20,8 @@ class MUEControllerUsers extends JControllerAdmin
 		$this->registerTask('block', 'changeBlock');
 		$this->registerTask('unblock', 'changeBlock');
 	}
-	
-	public function getModel($name = 'User', $prefix = 'MUEModel') 
+
+	public function getModel($name = 'User', $prefix = 'MUEModel', $config = [])
 	{
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 		return $model;
@@ -32,14 +33,15 @@ class MUEControllerUsers extends JControllerAdmin
 		//JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		// Initialise variables.
-		$ids	= JRequest::getVar('cid', array(), '', 'array');
+		$ids	= $this->input->get('cid', array(), '', 'array');
 		$values	= array('block' => 1, 'unblock' => 0);
 		$task	= $this->getTask();
-		$value	= JArrayHelper::getValue($values, $task, 0, 'int');
+		$value	= ArrayHelper::getValue($values, $task, 0, 'int');
 
 		if (empty($ids))
 		{
-			JError::raiseWarning(500, JText::_('COM_MUE_USERS_NO_ITEM_SELECTED'));
+
+			return false;
 		}
 		else
 		{
@@ -49,7 +51,8 @@ class MUEControllerUsers extends JControllerAdmin
 			// Change the state of the records.
 			if (!$model->block($ids, $value))
 			{
-				JError::raiseWarning(500, $model->getError());
+
+				return false;
 			}
 			else
 			{

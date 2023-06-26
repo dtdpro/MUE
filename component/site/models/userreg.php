@@ -6,6 +6,8 @@ defined('_JEXEC') or die();
 jimport( 'joomla.application.component.model' );
 jimport('joomla.utilities.date');
 
+use Joomla\CMS\Session\Session;
+
 class MUEModelUserreg extends JModelLegacy
 {
 
@@ -71,8 +73,9 @@ class MUEModelUserreg extends JModelLegacy
 	}
 
 	function getPresetFields() {
+		$input = JFactory::getApplication()->input;
 		$app=Jfactory::getApplication();
-		$preset_fields = JRequest::getVar('mue_pre', array(), 'get', 'array');
+		$preset_fields = $input->get('mue_pre', [], 'get', 'array');
 		foreach ($preset_fields as $pre_field=>$prevalue) {
 			$app->setUserState('mue.userreg.'.$pre_field, $prevalue);
 		}
@@ -81,10 +84,10 @@ class MUEModelUserreg extends JModelLegacy
 	
 	public function save()
 	{
-		JRequest::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$this->checkToken() or die(JText::_('JINVALID_TOKEN'));
 		// Initialise variables;
-		$data		= JRequest::getVar('jform', array(), 'post', 'array'); 
-		$dispatcher = JDispatcher::getInstance();
+		$input = JFactory::getApplication()->input;
+		$data		= $input->get('jform', [], 'post', 'array');
 		$isNew = true;
 		$db		= $this->getDbo();
 		$app=Jfactory::getApplication();
@@ -103,6 +106,7 @@ class MUEModelUserreg extends JModelLegacy
 			$optfs = array(); // single option field
 			$moptfs = array(); // multi option field
 			$cmlists = array();
+			$aclists = array();
 			$flist = $this->getUserFields($data['userGroupID'],false);
 			$item = new stdClass();
 			foreach ($flist as $d) {
@@ -343,6 +347,7 @@ class MUEModelUserreg extends JModelLegacy
 						$customfields[]=$newcmf;
 					}
 					$cmdata['CustomFields']=$customfields;
+					$cmdata['ConsentToTrack'] = 'yes';
 					$cmd=print_r($cmdata,true);
 					if ($cm->getSubscriberDetails($cmlist->uf_default,$item->email)) {
 						$cmresult = $cm->updateSubscriber($cmlist->uf_default,$item->email,$cmdata);
@@ -413,7 +418,7 @@ class MUEModelUserreg extends JModelLegacy
 				if ($gdata->status == 'OK') {
 					$udsql = 'INSERT INTO #__mue_userdir (ud_user,ud_lat,ud_lon,ud_userinfo,ud_searchinfo) VALUES  ("'.$user->id.'","'.$gdata->results[0]->geometry->location->lat.'","'.$gdata->results[0]->geometry->location->lng.'","'.$dbuserinfo.'","'.$dbsearchinfo.'")';
 					$db->setQuery($udsql);
-					$db->query();
+					$db->execute();
 					$usernotes .= $date->toSql(true)." Added to User Directory\r\n";
 				} else {
 					$item->$udf = 0;
@@ -428,7 +433,7 @@ class MUEModelUserreg extends JModelLegacy
 			//Set user group info
 			$qud = 'INSERT INTO #__mue_usergroup (userg_user,userg_group,userg_update,userg_notes,userg_siteurl) VALUES ('.$user->id.','.$data['userGroupID'].',"'.$date->toSql(true).'","'.$db->escape($usernotes).'","'.$item->site_url.'")';
 			$db->setQuery($qud);
-			if (!$db->query()) {
+			if (!$db->execute()) {
 				$this->setError('Could not update user group');
 				return false;
 			}
@@ -465,7 +470,7 @@ class MUEModelUserreg extends JModelLegacy
 					if (property_exists($item,$fieldname)) {
 						$qf = 'INSERT INTO #__mue_users (usr_user,usr_field,usr_data) VALUES ("' . $user->id . '","' . $fl->uf_id . '","' . $db->escape( $item->$fieldname ) . '")';
 						$db->setQuery( $qf );
-						if ( ! $db->query() ) {
+						if ( ! $db->execute() ) {
 							$this->setError( "Error saving additional information" );
 							return false;
 						}
@@ -490,17 +495,25 @@ class MUEModelUserreg extends JModelLegacy
 
 			//Send Welcome Email
 			if ($groupinfo->ug_send_welcome_email) {
-				$mail = JFactory::getMailer();
+				/*$mail = JFactory::getMailer();
 				$mail->IsHTML( true );
 				$mail->addRecipient( $emailtoaddress, $emailtoname );
 				$mail->setSender( $emailfromaddress, $emailfromname );
 				$mail->setSubject( $emailsubject );
 				$mail->setBody( $emailmsg );
-				$sent = $mail->Send();
+				$sent = $mail->Send();*/
 				/*if ($sent !== true) {
 					$this->setError($sent->getError());
 					return false;
 				}*/
+
+
+				$mail = JFactory::getMailer();
+
+				$emllist = Array();
+				$emllist[] = $emailtoaddress;
+
+				$sent = $mail->sendMail($emailfromaddress, $emailfromname, $emllist, $emailsubject, $emailmsg, true, null, null, null);
 			}
 
 			//Login User if activation not required
@@ -535,6 +548,13 @@ class MUEModelUserreg extends JModelLegacy
 	
 		if ($contents) return $contents;
 		else return FALSE;
+	}
+
+	public function checkToken($method = 'post', $redirect = true)
+	{
+		$valid = Session::checkToken($method);
+
+		return $valid;
 	}
 	
 

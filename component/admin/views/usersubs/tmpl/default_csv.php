@@ -1,71 +1,95 @@
 <?php
-//$path = JPATH_SITE.'/cache/';
+defined('_JEXEC') or die('Restricted access');
+
+// Load CSV Exporter
+require JPATH_COMPONENT."/vendor/autoload.php";
+
 $cfg=MUEHelper::getConfig();
 $filename = 'MUE_User_Subscriptions_Report' . '-' . date("Y-m-d").'.csv';
-$contents = "";
 
-$contents .= '"Subscription Id","Plan","Name","Username","Email","Type","Coupon Code","Subscribed At","Start","End","Pay Status"';
-$contents .= "\n";
+// Basic Headings
+$headers = ["Subscription Id","Plan","Name","Username","Email","Type","Coupon Code","Subscribed At","Start","End","Pay Status"];
 
+// Data Rows
+$dataRows = [];
 foreach ($this->items as $i) {
-	$contents .= '"'.$i->usrsub_id.'",';
-	$contents .= '"'.$i->sub_exttitle.'",';
-	$contents .= '"'.preg_replace( "/\r|\n/", "", $i->user_name).'",';
-	$contents .= '"'.$i->username.'",';
-	$contents .= '"'.$i->user_email.'",';
+	$dataRow = [];
 
+	$dataRow[] = $i->usrsub_id;
+	$dataRow[] = $i->sub_exttitle;
+	$dataRow[] = preg_replace( "/\r|\n/", "", $i->user_name);
+	$dataRow[] = $i->username;
+	$dataRow[] = $i->user_email;
+
+	$type = "";
 	switch ($i->usrsub_type) {
-		case "paypal": $contents .= "PayPal"; break;
-		case "redeem": $contents .= "Code"; break;
-		case "admin": $contents .= "Admin"; break;
-		case "google": $contents .= "Google"; break;
-		case "migrate": $contents .= "Migrated"; break;
-		case "check": $contents .= "Check"; break;
-		case "trial": $contents .= "Trial/Free"; break;
+		case "paypal": $type = "PayPal"; break;
+		case "redeem": $type = "Code"; break;
+		case "admin": $type = "Admin"; break;
+		case "google": $type = "Google"; break;
+		case "migrate": $type = "Migrated"; break;
+		case "check": $type = "Check"; break;
+		case "trial": $type = "Trial/Free"; break;
 	}
-	$contents .= ",";
+	$dataRow[] = $type;
 
-	$contents .= '"'.$i->usrsub_coupon.'",';
-	$contents .= '"'.$i->usrsub_time.'",';
-	$contents .= '"'.$i->usrsub_start.'",';
-	$contents .= '"'.$i->usrsub_end.'",';
+	$dataRow[] = $i->usrsub_coupon;
+	$dataRow[] = $i->usrsub_time;
+	$dataRow[] = $i->usrsub_start;
+	$dataRow[] = $i->usrsub_end;
 
+
+
+	$status = "";
 	switch ($i->usrsub_status) {
 
-		case "notyetstarted": $contents .= "Not Yet Started"; break;
-		case "verified": $contents .= "Verified"; break;
-		case "canceled": $contents .= "Canceled"; break;
-		case "accepted": $contents .= "Accepted"; break;
-		case "pending": $contents .= "Pending"; break;
-		case "started": $contents .= "Started"; break;
-		case "denied": $contents .= "Denied"; break;
-		case "refunded": $contents .= "Refunded"; break;
-		case "failed": $contents .= "Failed"; break;
-		case "pending": $contents .= "Pending"; break;
-		case "reversed": $contents .= "Reversed"; break;
-		case "canceled_reversal": $contents .= "Canceled Dispute"; break;
-		case "expired": $contents .= "Expired"; break;
-		case "voided": $contents .= "Voided"; break;
-		case "completed": $contents .= "Completed"; break;
-		case "dispute": $contents .= "Dispute"; break;
-		case "error": $contents .= "Error"; break;
+		case "notyetstarted": $status =  "Not Yet Started"; break;
+		case "verified": $status =  "Verified"; break;
+		case "canceled": $status =  "Canceled"; break;
+		case "accepted": $status =  "Accepted"; break;
+		case "pending": $status =  "Pending"; break;
+		case "started": $status =  "Started"; break;
+		case "denied": $status =  "Denied"; break;
+		case "refunded": $status =  "Refunded"; break;
+		case "failed": $status =  "Failed"; break;
+		case "pending": $status =  "Pending"; break;
+		case "reversed": $status =  "Reversed"; break;
+		case "canceled_reversal": $status =  "Canceled Dispute"; break;
+		case "expired": $status =  "Expired"; break;
+		case "voided": $status =  "Voided"; break;
+		case "completed": $status =  "Completed"; break;
+		case "dispute": $status =  "Dispute"; break;
+		case "error": $status =  "Error"; break;
 	}
 
-	$contents .= "\n";
+	$dataRow[] = $status;
+
+	$dataRows[] = $dataRow;
 }
 
-JResponse::clearHeaders();
-JResponse::setHeader("Pragma","public");
-JResponse::setHeader('Cache-Control', 'no-cache, must-revalidate', true);
-JResponse::setHeader('Expires', 'Sat, 26 Jul 1997 05:00:00 GMT', true);
-JResponse::setHeader('Content-Type', 'text/csv', true);
-JResponse::setHeader('Content-Description', 'File Transfer', true);
-JResponse::setHeader('Content-Disposition', 'attachment; filename="'.$filename.'"', true);
-JResponse::setHeader('Content-Transfer-Encoding', 'binary', true);
-JResponse::sendHeaders();
-echo $contents;
-exit();
-//JFile::write($path.$filename,$contents);
-//$app = JFactory::getApplication();
-//$app->redirect('../cache/'.$filename);
+// HTTP Headers
+$app = JFactory::getApplication();
+$app->clearHeaders();
+$app->setHeader( "Pragma", "public" );
+$app->setHeader( 'Cache-Control', 'no-cache, must-revalidate', true );
+$app->setHeader( 'Expires', 'Sat, 26 Jul 1997 05:00:00 GMT', true );
+$app->setHeader( 'Content-Type', 'text/csv', true );
+$app->setHeader( 'Content-Description', 'File Transfer', true );
+$app->setHeader( 'Content-Disposition', 'attachment; filename="' . $filename . '"', true );
+$app->setHeader( 'Content-Transfer-Encoding', 'binary', true );
+$app->sendHeaders();
 
+// Create CSV Writer
+$csv = \League\Csv\Writer::createFromString();
+
+// insert the Headings
+$csv->insertOne($headers);
+
+// insert all the records
+$csv->insertAll($dataRows);
+
+// CSV content
+echo $csv->toString();
+
+// stop
+$app->close();

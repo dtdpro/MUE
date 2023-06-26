@@ -1,52 +1,42 @@
 <?php
-
 // No direct access
 defined('_JEXEC') or die;
 
-$template = JFactory::getApplication()->getTemplate();
-
 // Load the tooltip behavior.
-JHtml::_('behavior.tooltip');
-JHtml::_('behavior.formvalidation');
+JHtml::_('bootstrap.tooltip');
+JHtml::_('behavior.formvalidator');
+
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+
+$input = JFactory::getApplication()->input;
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task)
 	{
-		if (document.formvalidator.isValid(document.id('component-form'))) {
-			Joomla.submitform(task, document.getElementById('component-form'));
+		if (task == 'aclist.cancel' || document.formvalidator.isValid(document.getElementById('mue-form'))) {
+			Joomla.submitform(task, document.getElementById('mue-form'));
 		}
 	}
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_mue');?>" id="mue-form" method="post" name="adminForm" class="form-validate">
-	<fieldset>
-		<div class="fltrt">
-			<button type="button" onclick="Joomla.submitform('aclist.apply', this.form);">
-				<?php echo JText::_('JAPPLY');?></button>
-			<button type="button" onclick="Joomla.submitform('aclist.save', this.form);">
-				<?php echo JText::_('JSAVE');?></button>
-			<button type="button" onclick="<?php echo JRequest::getBool('refresh', 0) ? 'window.parent.location.href=window.parent.location.href;' : '';?>  window.parent.SqueezeBox.close();">
-				<?php echo JText::_('JCANCEL');?></button>
-		</div>
-		<div class="configuration" >
-            Active Camapign List Configuration<br>
-            <em>Only the first AC list field will have fields synced</em>
-		</div>
-	</fieldset>
-
 	<?php
-	
-
-	echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'aclist-membership'));
-	echo JHtml::_('bootstrap.addTab', 'myTab', 'aclist-membership', "Subscription");
-
-	
+	if (JVersion::MAJOR_VERSION == 4) {
+		echo '<div class="form-horizontal main-card">';
+		echo HTMLHelper::_('uitab.startTabSet', 'myTab', array( 'active' => 'details', 'recall' => true, 'breakpoint' => 768 ) );
+		echo HTMLHelper::_('uitab.addTab', 'myTab', 'general', 'Subscription');
+	} else {
+		echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'general'));
+		echo JHtml::_('bootstrap.addTab', 'myTab', 'general', 'Subscription');
+	}
 
 	//Membership Grouping
 	echo '<h3>Subscripition Grouping</h3>';
+    echo '<p>Active Camapign List Configuration<br><em>Only the first AC list field will have fields synced</em></p>';
 	echo '<div class="form-horizontal">';
 	
 	//Sub Field
-	echo '<div class="control-group"><div class="control-label"><label for="jform_acsubstatus" id="jform_acsubstatus-lbl">Subscriber</label></div>';
+	echo '<div class="control-group"><div class="control-label"><label for="jform_acsubstatus" id="jform_acsubstatus-lbl">Subscriber Status</label></div>';
 	echo '<div class="controls"><select name="jform[acsubstatus]" id="jform_acsubstatus" class="inputbox">';
 	echo '<option value="">None</option>';
     echo JHtml::_('select.options', $this->list->list_textvars, null,null, $this->list->params->acsubstatus, true);
@@ -90,9 +80,13 @@ JHtml::_('behavior.formvalidation');
 	echo '<div class="clr"></div>';
 
 	//Fields
-	echo JHtml::_('bootstrap.endTab');
-	echo JHtml::_('bootstrap.addTab', 'myTab', 'aclist-fields', "Fields");
-
+	if ( JVersion::MAJOR_VERSION == 4 ) {
+		echo HTMLHelper::_('uitab.endTab');
+		echo HTMLHelper::_('uitab.addTab', 'myTab', 'fields', 'Fields');
+	} else {
+		echo JHtml::_('bootstrap.endTab');
+		echo JHtml::_('bootstrap.addTab', 'myTab', 'fields', 'Fields');
+	}
 	
 	echo '<table class="adminlist table table-striped">';
 	echo '<thead><tr><th>AC Field</th><th>Type</th><th>MUE Field</th></tr></thead><tbody>';
@@ -113,12 +107,17 @@ JHtml::_('behavior.formvalidation');
 	echo '</tbody></table>';
 	echo '<div class="clr"></div>';
 
-	echo JHtml::_('bootstrap.endTabSet');
+	if ( JVersion::MAJOR_VERSION == 4 ) {
+		echo HTMLHelper::_('uitab.endTab');
+		echo HTMLHelper::_( 'uitab.endTabSet' );
+		echo '</div>';
+	} else {
+		echo JHtml::_('bootstrap.endTab');
+		echo JHtml::_( 'bootstrap.endTabSet' );
+	}
 	
 	?>
-	<div>
-		<input type="hidden" name="field" value="<?php echo $this->list->uf_id;?>" />
-		<input type="hidden" name="task" value="" />
-		<?php echo JHtml::_('form.token'); ?>
-	</div>
+    <input type="hidden" name="field" value="<?php echo $this->list->uf_id;?>" />
+    <input type="hidden" name="task" value="" />
+    <?php echo JHtml::_('form.token'); ?>
 </form>

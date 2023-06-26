@@ -82,15 +82,6 @@
 			filter="raw"
 			buttons="false"
 		/>
-		<field
-			name="ug_lostinfo_email"
-			type="editor"
-			label="COM_MUE_UGROUP_FIELD_LOSTEML_LABEL"
-			description="COM_MUE_UGROUP_FIELD_LOSTEML_DESC"
-			class="inputbox"
-			filter="raw"
-			buttons="false"
-		/>
 
 	</fieldset>
 	

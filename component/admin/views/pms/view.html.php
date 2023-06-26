@@ -14,12 +14,15 @@ class MUEViewPMs extends JViewLegacy
 	
 	function display($tpl = null) 
 	{
+		$jinput = JFactory::getApplication()->input;
 		$this->state = $this->get('State');
 		$this->items = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
-		
+		$this->filterForm    = $this->get('FilterForm');
+		$this->activeFilters = $this->get('ActiveFilters');
 
-		MUEHelper::addSubmenu(JRequest::getVar('view'));
+
+		if (JVersion::MAJOR_VERSION == 3) MUEHelper::addSubmenu($jinput->getVar('view'));
 		
 		if (count($errors = $this->get('Errors'))) 
 		{
@@ -38,10 +41,5 @@ class MUEViewPMs extends JViewLegacy
 		JToolBarHelper::title("Private Messages", 'mue');
 		JToolBarHelper::trash('pms.trashmsgs');
 		JToolBarHelper::deleteList("Do you want to permanently delete these messages?",'pms.deletemsgs');
-		
-		JHtmlSidebar::setAction('index.php?option=com_mue&view=pms');
-		
-		JHtmlSidebar::addFilter(JText::_('JOPTION_SELECT_PUBLISHED'),'filter_status',JHtml::_('select.options', [['value'=>"new",'text'=>"New"],['value'=>"read",'text'=>"Read"],['value'=>"unsent",'text'=>"Unsent"],['value'=>"trashed",'text'=>"Trashed"],['value'=>"spam",'text'=>"SPAM"]], 'value', 'text', $this->state->get('filter.status'), true));
-		
 	}
 }

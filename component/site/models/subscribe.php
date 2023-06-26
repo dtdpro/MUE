@@ -5,6 +5,8 @@ defined('_JEXEC') or die();
 
 jimport( 'joomla.application.component.model' );
 
+use Joomla\CMS\Session\Session;
+
 class MUEModelSubscribe extends JModelLegacy
 {
 	
@@ -111,7 +113,7 @@ class MUEModelSubscribe extends JModelLegacy
 	}
 	
 	function payByCheck($pinfo,$start) {
-		JRequest::checkToken() or jexit( 'Invalid Token' );
+		$this->checkToken() or die(JText::_('JINVALID_TOKEN'));
 		$db = JFactory::getDBO();
 		$user = JFactory::getUser();
 		$q = 'INSERT INTO #__mue_usersubs (usrsub_user,usrsub_sub,usrsub_type,usrsub_ip,usrsub_status,usrsub_start,usrsub_end) VALUES ('.$user->id.','.$pinfo->sub_id.',"check","'.$_SERVER['REMOTE_ADDR'].'","pending",';
@@ -122,13 +124,13 @@ class MUEModelSubscribe extends JModelLegacy
 		else $q .= 'NOW()';
 		$q .=',INTERVAL '.$pinfo->sub_length.' '.strtoupper($pinfo->sub_period).'))';
 		$db->setQuery($q);
-		if (!$db->query()) return false;
+		if (!$db->execute()) return false;
 		return $db->insertid();
 	}
 
 	function freeOfCharge($pinfo,$start) {
 		$cfg=MUEHelper::getConfig();
-		JRequest::checkToken() or jexit( 'Invalid Token' );
+		$this->checkToken() or die(JText::_('JINVALID_TOKEN'));
 		$db = JFactory::getDBO();
 		$user = JFactory::getUser();
 		if ($pinfo->discounted > -1) {
@@ -143,7 +145,7 @@ class MUEModelSubscribe extends JModelLegacy
 		else $q .= 'NOW()';
 		$q .=',INTERVAL '.$pinfo->sub_length.' '.strtoupper($pinfo->sub_period).'))';
 		$db->setQuery($q);
-		if (!$db->query()) return false;
+		if (!$db->execute()) return false;
 		$newid = $db->insertid();
 		MUEHelper::getActiveSub();
 		$query = $db->getQuery(true);
@@ -159,7 +161,7 @@ class MUEModelSubscribe extends JModelLegacy
 			$query->columns(array($db->quoteName('user_id'), $db->quoteName('group_id')));
 			$query->values((int) $user->id . ',' . $cfg->subgroup);
 			$db->setQuery($query);
-			$db->query();
+			$db->execute();
 		}
 		return $newid;
 	}
@@ -279,7 +281,7 @@ class MUEModelSubscribe extends JModelLegacy
 		//Update update date
 		$qud = 'UPDATE #__mue_usergroup SET userg_update = "'.$date->toSql(true).'", userg_notes = CONCAT(userg_notes,"'.$db->escape($usernotes).'") WHERE userg_user = '.$user->id;
 		$db->setQuery($qud);
-		if (!$db->query()) {
+		if (!$db->execute()) {
 			$this->setError($db->getErrorMsg());
 			return false;
 		}
@@ -362,5 +364,11 @@ class MUEModelSubscribe extends JModelLegacy
 		else return true;
 
 	}
-	
+
+	public function checkToken($method = 'post', $redirect = true)
+	{
+		$valid = Session::checkToken($method);
+
+		return $valid;
+	}
 }

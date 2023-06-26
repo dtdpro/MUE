@@ -10,6 +10,8 @@ class MUEViewUsers extends JViewLegacy
 {
 	function display($tpl = null) 
 	{
+		$jinput = JFactory::getApplication()->input;
+
 		// Get data from the model
 		$this->items = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
@@ -30,7 +32,7 @@ class MUEViewUsers extends JViewLegacy
 		}
 
         // Set the submenu
-        MUEHelper::addSubmenu(JRequest::getVar('view'));
+		if (JVersion::MAJOR_VERSION == 3) MUEHelper::addSubmenu($jinput->getVar('view'));
 
         $this->sidebar = JHtmlSidebar::render();
 
@@ -66,7 +68,6 @@ class MUEViewUsers extends JViewLegacy
 		// Instantiate a new JLayoutFile instance and render the batch button
 		$layout = new JLayoutFile('joomla.toolbar.batch');
 		$dhtml = $layout->render(array('title' => $title));
-		$tbar->appendButton('Custom', $dhtml, 'batch');
 		
 		JToolBarHelper::preferences('com_mue');
 	}

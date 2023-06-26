@@ -14,6 +14,7 @@ class MUEViewUfields extends JViewLegacy
 
 	function display($tpl = null) 
 	{
+		$jinput = JFactory::getApplication()->input;
 		// Get data from the model
         $this->state = $this->get('State');
         $this->items = $this->get('Items');
@@ -28,7 +29,7 @@ class MUEViewUfields extends JViewLegacy
 		}
 
         // Set the submenu
-        MUEHelper::addSubmenu(JRequest::getVar('view'));
+		if (JVersion::MAJOR_VERSION == 3) MUEHelper::addSubmenu($jinput->getVar('view'));
         $this->sidebar = JHtmlSidebar::render();
 
 		// Set the toolbar

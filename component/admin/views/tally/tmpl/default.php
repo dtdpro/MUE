@@ -12,7 +12,7 @@
     <div id="j-main-container">
 <?php endif;?>
 <?php
-$db =& JFactory::getDBO();
+$db = JFactory::getDBO();
 		
 	foreach ($this->fdata as $f) {
 		$anscor=false;

@@ -9,7 +9,8 @@ class MUEModelCmlist extends JModelLegacy
 	protected function populateState()
 	{
 		// Set the component (option) we are dealing with.
-		$field = JRequest::getInt('field');
+		$app	= JFactory::getApplication();
+		$field = $app->input->getInt('field');
 		$this->setState('cmlist.field', $field);
 	}
 	
@@ -24,7 +25,7 @@ class MUEModelCmlist extends JModelLegacy
 		$query->order('ordering');
 		$this->_db->setQuery($query);
 		$data=$this->_db->loadObjectList();
-		
+		$fields = new stdClass();
 		$fields->text = array();
 		$fields->mso = array();
 		$fields->msm = array();
@@ -95,7 +96,7 @@ class MUEModelCmlist extends JModelLegacy
 		$query->from('#__mue_users');
 		$query->where('usr_field = '.$field);
 		$db->setQuery((string)$query);
-		$db->query();
+		$db->execute();
 		
 		foreach ($userids as $u) {
 			$q=$db->getQuery(true);
@@ -103,7 +104,7 @@ class MUEModelCmlist extends JModelLegacy
 			$q->columns('usr_data,usr_field,usr_user');
 			$q->values("1,$field,$u");
 			$db->setQuery($q);
-			if (!$db->query()) {
+			if (!$db->execute()) {
 				$this->setError($db->getErrorMsg());
 				return false;
 			}
@@ -115,7 +116,7 @@ class MUEModelCmlist extends JModelLegacy
 			$q->columns('usr_data,usr_field,usr_user');
 			$q->values("0,$field,$u");
 			$db->setQuery($q);
-			if (!$db->query()) {
+			if (!$db->execute()) {
 				$this->setError($db->getErrorMsg());
 				return false;
 			}
@@ -469,7 +470,7 @@ class MUEModelCmlist extends JModelLegacy
 		$query->set('params = '.$db->quote($params));
 		$query->where('uf_id = '.$field);
 		$db->setQuery($query);
-		if ($db->query()) { return true; }
+		if ($db->execute()) { return true; }
 		else { $this->setError($db->getError()); return false; }
 	}
 }
