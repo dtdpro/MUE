@@ -6,6 +6,7 @@ defined('_JEXEC') or die('Restricted access');
 // import the Joomla modellist library
 jimport('joomla.application.component.modellist');
 
+use Joomla\Utilities\ArrayHelper;
 
 class MUEModelUsers extends JModelList
 {
@@ -81,16 +82,8 @@ class MUEModelUsers extends JModelList
 		$active = $this->getUserStateFromRequest($this->context . '.filter.active', 'filter_active');
 		$this->setState('filter.active', $active);
 		
-		$groupId = $this->getUserStateFromRequest($this->context . '.filter.group', 'filter_group_id', null, 'int');
+		$groupId = $this->getUserStateFromRequest($this->context . '.filter.group_id', 'filter_group_id', null, 'int');
 		$this->setState('filter.group_id', $groupId);
-		
-		$groups = json_decode(base64_decode($app->input->get('groups', '', 'BASE64')));
-		if (isset($groups))
-		{
-			JArrayHelper::toInteger($groups);
-		}
-		$this->setState('filter.groups', $groups);
-		
 		
 		$range = $this->getUserStateFromRequest($this->context . '.filter.range', 'filter_range');
 		$this->setState('filter.range', $range);		
@@ -168,19 +161,14 @@ class MUEModelUsers extends JModelList
 		}
 		
 		// Filter by Joomla User Group
-		$groups  = $this->getState('filter.groups');
 		$groupId = $this->getState('filter.group_id');
-		if ($groupId || isset($groups))
+		if ($groupId )
 		{
 			$query->join('LEFT', '#__user_usergroup_map AS map2 ON map2.user_id = u.id')
 			->group($db->quoteName(array('u.id', 'u.name', 'u.username', 'u.password', 'u.block', 'u.sendEmail', 'u.registerDate', 'u.lastvisitDate', 'u.activation', 'u.params', 'u.email')));
 			if ($groupId)
 			{
 				$query->where('map2.group_id = ' . (int) $groupId);
-			}
-			if (isset($groups))
-			{
-				$query->where('map2.group_id IN (' . implode(',', $groups) . ')');
 			}
 		}
 		
