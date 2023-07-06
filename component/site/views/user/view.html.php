@@ -50,7 +50,7 @@ class MUEViewUser extends JViewLegacy
 	protected function saveEmail() {
 		$this->checkToken() or die(JText::_('JINVALID_TOKEN'));
 		$model = $this->getModel();
-		$newemail = $this->input->get('newemail');
+		$newemail = $this->input->getVar('newemail');
 		$user = JFactory::getUser();
 		$userid = $user->id;
 		if ($userid != 0) {
