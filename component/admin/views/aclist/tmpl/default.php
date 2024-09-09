@@ -21,14 +21,25 @@ $input = JFactory::getApplication()->input;
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_mue');?>" id="mue-form" method="post" name="adminForm" class="form-validate">
 	<?php
-	if (JVersion::MAJOR_VERSION == 4) {
+	if (JVersion::MAJOR_VERSION >= 4) {
 		echo '<div class="form-horizontal main-card">';
 		echo HTMLHelper::_('uitab.startTabSet', 'myTab', array( 'active' => 'details', 'recall' => true, 'breakpoint' => 768 ) );
-		echo HTMLHelper::_('uitab.addTab', 'myTab', 'general', 'Subscription');
+		echo HTMLHelper::_('uitab.addTab', 'myTab', 'general', 'Subscription & Login');
 	} else {
 		echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'general'));
-		echo JHtml::_('bootstrap.addTab', 'myTab', 'general', 'Subscription');
+		echo JHtml::_('bootstrap.addTab', 'myTab', 'general', 'Subscription & Login');
 	}
+
+    //Login
+    echo '<h3>Login</h3>';
+
+    //Last Login
+    echo '<div class="control-group"><div class="control-label"><label for="jform_aclastlogin" id="jform_aclastlogin-lbl">Last Login Date</label></div>';
+    echo '<div class="controls"><select name="jform[aclastlogin]" id="jform_aclastlogin" class="inputbox">';
+    echo '<option value="">None</option>';
+    echo JHtml::_('select.options', $this->list->list_datevars, null,null, $this->list->params->aclastlogin, true);
+    echo '</select></div>';
+    echo '</div>';
 
 	//Membership Grouping
 	echo '<h3>Subscripition Grouping</h3>';
@@ -80,7 +91,7 @@ $input = JFactory::getApplication()->input;
 	echo '<div class="clr"></div>';
 
 	//Fields
-	if ( JVersion::MAJOR_VERSION == 4 ) {
+	if ( JVersion::MAJOR_VERSION >= 4 ) {
 		echo HTMLHelper::_('uitab.endTab');
 		echo HTMLHelper::_('uitab.addTab', 'myTab', 'fields', 'Fields');
 	} else {
@@ -107,7 +118,7 @@ $input = JFactory::getApplication()->input;
 	echo '</tbody></table>';
 	echo '<div class="clr"></div>';
 
-	if ( JVersion::MAJOR_VERSION == 4 ) {
+	if ( JVersion::MAJOR_VERSION >= 4 ) {
 		echo HTMLHelper::_('uitab.endTab');
 		echo HTMLHelper::_( 'uitab.endTabSet' );
 		echo '</div>';

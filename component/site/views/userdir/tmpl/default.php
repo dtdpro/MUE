@@ -18,16 +18,27 @@ $cecfg = MUEHelper::getConfig();
 			mapTypeControlOptions: {style: google.maps.MapTypeControlStyle.DROPDOWN_MENU}
 		});
 		infoWindow = new google.maps.InfoWindow();
-		jQuery("#userdirform").validate({
-			errorClass:"uf_error uk-form-danger",
-			validClass:"uf_valid uk-form-success",
-			errorPlacement: function(error, element) {
-		    	error.appendTo( element.parent("div").next("div") );
-		    },
-			submitHandler: function(form) {
-				searchLocations();
-			}
-		});
+
+        var validator = jQuery("#userdirform").validate({
+            errorClass:"uf_error uk-form-danger",
+            validClass:"uf_valid uk-form-success",
+            ignore: ".ignore",
+            errorElement: "div",
+            errorPlacement: function (error, element) {
+                error.appendTo(element.parent("div"));
+                error.addClass("uk-alert uk-alert-danger uk-form-controls-text");
+            },
+            onsubmit: false
+        });
+
+        jQuery("#userdirform").submit(function( event ) {
+            event.preventDefault();
+            if (validator.form()) {
+                jQuery("#searchdirectory").attr("disabled", true);
+                jQuery("#searchdirectory").prop("value", "searchdirectory, please wait...");
+                searchLocations();
+            }
+        });
 	});
 
 
@@ -63,6 +74,10 @@ $cecfg = MUEHelper::getConfig();
 				var xml = parseXml(data);
 				var markerNodes = xml.documentElement.getElementsByTagName("marker");
 				var bounds = new google.maps.LatLngBounds();
+
+                jQuery("#searchdirectory").attr("disabled", false);
+                jQuery("#searchdirectory").prop("value", "Search Directory");
+
 				if (markerNodes.length > 0) {
 					for (var i = 0; i < markerNodes.length; i++) {
 						var name = markerNodes[i].getAttribute("name");
@@ -245,7 +260,7 @@ foreach($this->sfields as $f) {
 echo '<div class="uk-form-row uk-margin-top mue-user-dir-row">';
 echo '<div class="uk-form-label mue-user-dir-label"></div>';
 echo '<div class="uk-form-controls mue-user-dir-submit">';
-echo '<input type="submit" value="Search Directory" class="button uk-button uk-button-primary">';
+echo '<input type="submit" id="searchdirectory" value="Search Directory" class="button uk-button uk-button-primary">';
 echo '<input type="hidden" name="lat" id="lat">';
 echo '<input type="hidden" name="lng" id="lng">';
 //echo '<input type="hidden" name="layout" value="groupuser">';

@@ -25,7 +25,7 @@
 		<field 
 			name="usrsub_sub" 
 			type="SubPlans" 
-			class="inputbox"
+			class="form-select inputbox"
 			label="COM_MUE_USERSUB_FIELD_PLAN_LABEL"
 			description="COM_MUE_USERSUB_FIELD_PLAN_DESC" 
 		/>

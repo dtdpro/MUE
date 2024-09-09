@@ -66,7 +66,7 @@ if ($user->id && $canview) {
 		if (is_array($d)) {
 			foreach ($d as $do) $sdata[] = 'ud.ud_searchinfo LIKE "%'.$db->espcae(trim($do)).'%"'; 
 		} else if (trim($d)) {
-			$sdata[] = 'ud.ud_searchinfo LIKE "%'.$db->espcae(trim($d)).'%"';
+			$sdata[] = 'ud.ud_searchinfo LIKE "%'.$db->escape(trim($d)).'%"';
 		}
 	} 
 	

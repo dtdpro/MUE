@@ -25,7 +25,7 @@ $params = $this->form->getFieldsets('params');
 <form action="<?php echo JRoute::_('index.php?option=com_mue&layout=edit&ug_id='.(int) $this->item->ug_id); ?>" method="post" name="adminForm" id="mue-form" class="form-validate">
 
 	<?php
-	if (JVersion::MAJOR_VERSION == 4) {
+	if (JVersion::MAJOR_VERSION >= 4) {
 		echo '<div class="form-horizontal main-card">';
 		echo HTMLHelper::_('uitab.startTabSet', 'myTab', array( 'active' => 'details', 'recall' => true, 'breakpoint' => 768 ) );
 		echo HTMLHelper::_('uitab.addTab', 'myTab', 'general', 'Details');
@@ -37,24 +37,27 @@ $params = $this->form->getFieldsets('params');
 
     <div class="row-fluid row">
         <div class="width-60 fltlft span8 col-md-8">
-            <fieldset class="adminform">
+            <fieldset class="options-form form-vertical">
                 <legend><?php echo JText::_( 'COM_MUE_UGROUP_DETAILS' ); ?></legend>
-                <ul class="adminformlist treeselect">
                     <?php foreach($this->form->getFieldset('details') as $field): ?>
-                    <li><?php echo $field->label;echo $field->input;?></li>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $field->label;?></div>
+                            <div class="controls"><?php echo $field->input;?></div>
+                        </div>
                     <?php endforeach; ?>
-                </ul>
             </fieldset>
         </div>
         <div class="width-40 fltlft span4 col-md-4">
-            <fieldset class="adminform">
+            <fieldset class="options-form form-horizontal">
                 <legend><?php echo JText::_( 'COM_MUE_UGROUP_SETTINGS' ); ?></legend>
                     <?php foreach($this->form->getFieldset('settings') as $field): ?>
-                    <?php echo '<div>'.$field->label.'<div class="clr"></div>'.$field->input.'</div>';?>
-                    <div class="clr"></div>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $field->label;?></div>
+                            <div class="controls"><?php echo $field->input;?></div>
+                        </div>
                     <?php endforeach; ?>
             </fieldset>
-            <fieldset class="adminform">
+            <fieldset class="options-form form-horizontal">
                 <legend><?php echo JText::_( 'COM_MUE_UGROUP_EMAILTAGS' ); ?></legend>
                 <p>
                     <strong>{username}</strong> - Username<br>
@@ -67,7 +70,7 @@ $params = $this->form->getFieldsets('params');
     </div>
 
 	<?php
-	if ( JVersion::MAJOR_VERSION == 4 ) {
+	if ( JVersion::MAJOR_VERSION >= 4 ) {
 		echo HTMLHelper::_('uitab.endTab');
 		echo HTMLHelper::_( 'uitab.endTabSet' );
 		echo '</div>';

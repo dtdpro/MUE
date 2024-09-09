@@ -12,9 +12,14 @@ class JFormFieldMUEDefault extends JFormField
 		$type = $this->form->getValue('uf_type');
 		
 		$id	= (int) $this->form->getValue('uf_id');
-		if (!$id) return '<input type="hidden" name="' . $this->name . '" value="0" />' . '<span class="readonly">Available Once Field Saved</span>';
+		if (!$id) return '<input type="hidden" name="' . $this->name . '" value="" />' . '<span class="readonly">Available Once Field Saved</span>';
 		
 		switch ($type) {
+            case 'country':
+            case 'message':
+            case 'html':
+                $html = '<input type="hidden" name="' . $this->name . '" value="" />' . '<span class="readonly">N/A</span>';
+                break;
 			case "multi":
 			case "dropdown":
 				$html = $this->getMultiChoiceOpts($id,false);
@@ -51,7 +56,7 @@ class JFormFieldMUEDefault extends JFormField
 		// Initialize some field attributes.
 		$size = ' size="60"';
 		$maxLength = $this->element['maxlength'] ? ' maxlength="' . (int) $this->element['maxlength'] . '"' : '';
-		$class = $this->element['class'] ? ' class="' . (string) $this->element['class'] . '"' : '';
+		$class = $this->element['class'] ? ' class="form-control ' . (string) $this->element['class'] . '"' : '';
 		$readonly = ((string) $this->element['readonly'] == 'true') ? ' readonly="readonly"' : '';
 		$disabled = ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
 		
@@ -83,7 +88,7 @@ class JFormFieldMUEDefault extends JFormField
         $html = array();
         $attr = '';
         // Initialize some field attributes.
-        $attr .= $this->element['class'] ? ' multiple="true" class="'.(string) $this->element['class'].'"' : '';
+        $attr .= $this->element['class'] ? ' multiple="true" class="form-select '.(string) $this->element['class'].'"' : '';
         $attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
 
 
@@ -113,7 +118,7 @@ class JFormFieldMUEDefault extends JFormField
 		$html = array();
 		$attr = '';
 		// Initialize some field attributes.
-		$attr .= $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
+		$attr .= $this->element['class'] ? ' class="form-select '.(string) $this->element['class'].'"' : '';
 		$attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
 		
 	
@@ -142,7 +147,7 @@ class JFormFieldMUEDefault extends JFormField
 		$html = array();
 		$attr = '';
 		// Initialize some field attributes.
-		$attr .= $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
+		$attr .= $this->element['class'] ? ' class="form-select '.(string) $this->element['class'].'"' : '';
 		$attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
 		
 	
@@ -171,7 +176,7 @@ class JFormFieldMUEDefault extends JFormField
 		$html = array();
 		$attr = '';
 		// Initialize some field attributes.
-		$attr .= $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
+		$attr .= $this->element['class'] ? ' class="form-select '.(string) $this->element['class'].'"' : '';
 		$attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
 		
 	
@@ -197,7 +202,7 @@ class JFormFieldMUEDefault extends JFormField
 		$attr = '';
 		$db = JFactory::getDBO();
 		// Initialize some field attributes.
-		$attr .= $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
+		$attr .= $this->element['class'] ? ' class="form-select '.(string) $this->element['class'].'"' : '';
 		$attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
 		if ($multi) {
 			$attr .= ' multiple ';
@@ -211,7 +216,7 @@ class JFormFieldMUEDefault extends JFormField
 		if (!$id) return $this->getTextField();
 	
 		// Build the query for the ordering list.
-		$html[] = '<select name="'.$this->name.'" class="inputbox" '.$attr.'>';
+		$html[] = '<select name="'.$this->name.'" class="form-select inputbox" '.$attr.'>';
 		$html[] = '<option value="">None</option>';
 		$query = 'SELECT opt_id AS value, opt_text AS text' .
 				' FROM #__mue_ufields_opts' .

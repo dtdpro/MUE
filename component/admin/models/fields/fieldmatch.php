@@ -24,7 +24,7 @@ class JFormFieldFieldMatch extends JFormField
 		// Initialize JavaScript field attributes.
 		$attr .= $this->element['onchange'] ? ' onchange="'.(string) $this->element['onchange'].'"' : '';
 
-		$html[] = '<select name="'.$this->name.'" class="inputbox" '.$attr.'>';
+		$html[] = '<select name="'.$this->name.'" class="form-select inputbox" '.$attr.'>';
 		$html[] = '<option value="">None</option>';
 		// Build the query for the ordering list.
 		$query = 'SELECT uf_sname AS value, uf_name AS text' .

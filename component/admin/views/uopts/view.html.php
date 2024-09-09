@@ -36,9 +36,6 @@ class MUEViewUopts extends JViewLegacy
 
 		// Display the template
 		parent::display($tpl);
-
-		// Set the document
-		$this->setDocument();
 	}
 
 	protected function addToolBar() 
@@ -59,13 +56,6 @@ class MUEViewUopts extends JViewLegacy
 		}
 		JToolbarHelper::link('index.php?option=com_mue&view=ufields','Return to Fields','chevron-left');
 	}
-	
-	protected function setDocument() 
-	{
-		$document = JFactory::getDocument();
-		$document->setTitle(JText::_('COM_MUE_MANAGER_UOPTS'));
-	}
-
 
     protected function getSortFields()
     {

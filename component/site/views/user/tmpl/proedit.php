@@ -5,15 +5,26 @@ echo '<h2 class="componentheading uk-article-title">'.JText::_('COM_MUE_USER_PRO
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function() {
-		jQuery("#regform").validate({
-			errorClass:"uf_error uk-form-danger",
+		var validator = jQuery("#regform").validate({
+            errorClass:"uf_error uk-form-danger",
             validClass:"uf_valid uk-form-success",
+            ignore: ".ignore",
             errorElement: "div",
-            errorPlacement: function(error, element) {
-                error.appendTo( element.parent("div"));
+            errorPlacement: function (error, element) {
+                error.appendTo(element.parent("div"));
                 error.addClass("uk-alert uk-alert-danger uk-form-controls-text");
+            },
+            onsubmit: false
+        });
+
+        jQuery("#regform").submit(function( event ) {
+            event.preventDefault();
+            if (validator.form()) {
+                jQuery("#saveprofile").attr("disabled", true);
+                jQuery("#saveprofile").prop("value", "Saving, please wait...");
+                jQuery("#regform")[0].submit();
             }
-	    });
+        });
 
 	});
 
@@ -26,6 +37,12 @@ if (!$this->one_group) echo '<div class="uk-form-row uk-margin-top mue-user-edit
 $ri=0;
 foreach($this->userfields as $f) {
 	$sname = $f->uf_sname;
+
+    if ($f->uf_type == "html") {
+        echo $f->uf_note;
+        continue;
+    }
+
 	if ($f->uf_change) {
 		if ($ri==1) $ri=0;
 		else $ri=1;
@@ -100,6 +117,11 @@ foreach($this->userfields as $f) {
 		if ($f->uf_type=="birthday") {
 			echo JHtml::_('muefields.birthday',$f,$this->userinfo->$sname);
 		}
+
+        //Country
+        if ($f->uf_type=="country") {
+            echo JHtml::_('muefields.country',$f,$this->userinfo->$sname);
+        }
 
 		//Timezone
 		if ($f->uf_type=="timezone") {

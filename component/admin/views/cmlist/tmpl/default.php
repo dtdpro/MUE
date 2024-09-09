@@ -22,7 +22,7 @@ use Joomla\CMS\Language\Text;
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_mue');?>" id="mue-form" method="post" name="adminForm" class="form-validate">
 	<?php
-	if (JVersion::MAJOR_VERSION == 4) {
+	if (JVersion::MAJOR_VERSION >= 4) {
 		echo '<div class="form-horizontal main-card">';
 		echo HTMLHelper::_('uitab.startTabSet', 'myTab', array( 'active' => 'details', 'recall' => true, 'breakpoint' => 768 ) );
 		echo HTMLHelper::_('uitab.addTab', 'myTab', 'general', 'Subscription');
@@ -85,7 +85,7 @@ use Joomla\CMS\Language\Text;
 	echo '<div class="clr"></div>';
 
 	//CM Fields
-	if ( JVersion::MAJOR_VERSION == 4 ) {
+	if ( JVersion::MAJOR_VERSION >= 4 ) {
 		echo HTMLHelper::_('uitab.endTab');
 		echo HTMLHelper::_('uitab.addTab', 'myTab', 'fields', 'Fields');
 	} else {
@@ -132,7 +132,7 @@ use Joomla\CMS\Language\Text;
 	echo '<div class="clr"></div>';
 	
 	//Ops
-	if ( JVersion::MAJOR_VERSION == 4 ) {
+	if ( JVersion::MAJOR_VERSION >= 4 ) {
 		echo HTMLHelper::_('uitab.endTab');
 		echo HTMLHelper::_('uitab.addTab', 'myTab', 'ops', 'Operations');
 	} else {
@@ -145,7 +145,7 @@ use Joomla\CMS\Language\Text;
 	echo '<div class="clr"></div>';
 	
 	//Webhooks
-	if ( JVersion::MAJOR_VERSION == 4 ) {
+	if ( JVersion::MAJOR_VERSION >= 4 ) {
 		echo HTMLHelper::_('uitab.endTab');
 		echo HTMLHelper::_('uitab.addTab', 'myTab', 'webhooks', 'Webhooks');
 	} else {
@@ -170,7 +170,7 @@ use Joomla\CMS\Language\Text;
 	echo '<div class="clr"></div>';
 
 
-	if ( JVersion::MAJOR_VERSION == 4 ) {
+	if ( JVersion::MAJOR_VERSION >= 4 ) {
 		echo HTMLHelper::_('uitab.endTab');
 		echo HTMLHelper::_( 'uitab.endTabSet' );
 		echo '</div>';

@@ -37,9 +37,6 @@ class MUEViewUgroups extends JViewLegacy
 
 		// Display the template
 		parent::display($tpl);
-
-		// Set the document
-		$this->setDocument();
 	}
 
 	protected function addToolBar() 
@@ -59,12 +56,7 @@ class MUEViewUgroups extends JViewLegacy
 			JToolBarHelper::trash('ugroups.trash');
 		}
 	}
-	
-	protected function setDocument() 
-	{
-		$document = JFactory::getDocument();
-		$document->setTitle(JText::_('COM_MUE_MANAGER_UGROUPS'));
-	}
+
     protected function getSortFields()
     {
         return array(

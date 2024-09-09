@@ -120,9 +120,7 @@ class MUEController extends JControllerLegacy {
 								$app->enqueueMessage('Subscription Expires in '.$sub->daysLeft. ' day(s)','warning');
 							}
 						}
-					} else {
-						$app->enqueueMessage('Subscription Required','error');
-					}
+					} 
 				}
 			}
 			$view->display();

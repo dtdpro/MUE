@@ -36,9 +36,6 @@ class MUEViewUplans extends JViewLegacy
 
 		// Display the template
 		parent::display($tpl);
-
-		// Set the document
-		$this->setDocument();
 	}
 
 	protected function addToolBar() 
@@ -58,12 +55,7 @@ class MUEViewUplans extends JViewLegacy
 			JToolBarHelper::trash('uplans.trash');
 		}
 	}
-	
-	protected function setDocument() 
-	{
-		$document = JFactory::getDocument();
-		$document->setTitle(JText::_('COM_MUE_MANAGER_UPLANS'));
-	}
+
     protected function getSortFields()
     {
         return array(

@@ -23,9 +23,9 @@ use Joomla\CMS\Language\Text;
 
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_mue&layout=edit&usr_id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="mue-form" class="form-validate">
-	<?php if (JVersion::MAJOR_VERSION == 4) { ?><div class="form-horizontal main-card"><?php } ?>
+	<?php if (JVersion::MAJOR_VERSION >= 4) { ?><div class="form-horizontal main-card"><?php } ?>
 		<?php
-		if (JVersion::MAJOR_VERSION == 4) {
+		if (JVersion::MAJOR_VERSION >= 4) {
 			echo HTMLHelper::_('uitab.startTabSet', 'myTab', array( 'active' => 'details', 'recall' => true, 'breakpoint' => 768 ) );
 			echo HTMLHelper::_('uitab.addTab', 'myTab', 'general', 'User Details');
 		} else {
@@ -37,7 +37,7 @@ use Joomla\CMS\Language\Text;
 
         <div class="row-fluid row">
 	<div class="width-50 fltlft span6 col-md-6">
-		<fieldset class="adminform form-horizontal">
+		<fieldset class="options-form form-horizontal">
 			<legend><?php echo JText::_( 'COM_MUE_USER_DETAILS' ); ?></legend>
 			
 				<div class="control-group">
@@ -101,6 +101,18 @@ use Joomla\CMS\Language\Text;
 						}
 						echo '</select>';
 					}
+
+                    //country
+                    if ($f->uf_type=="country") {
+                        echo '<select id="jform_'.$sname.'" name="jform['.$sname.']" class="form-select inputbox" size="1">';
+                        foreach ($this->country_list as $o) {
+                            if (!empty($this->item->$sname)) $selected = ($o == $this->item->$sname) ? ' selected="selected"' : '';
+                            else $selected = '';
+                            echo '<option value="'.$o.'"'.$selected.'>';
+                            echo ' '.$o.'</option>';
+                        }
+                        echo '</select>';
+                    }
 					
 					//text field, phone #, email, username, birthday
 					if ($f->uf_type=="textbox" || $f->uf_type=="email" || $f->uf_type=="username" || $f->uf_type=="phone" || $f->uf_type=="birthday") {
@@ -148,11 +160,11 @@ use Joomla\CMS\Language\Text;
 		</fieldset>
 	</div>
 	<div class="width-50 fltlft span6 col-md-6 form-horizontal">
-		<fieldset class="adminform">
+		<fieldset class="options-form">
 			<legend>Joomla User Group</legend>
             <?php echo JHtml::_('access.usergroups', 'jform[groups]', $this->groups, true); ?>
 		</fieldset>
-        <fieldset class="adminform">
+        <fieldset class="options-form">
             <legend>Other User Info</legend>
 			<?php
 			echo '<label for="jform_lastupdate">Last Updated:</label> '.$this->item->lastupdate.'<br /><br />';//JHTML::_('calendar',$this->item->lastupdate,'jform[lastupdate]','jform_lastupdate','%Y-%m-%d','').'<br /><br />';
@@ -167,7 +179,7 @@ use Joomla\CMS\Language\Text;
 
         <?php
 
-		if ( JVersion::MAJOR_VERSION == 4 ) {
+		if ( JVersion::MAJOR_VERSION >= 4 ) {
 				echo HTMLHelper::_('uitab.endTab');
 			echo HTMLHelper::_( 'uitab.endTabSet' );
 		} else {
@@ -175,7 +187,7 @@ use Joomla\CMS\Language\Text;
 			echo JHtml::_( 'bootstrap.endTabSet' );
 		}
 
-        if (JVersion::MAJOR_VERSION == 4) { ?></div><?php }
+        if (JVersion::MAJOR_VERSION >= 4) { ?></div><?php }
 
         ?>
 
@@ -183,4 +195,3 @@ use Joomla\CMS\Language\Text;
 		<input type="hidden" name="usr_user" value="<?php echo $this->item->usr_user; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 </form>
-

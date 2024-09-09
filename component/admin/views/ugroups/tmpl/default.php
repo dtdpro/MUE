@@ -71,7 +71,7 @@ if ($saveOrder) {
 				<td colspan="6"><?php echo $this->pagination->getListFooter(); ?></td>
 			</tr>
 		</tfoot>
-        <tbody <?php if (JVersion::MAJOR_VERSION == 4) { ?>class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" data-nested="true"<?php } ?>>
+        <tbody <?php if (JVersion::MAJOR_VERSION >= 4) { ?>class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" data-nested="true"<?php } ?>>
 		<?php foreach($this->items as $i => $item): ?>
             <tr class="row<?php echo $i % 2; ?>" <?php if (JVersion::MAJOR_VERSION == 3) { ?>sortable-group-id="muegroup" <?php } else { ?>data-draggable-group="muegroup"<?php } ?>>
                 <td class="order nowrap center hidden-phone">

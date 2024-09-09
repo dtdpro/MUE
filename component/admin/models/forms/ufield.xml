@@ -22,7 +22,7 @@
 		<field 
 			name="ordering" 
 			type="OrderUField" 
-			class="inputbox"
+			class="form-select inputbox"
 			label="JFIELD_ORDERING_LABEL"
 			description="JFIELD_ORDERING_DESC" 
 		/>
@@ -69,6 +69,8 @@
 			<option value="cmlist">Campaign Monitor List</option>
 			<option value="aclist">Active Campaign List</option>
 			<option value="timezone">Timezone</option>
+			<option value="html">HTML</option>
+			<option value="country">Country</option>
 		</field>
 		<field
 			name="uf_req"
@@ -124,7 +126,7 @@
 		<field 
 			name="uf_match" 
 			type="FieldMatch" 
-			class="inputbox"
+			class="form-select inputbox"
 			label="COM_MUE_UFIELD_FIELD_MATCH_LABEL"
 			description="COM_MUE_UFIELD_FIELD_MATCH_DESC" 
 		/>

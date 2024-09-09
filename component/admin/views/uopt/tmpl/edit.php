@@ -16,7 +16,7 @@ $params = $this->form->getFieldsets('params');
 <script type="text/javascript">
     Joomla.submitbutton = function(task)
     {
-        if (task == 'upot.cancel' || document.formvalidator.isValid(document.getElementById('mue-form'))) {
+        if (task == 'uopt.cancel' || document.formvalidator.isValid(document.getElementById('mue-form'))) {
             Joomla.submitform(task, document.getElementById('mue-form'));
         }
     }
@@ -25,7 +25,7 @@ $params = $this->form->getFieldsets('params');
 <form action="<?php echo JRoute::_('index.php?option=com_mue&layout=edit&opt_id='.(int) $this->item->opt_id); ?>" method="post" name="adminForm" id="mue-form" class="form-validate">
 
 	<?php
-	if (JVersion::MAJOR_VERSION == 4) {
+	if (JVersion::MAJOR_VERSION >= 4) {
 		echo '<div class="form-horizontal main-card">';
 		echo HTMLHelper::_('uitab.startTabSet', 'myTab', array( 'active' => 'details', 'recall' => true, 'breakpoint' => 768 ) );
 		echo HTMLHelper::_('uitab.addTab', 'myTab', 'general', 'Details');
@@ -55,7 +55,7 @@ $params = $this->form->getFieldsets('params');
     </div>
 
 	<?php
-	if ( JVersion::MAJOR_VERSION == 4 ) {
+	if ( JVersion::MAJOR_VERSION >= 4 ) {
 		echo HTMLHelper::_('uitab.endTab');
 		echo HTMLHelper::_( 'uitab.endTabSet' );
 		echo '</div>';

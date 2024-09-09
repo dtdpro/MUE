@@ -364,13 +364,10 @@ class MUEModelUser extends JModelLegacy
 				}
 
 				// sync contact
-				$acClient->syncContact($item->email,$item->fname, $item->lname,$fieldData);
+				$acClient->syncContact($item->email,$item->fname, $item->lname,$fieldData);z
 
 				// get contact
 				$contact = $acClient->getContact($item->email);
-
-				// pause
-				sleep(1);
 
 				if ($contact) {
 					// Gather List Ids and set status

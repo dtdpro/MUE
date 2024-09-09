@@ -118,7 +118,7 @@ if ($saveOrder) {
 				<td colspan="12"><?php echo $this->pagination->getListFooter(); ?></td>
 			</tr>
 		</tfoot>
-		<tbody <?php if (JVersion::MAJOR_VERSION == 4) { ?>class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" data-nested="true"<?php } ?>>
+		<tbody <?php if (JVersion::MAJOR_VERSION >= 4) { ?>class="js-draggable" data-url="<?php echo $saveOrderingUrl; ?>" data-direction="<?php echo strtolower($listDirn); ?>" data-nested="true"<?php } ?>>
 		<?php foreach($this->items as $i => $item): ?>
             <tr class="row<?php echo $i % 2; ?>" <?php if (JVersion::MAJOR_VERSION == 3) { ?>sortable-group-id="muefields" <?php } else { ?>data-draggable-group="muefields"<?php } ?>>
                 <td class="order nowrap center hidden-phone">
@@ -165,6 +165,8 @@ if ($saveOrder) {
 						case "cmlist": echo 'Campaign Monitor List'; break;
                         case "aclist": echo 'Active Campaign List'; break;
 						case "timezone": echo 'Timezone'; break;
+                        case "html": echo 'HTML'; break;
+                        case "country": echo 'Country'; break;
 					}
 					?>
 				</td>

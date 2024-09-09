@@ -11,26 +11,31 @@ class MUEModelActivation extends JModelLegacy
 
 	public function activateUser($token) {
 		$db = $this->getDbo();
+        $app=Jfactory::getApplication();
 		$config     = JFactory::getConfig();
 		$userParams = JComponentHelper::getParams('com_users');
+        $mueCfg = MUEHelper::getConfig();
 
 		// Get the user id based on the token.
 		$query = $db->getQuery(true);
-		$query->select($db->quoteName('id'))
+		$query->select('id,username')
 		      ->from($db->quoteName('#__users'))
 		      ->where($db->quoteName('activation') . ' = ' . $db->quote($token))
 		      ->where($db->quoteName('block') . ' = ' . 1);
 		$db->setQuery($query);
-		$userId = $db->loadResult();
-		if (!$userId) {
-			$this->setError("User not found or already active");
-			return false;
-		}
+        $foundUser =  $db->loadObject();
+        if (!$foundUser) {
+            $this->setError("User not found or already active");
+            return false;
+        }
+		$userId = $foundUser->id;
 
 		$user = JFactory::getUser($userId);
 
 		if ($userParams->get('useractivation') == 2 && !$user->getParam('activate', 0)) {
-			// Compile the admin notification mail values.
+			// Admin Activation required, user has verified or does not need to
+
+            // Compile the admin notification mail values.
 			$data = $user->getProperties();
 			$data['activation'] = JApplicationHelper::getHash(JUserHelper::genRandomPassword());
 			$user->set('activation', $data['activation']);
@@ -76,14 +81,49 @@ class MUEModelActivation extends JModelLegacy
 			}
 			return 'adminactivate';
 		} else {
-			$user->set('activation', '');
-			$user->set('block', '0');
-			if (!$user->save())
-			{
-				$this->setError(JText::sprintf('COM_USERS_REGISTRATION_ACTIVATION_SAVE_FAILED', $user->getError()));
-				return false;
-			}
-			return 'active';
+            // No admin activation required, user can log in or be logged in
+            if ($mueCfg->verify_then_login) {
+                // Auto login user
+                $credentials = [];
+                $credentials['username'] = $foundUser->username;
+                $credentials['token'] = $token;
+                $options = [];
+                $options['remember'] = true;
+
+                // Activate
+                $user->set('block', '0');
+                if (!$user->save())
+                {
+                    $this->setError(JText::sprintf('COM_USERS_REGISTRATION_ACTIVATION_SAVE_FAILED', $user->getError()));
+                    return false;
+                }
+                $status = 'active';
+
+                // Login User
+                if ($app->login( $credentials, $options )) {
+                    $status = 'active_loggedin';
+                }
+
+                // Clear activation token
+                $user->set('activation', '');
+                if (!$user->save())
+                {
+                    $this->setError(JText::sprintf('COM_USERS_REGISTRATION_ACTIVATION_SAVE_FAILED', $user->getError()));
+                    return false;
+                }
+
+                return $status;
+            } else {
+                // Do not auto login user
+                $user->set('activation', '');
+                $user->set('block', '0');
+                if (!$user->save())
+                {
+                    $this->setError(JText::sprintf('COM_USERS_REGISTRATION_ACTIVATION_SAVE_FAILED', $user->getError()));
+                    return false;
+                }
+                return 'active';
+            }
 		}
 	}
 

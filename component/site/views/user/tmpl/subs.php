@@ -10,7 +10,7 @@ $sub=MUEHelper::getActiveSub();
 $numsubs=count(MUEHelper::getUserSubs());
 if ($numsubs) {
 if (!$sub) {
-	echo '<p>Subscription Expired <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button uk-button">'.JText::_('COM_MUE_USER_SUBS_BUTTON_RENEW_SUB').'</a></p>';
+	echo '<p><a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button uk-button">'.JText::_('COM_MUE_USER_SUBS_BUTTON_RENEW_SUB').'</a></p>';
 } else {
 	echo $config->profile_sub_content;
 	if ((!$sub->sub_recurring || $sub->usrsub_rpstatus != "ActiveProfile") && $sub->daysLeft <= 10) {
@@ -18,7 +18,7 @@ if (!$sub) {
 	}
 }
 } else {
-	echo '<p>Subscription Required <a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button uk-button">'.JText::_('COM_MUE_USER_SUBS_BUTTON_ADD_SUB').'</a></p>';
+	echo '<p><a href="'.JRoute::_('index.php?option=com_mue&view=subscribe').'" class="button uk-button">'.JText::_('COM_MUE_USER_SUBS_BUTTON_ADD_SUB').'</a></p>';
 }
 
 if ($this->usersubs) {

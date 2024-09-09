@@ -36,9 +36,6 @@ class MUEViewUsersubs extends JViewLegacy
 
 		// Display the template
 		parent::display($tpl);
-
-		// Set the document
-		$this->setDocument();
 	}
 
 	/**
@@ -58,15 +55,5 @@ class MUEViewUsersubs extends JViewLegacy
 		JHtmlSidebar::setAction('index.php?option=com_mue&view=usersubs');
 
 
-	}
-	/**
-	 * Method to set up the document properties
-	 *
-	 * @return void
-	 */
-	protected function setDocument() 
-	{
-		$document = JFactory::getDocument();
-		$document->setTitle(JText::_('COM_MUE_MANAGER_USERSUBS'));
 	}
 }

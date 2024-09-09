@@ -6,15 +6,27 @@ $user=JFactory::getUser();
 
 <script type="text/javascript">
 	jQuery(document).ready(function() {
-		jQuery("#regform").validate({
-			errorClass:"uf_error",
-			validClass:"uf_valid",
+
+        var validator = jQuery("#regform").validate({
+            errorClass:"uf_error uk-form-danger",
+            validClass:"uf_valid uk-form-success",
+            ignore: ".ignore",
             errorElement: "div",
-            errorPlacement: function(error, element) {
-                error.appendTo( element.parent("div"));
+            errorPlacement: function (error, element) {
+                error.appendTo(element.parent("div"));
                 error.addClass("uk-alert uk-alert-danger uk-form-controls-text");
+            },
+            onsubmit: false
+        });
+
+        jQuery("#regform").submit(function( event ) {
+            event.preventDefault();
+            if (validator.form()) {
+                jQuery("#saveprofile").attr("disabled", true);
+                jQuery("#saveprofile").prop("value", "Saving, please wait...");
+                jQuery("#regform")[0].submit();
             }
-	    });
+        });
 
 	});
 

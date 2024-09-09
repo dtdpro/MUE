@@ -33,9 +33,9 @@ if (!$user->id) {
 	$formtoken=JHTML::_( 'form.token' );
 
 	echo '<div id="mue-plan-pick">';
-	echo '<div class="mue-plan-pick-hdr">';
+	/*echo '<div class="mue-plan-pick-hdr">';
 	echo 'Select your plan below';
-	echo '</div>';
+	echo '</div>';*/
 
 	echo '<hr>';
 
@@ -106,18 +106,12 @@ if (!$user->id) {
 
 		echo '<div class="uk-margin-top" uk-grid>';
 
-		echo '<div class="uk-width-1-3">';
-		echo '</div>';
-
-		echo '<div class="uk-width-1-3 uk-text-center">';
+		echo '<div class="uk-width-1-1 uk-text-center">';
 
 		if ($this->return) $continuelink = $this->return;
 		else $continuelink = JRoute::_('index.php?option=com_mue&view=user&layout=profile');
 		echo '<a href="'.$continuelink.'"  class="button uk-button uk-button-default uk-width-1-1">'.JText::_('COM_MUE_SUBSCRIBE_LABEL_CONTINUE').'</a>';
 
-		echo '</div>';
-
-		echo '<div class="uk-width-1-3">';
 		echo '</div>';
 
 		echo '</div>';

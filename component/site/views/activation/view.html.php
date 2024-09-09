@@ -45,6 +45,14 @@ class MUEViewActivation extends JViewLegacy
 					$redirectUrl = $redirectUrl.'&return='.base64_encode($return);
 				}
 				$app->redirect(JRoute::_($redirectUrl, false));
+			} else if ($status == 'active_loggedin') {
+				$redirectUrl = JRoute::_( 'index.php?option=com_mue&view=subscribe' );
+				if ( $muecfg->subscribe ) {
+					$app->enqueueMessage(JText::_('COM_MUE_REGISTRATION_ACTIVATE_SUCCESS_LOGIN_SUBSCRIBE'));
+				} else {
+					$app->enqueueMessage(JText::_('COM_MUE_REGISTRATION_ACTIVATE_SUCCESS_LOGIN'));
+				}
+				$app->redirect(JRoute::_($redirectUrl, false));
 			} else if ($status == 'adminactivate') {
 				$this->completeMessage = JText::_('COM_MUE_REGISTRATION_VERIFY_SUCCESS');
 			}

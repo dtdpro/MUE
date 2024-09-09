@@ -252,7 +252,7 @@ class MUEModelUserreg extends JModelLegacy
 					// Subscription Status
 					if ($aclistFirst->params->acsubstatus) {
 						$fieldVal = '';
-						$fieldVal=$aclistFirst->params->acsubtextyes;
+						$fieldVal=$aclistFirst->params->acsubtextno;
 						$fieldDataEntry = [];
 						$fieldDataEntry['field'] = $aclistFirst->params->acsubstatus;
 						$fieldDataEntry['value'] = $fieldVal;
@@ -263,11 +263,12 @@ class MUEModelUserreg extends JModelLegacy
 				// sync contact
 				$acClient->syncContact($item->email,$item->fname, $item->lname,$fieldData);
 
+                // pause
+                sleep(1);
+
 				// get contact
 				$contact = $acClient->getContact($item->email);
 
-				// pause
-				sleep(1);
 
 				if ($contact) {
 					// Gather List Ids and set status to subscribed, only if checked, unchecked does nothing

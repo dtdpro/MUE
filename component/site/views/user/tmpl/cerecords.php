@@ -25,7 +25,7 @@ if ($this->userrecs) {
 		}
 		echo '</td><td>';
 		if ($course->sess_pstatus == "pass") {
-			echo number_format($course->ci_credits,2);
+			echo number_format(floatval($course->ci_credits),2);
 			$total_credits = $total_credits + floatval($course->ci_credits);
 		}
 		echo '</td><td> ';

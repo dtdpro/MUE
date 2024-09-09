@@ -2,6 +2,10 @@
 
 <config>
 	<fieldset name="registration" label="COM_MUE_CONFIG_REG_LABEL" description="COM_MUE_CONFIG_REG_DESC" addfieldpath="/administrator/components/com_mue/models/fields">
+		<field name="verify_then_login" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_VERIFY_THEN_LOGIN_LABEL" description="COM_MUE_CONFIG_FIELD_VERIFY_THEN_LOGIN_DESC" default="0">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</field>
 		<field name="REG_PAGE_CONTENT" type="textarea" label="COM_MUE_CONFIG_FIELD_REG_PAGE_CONTENT_LABEL" description="COM_MUE_CONFIG_FIELD_REG_PAGE_CONTENT_DESC" rows="4" cols="70" class="inputbox" required="true" filter="safehtml" buttons="false" />
 		<field name="FROM_EMAIL" type="text" label="COM_MUE_CONFIG_FIELD_FROM_EMAIL_LABEL" description="COM_MUE_CONFIG_FIELD_FROM_EMAIL_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="FROM_NAME" type="text" label="COM_MUE_CONFIG_FIELD_FROM_NAME_LABEL" description="COM_MUE_CONFIG_FIELD_FROM_NAME_DESC" size="70" class="inputbox" required="false" default="" />

@@ -39,9 +39,6 @@ class MUEViewUsersub extends JViewLegacy
 
 		// Display the template
 		parent::display($tpl);
-
-		// Set the document
-		$this->setDocument();
 	}
 
 	/**
@@ -72,19 +69,5 @@ class MUEViewUsersub extends JViewLegacy
 			JToolBarHelper::custom('usersub.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
 			JToolBarHelper::cancel('usersub.cancel', 'JTOOLBAR_CLOSE');
 		}
-	}
-	/**
-	 * Method to set up the document properties
-	 *
-	 * @return void
-	 */
-	protected function setDocument() 
-	{
-		$isNew = $this->item->usrsub_id == 0;
-		$document = JFactory::getDocument();
-		$document->setTitle($isNew ? JText::_('COM_MUE_USERSUB_CREATING') : JText::_('COM_MUE_USERSUB_EDITING'));
-		$document->addScript(JURI::root() . $this->script);
-		$document->addScript(JURI::root() . "/administrator/components/com_mue/views/usersub/submitbutton.js");
-		JText::script('COM_MUE_USERSUB_ERROR_UNACCEPTABLE');
 	}
 }

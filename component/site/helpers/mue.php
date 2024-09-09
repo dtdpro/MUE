@@ -264,7 +264,12 @@ class MUEHelper {
 			//get first list
 			$aclistFirst = $acfields[0];
 
-			// get contact
+            //associate params
+            $registry = new JRegistry();
+            $registry->loadString($aclistFirst->params);
+            $aclistFirst->params = $registry->toObject();
+
+            // get contact
 			$contact = $acClient->getContact($user->email);
 
 			// update group fields
@@ -459,4 +464,55 @@ class MUEHelper {
 			$db->execute();
 		}
 	}
+
+    public static function updateUserLoginTime($userid) {
+        $user = JFactory::getUser($userid);
+        $date = new JDate('now');
+        $cfg = MUEHelper::getConfig();
+
+        /// Active campaign Integration
+        $db = JFactory::getDBO();
+        $qd = 'SELECT f.* FROM #__mue_ufields as f ';
+        $qd.= ' WHERE f.published = 1 ';
+        $qd .= ' && f.uf_type IN ("aclist")';
+        $qd.= ' ORDER BY f.ordering';
+        $db->setQuery( $qd );
+        $acfields = $db->loadObjectList();
+
+        if (count($acfields)) {
+            // Load up AC connector
+            require_once( JPATH_ROOT . '/components/com_mue/lib/activecampaign.php' );
+            $acClient = new ActiveCampaign( $cfg->ackey, $cfg->acurl );
+
+            //get first list
+            $aclistFirst = $acfields[0];
+
+            //associate params
+            $registry = new JRegistry();
+            $registry->loadString($aclistFirst->params);
+            $aclistFirst->params = $registry->toObject();
+
+            // get contact
+            $contact = $acClient->getContact($user->email);
+
+            // update group fields
+            if ($contact) {
+                // set field data
+                $fieldData = [];
+
+                // Set Member Since
+                if ( $aclistFirst->params->aclastlogin) {
+                    $fieldDataEntry = [];
+                    $fieldDataEntry['field'] = $aclistFirst->params->aclastlogin;
+                    $fieldDataEntry['value'] = $date->format("Y-m-d");
+                    $fieldData[] = $fieldDataEntry;
+                }
+
+                // update ac data
+                if (count($fieldData)) {
+                    $acClient->updateContactFields($contact['id'],$fieldData);
+                }
+            }
+        }
+    }
 }

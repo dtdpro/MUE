@@ -5,6 +5,8 @@ defined('_JEXEC') or die('Restricted access');
 // import Joomla modelform library
 jimport('joomla.application.component.modeladmin');
 
+use Joomla\Utilities\ArrayHelper;
+
 class MUEModelPM extends JModelAdmin
 {
 	public function getTable($type = 'PM', $prefix = 'MUETable', $config = array())
@@ -40,7 +42,7 @@ class MUEModelPM extends JModelAdmin
 		}
 		// Convert to the JObject before adding other data.
 		$properties = $table->getProperties(1);
-		$item = JArrayHelper::toObject($properties, 'JObject');
+		$item = ArrayHelper::toObject($properties, 'JObject');
 
 		$db = JFactory::getDBO();
 		$fromQuery = $db->getQuery(true);

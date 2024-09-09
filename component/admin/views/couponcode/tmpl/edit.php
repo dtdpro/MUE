@@ -24,7 +24,7 @@ $params = $this->form->getFieldsets('params');
 <form action="<?php echo JRoute::_('index.php?option=com_mue&layout=edit&cu_id='.(int) $this->item->cu_id); ?>" method="post" name="adminForm" id="mue-form" class="form-validate">
 
     <?php
-    if (JVersion::MAJOR_VERSION == 4) {
+    if (JVersion::MAJOR_VERSION >= 4) {
         echo '<div class="form-horizontal main-card">';
         echo HTMLHelper::_('uitab.startTabSet', 'myTab', array( 'active' => 'details', 'recall' => true, 'breakpoint' => 768 ) );
         echo HTMLHelper::_('uitab.addTab', 'myTab', 'general', 'Details');
@@ -36,7 +36,6 @@ $params = $this->form->getFieldsets('params');
 
     <div class="row-fluid row">
 		<div class="span12 form-horizontal col-md-12">
-			<h4><?php echo JText::_( 'COM_MUE_COUPONCODE_DETAILS' ); ?></h4>
 			<?php foreach($this->form->getFieldset('details') as $field): ?>
 				<div class="control-group">
 					<div class="control-label"><?php echo $field->label;?></div>
@@ -47,7 +46,7 @@ $params = $this->form->getFieldsets('params');
 	</div>
 
     <?php
-    if ( JVersion::MAJOR_VERSION == 4 ) {
+    if ( JVersion::MAJOR_VERSION >= 4 ) {
         echo HTMLHelper::_('uitab.endTab');
         echo HTMLHelper::_( 'uitab.endTabSet' );
         echo '</div>';

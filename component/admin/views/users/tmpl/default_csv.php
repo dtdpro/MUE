@@ -48,7 +48,7 @@ foreach ($this->items as $i) {
 			if ((int)$i->sub->daysLeft > 0) {
 				switch ($i->sub->usrsub_status) {
 					case "notyetstarted": $dataRow[] = "Not Yet Started"; break;
-					case "verified": $dataRow[] = "Assessment"; break;
+					case "verified": $dataRow[] = "Verified"; break;
 					case "canceled": $dataRow[] = "Canceled"; break;
 					case "accepted": $dataRow[] = "Accepted"; break;
 					case "pending": $dataRow[] = "Pending"; break;

@@ -33,9 +33,6 @@ class MUEViewUfield extends JViewLegacy
 
 		// Display the template
 		parent::display($tpl);
-
-		// Set the document
-		$this->setDocument();
 	}
 
 	protected function addToolBar() 
@@ -63,15 +60,5 @@ class MUEViewUfield extends JViewLegacy
 			JToolBarHelper::custom('ufield.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
 			JToolBarHelper::cancel('ufield.cancel', 'JTOOLBAR_CLOSE');
 		}
-	}
-	
-	protected function setDocument() 
-	{
-		$isNew = $this->item->uf_id == 0;
-		$document = JFactory::getDocument();
-		$document->setTitle($isNew ? JText::_('COM_MUE_UFIELD_CREATING') : JText::_('COM_MUE_UFIELD_EDITING'));
-		$document->addScript(JURI::root() . $this->script);
-		$document->addScript(JURI::root() . "/administrator/components/com_mue/views/ufield/submitbutton.js");
-		JText::script('COM_MUE_UFIELD_ERROR_UNACCEPTABLE');
 	}
 }

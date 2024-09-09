@@ -3,24 +3,7 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
 echo '<h2 class="componentheading uk-article-title">'.JText::_('COM_MUE_LOGIN_LOGIN_PAGE_TITLE').'</h2>';
 ?>
-<script type="text/javascript">
-	jQuery(document).ready(function() {
-		jQuery("#loginform").validate({
-			errorClass:"uf_error uk-form-danger",
-			errorPlacement: function(error, element) {
-		    	error.appendTo( element.parent("div").next("div") );
-		    }
-	    });	
-	    <?php if ($cecfg->show_loginreg) { ?>
-	    jQuery("#regform").validate({
-			errorClass:"uf_error uk-form-danger",
-			errorPlacement: function(error, element) {
-		    	error.appendTo( element.parent("div").next("div") );
-		    }
-	    });	
-	    <?php } ?>
-	});
-</script>
+
 <?php 
 echo '<div id="mue-login">';
 //Login Description
@@ -32,7 +15,7 @@ if (($this->params->get('logindescription_show') == 1 && str_replace(' ', '', $t
 
 //Login Form
 echo '<div id="mue-login-login">';
-echo '<form action="" method="post" name="loginform" id="loginform" target="_top" class="uk-form uk-form-horizontal">';
+echo '<form action="" method="post" name="mueloginform" id="mueloginform" target="_top" class="uk-form uk-form-horizontal">';
 echo '<div class="mue-login-login-row uk-form-row uk-margin-top">';
 echo '<div class="mue-login-login-label uk-form-label uk-text-bold"></div>';
 echo '<div class="mue-login-login-hdr uk-form-controls">';
@@ -64,7 +47,7 @@ echo '</div>';
 echo '<div class="mue-login-login-row uk-form-row uk-margin-top">';
 echo '<div class="mue-login-login-label uk-form-label uk-text-bold"></div>';
 echo '<div class="mue-login-login-submit uk-form-controls">';
-echo '<input type="submit" value="'.JText::_('COM_MUE_LOGIN_LOGIN_BUTTON_LOGIN').'" class="button uk-button" border="0" name="submit">';
+echo '<input type="submit" id="loginbutton" value="'.JText::_('COM_MUE_LOGIN_LOGIN_BUTTON_LOGIN').'" class="button uk-button" border="0" name="submit">';
 echo '</div>';
 echo '</div>';
 

@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `#__mue_subs` (
     `access` int NOT NULL,
     `ordering` int NOT NULL,
     PRIMARY KEY (`sub_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 CREATE TABLE IF NOT EXISTS `#__mue_ufields` (
     `uf_id` bigint NOT NULL AUTO_INCREMENT,
@@ -138,8 +138,9 @@ CREATE TABLE IF NOT EXISTS `#__mue_usersubs` (
     `usrsub_end` date DEFAULT NULL,
     `usrsub_coupon` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
     `usrsub_cost` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-    PRIMARY KEY (`usrsub_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
+    PRIMARY KEY (`usrsub_id`),
+    KEY `usrsub_user` (`usrsub_user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 CREATE TABLE IF NOT EXISTS `#__mue_usersubs_log` (
     `usl_id` int NOT NULL AUTO_INCREMENT,
@@ -149,7 +150,7 @@ CREATE TABLE IF NOT EXISTS `#__mue_usersubs_log` (
     `usl_resarray` text NOT NULL,
     `usl_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`usl_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 INSERT INTO `#__mue_ufields` (`uf_id`, `uf_sname`, `ordering`, `uf_name`, `uf_type`, `uf_cms`, `uf_req`, `uf_note`, `uf_match`, `published`, `uf_hidden`, `uf_change`, `uf_reg`, `uf_profile`, `uf_min`, `uf_max`, `uf_default`, `uf_userdir`, `params`) VALUES
 (1, 'fname', 2, 'First Name', 'textbox', 0, 1, '', '', 1, 0, 1, 1, 1, 0, 0, '', 0, ''),

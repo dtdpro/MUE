@@ -26,7 +26,7 @@
 		<field 
 			name="ordering" 
 			type="OrderUOpt" 
-			class="inputbox"
+			class="form-select inputbox"
 			label="JFIELD_ORDERING_LABEL"
 			description="JFIELD_ORDERING_DESC" 
 		/>

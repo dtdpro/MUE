@@ -58,16 +58,20 @@ echo '<div class="uk-width-1-4 uk-text-bold">'.JText::_('COM_MUE_USER_PROFILE_LA
 foreach ($this->userfields as $f) {
 	if ($f->uf_type != "password" && $f->uf_profile) {
 		$field=$f->uf_sname;
-		if ($f->uf_type == "message") {
+		if ($f->uf_type == "html") {
+			echo '<div class="uk-width-1-1">';
+			echo $f->uf_note;
+			echo '</div>';
+		} else if ($f->uf_type == "message") {
             echo '<div class="uk-width-1-4 uk-text-bold"></div>';
-		    echo '<div class="uk-width-3-4"><div class="uk-alert">'.$f->uf_name.'</div>';
+		    echo '<div class="uk-width-3-4"><div class="uk-alert">'.$f->uf_name.'</div></div>';
         } else {
 			echo '<div class="uk-width-1-4 uk-text-bold">' . $f->uf_name . '</div>';
 			echo '<div class="uk-width-3-4">';
 			if (property_exists($this->userinfo,$field)) echo $this->userinfo->$field;
 			else echo '&nbsp;';
+			echo '</div>';
 		}
-		echo '</div>';
 	}
 }
 

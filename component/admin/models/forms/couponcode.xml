@@ -73,6 +73,7 @@
 			description="COM_MUE_COUPONCODE_FIELD_PLANS_DESC"
 			multiple="true"
 			required="false"
+			class="form-select inputbox"
 		/>
 		<field
 				name="cu_singleuse"

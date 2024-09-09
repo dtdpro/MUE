@@ -31,7 +31,15 @@ class ActiveCampaign {
 			$listsById[$l['id']] = $l['name'];
 		}
 
-		return $listsById;
+        if ($data['meta']['total'] > 100) {
+            $data = $this->getData('/api/3/lists?limit=100&offset=100');
+
+            foreach ($data['lists'] as $l) {
+                $listsById[$l['id']] = $l['name'];
+            }
+        }
+
+        return $listsById;
 	}
 
 	public function getContactListsIdsSubscribedTo($contactId) {

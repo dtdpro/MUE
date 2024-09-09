@@ -1,10 +1,14 @@
 <?php
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+
 ?>
 
 <?php
-if (JVersion::MAJOR_VERSION == 4) {
+if (JVersion::MAJOR_VERSION >= 4) {
 	echo '<div class="form-horizontal main-card">';
 	echo HTMLHelper::_('uitab.startTabSet', 'myTab', array( 'active' => 'details', 'recall' => true, 'breakpoint' => 768 ) );
 	echo HTMLHelper::_('uitab.addTab', 'myTab', 'general', 'Details');
@@ -41,7 +45,7 @@ if (JVersion::MAJOR_VERSION == 4) {
 </div>
 
 <?php
-if ( JVersion::MAJOR_VERSION == 4 ) {
+if ( JVersion::MAJOR_VERSION >= 4 ) {
 	echo HTMLHelper::_('uitab.endTab');
 	echo HTMLHelper::_( 'uitab.endTabSet' );
 	echo '</div>';

@@ -349,7 +349,7 @@ class MUEModelSubscribe extends JModelLegacy
 		$query.= 'WHERE usrsub_user="'.$user->id.'"';
 		$query .= ' && usrsub_coupon = "'.$db->escape($code).'"';
 		$db->setQuery($query);
-		$uses = $db->loadObject();
+		$uses = $db->loadObjectList();
 		return count($uses);
 
 	}

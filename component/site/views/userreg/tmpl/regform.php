@@ -6,16 +6,23 @@ JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 
 <script type="text/javascript">
 	jQuery(document).ready(function() {
-		jQuery("#regform").validate({
-            ignore: [],
-			errorClass:"uf_error uk-form-danger",
-			validClass:"uf_valid uk-form-success",
+        var validator = jQuery("#regform").validate({
+            errorClass:"uf_error uk-form-danger",
+            validClass:"uf_valid uk-form-success",
+            ignore: ".ignore",
             errorElement: "div",
-            errorPlacement: function(error, element) {
-                error.appendTo( element.parent("div"));
+            errorPlacement: function (error, element) {
+                error.appendTo(element.parent("div"));
                 error.addClass("uk-alert uk-alert-danger uk-form-controls-text");
             },
-            submitHandler: function (form) {
+            onsubmit: false
+        });
+
+        jQuery("#regform").submit(function( event ) {
+            event.preventDefault();
+            if (validator.form()) {
+                jQuery("#savereg").attr("disabled", true);
+                jQuery("#savereg").prop("value", "Registering, please wait...");
                 if (typeof ga === 'function') {
                     ga('send', 'event', 'MUE', 'Registration', 'Registration Submission');
                 }
@@ -25,10 +32,9 @@ JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
                         'event_label': 'Registration Submission'
                     });
                 }
-                $(form).submit();
+                jQuery("#regform")[0].submit();
             }
-	    });
-
+        });
 	});
 
 	function reCapChecked() {
@@ -60,16 +66,21 @@ $ri=1;
 foreach($this->userfields as $f) {
 	$sname = $f->uf_sname;
 
+    if ($f->uf_type == "html") {
+        echo $f->uf_note;
+        continue;
+    }
     // Start Row
 	echo '<div class="uk-form-row uk-margin-top mue-user-reg-row mue-row'.($ri % 2).'">';
 
 	// Field Label
-	echo '<div class="uk-form-label mue-user-reg-label uk-text-bold">';
-	if ($f->uf_req) echo "*";
-	if ($f->uf_type != "cbox" && $f->uf_type != "message" && $f->uf_type != "cmlist" && $f->uf_type != "aclist") {
-	    echo $f->uf_name;
-	}
-	echo '</div>';
+    echo '<div class="uk-form-label mue-user-reg-label uk-text-bold">';
+    if ($f->uf_req) echo "*";
+    if ($f->uf_type != "cbox" && $f->uf_type != "message" && $f->uf_type != "cmlist" && $f->uf_type != "aclist") {
+        echo $f->uf_name;
+    }
+    echo '</div>';
+
 
 	// Start Field
 	echo '<div class="uk-form-controls mue-user-reg-value';
@@ -141,7 +152,12 @@ foreach($this->userfields as $f) {
 		echo JHtml::_('muefields.birthday',$f,$f->value);
 	}
 
-	if ($f->uf_note && $f->uf_type!="captcha") echo '<span class="uf_note">'.$f->uf_note.'</span>';
+    //Country
+    if ($f->uf_type=="country") {
+        echo JHtml::_('muefields.country',$f,$f->value);
+    }
+
+	if ($f->uf_note && $f->uf_type != "captcha") echo '<span class="uf_note">'.$f->uf_note.'</span>';
 
 	// End Field
 	echo '</div>';

@@ -160,7 +160,7 @@ JFactory::getDocument()->addScriptDeclaration('
 							if ((int)$item->sub->daysLeft > 0) {
 								switch ($item->sub->usrsub_status) {
 									case "notyetstarted": echo "Not Yet Started"; break;
-									case "verified": echo "Incomplete"; break;
+									case "verified": echo "Verified"; break;
 									case "canceled": echo "Canceled"; break;
 									case "accepted": echo "Accepted"; break;
 									case "pending": echo "Pending"; break;

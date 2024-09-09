@@ -37,9 +37,6 @@ class MUEViewUfields extends JViewLegacy
 
 		// Display the template
 		parent::display($tpl);
-
-		// Set the document
-		$this->setDocument();
 	}
 
 	protected function addToolBar() 
@@ -61,12 +58,6 @@ class MUEViewUfields extends JViewLegacy
 		}		
 		JToolBarHelper::divider();
 		JToolBarHelper::preferences('com_mue');
-	}
-	
-	protected function setDocument() 
-	{
-		$document = JFactory::getDocument();
-		$document->setTitle(JText::_('COM_MUE_MANAGER_UFIELDS'));
 	}
 
 

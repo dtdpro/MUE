@@ -24,7 +24,7 @@ $params = $this->form->getFieldsets('params');
 <form action="<?php echo JRoute::_('index.php?option=com_mue&layout=edit&sub_id='.(int) $this->item->sub_id); ?>" method="post" name="adminForm" id="mue-form" class="form-validate">
 
 	<?php
-	if (JVersion::MAJOR_VERSION == 4) {
+	if (JVersion::MAJOR_VERSION >= 4) {
 		echo '<div class="form-horizontal main-card">';
 		echo HTMLHelper::_('uitab.startTabSet', 'myTab', array( 'active' => 'details', 'recall' => true, 'breakpoint' => 768 ) );
 		echo HTMLHelper::_('uitab.addTab', 'myTab', 'general', 'Details');
@@ -35,28 +35,32 @@ $params = $this->form->getFieldsets('params');
 	?>
 
     <div class="row-fluid row">
-        <div class="span4 form-horizontal col-span-4">
-            <h4><?php echo JText::_( 'COM_MUE_UPLAN_DETAILS' ); ?></h4>
-			<?php foreach($this->form->getFieldset('details') as $field): ?>
-                <div class="control-group">
-                    <div class="control-label"><?php echo $field->label;?></div>
-                    <div class="controls"><?php echo $field->input;?></div>
-                </div>
-			<?php endforeach; ?>
+        <div class="span4 form-horizontal col-md-4">
+            <fieldset class="options-form form-horizontal">
+                <legend><?php echo JText::_( 'COM_MUE_UPLAN_DETAILS' ); ?></legend>
+                <?php foreach($this->form->getFieldset('details') as $field): ?>
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $field->label;?></div>
+                        <div class="controls"><?php echo $field->input;?></div>
+                    </div>
+                <?php endforeach; ?>
+            </fieldset>
         </div>
-        <div class="span8 form-horizontal col-span-8">
-            <h4><?php echo JText::_( 'COM_MUE_UPLAN_CONTENT' ); ?></h4>
-	        <?php foreach($this->form->getFieldset('content') as $field): ?>
-                <div class="control-group">
-                    <div class="control-label"><?php echo $field->label;?></div>
-                    <div class="controls"><?php echo $field->input;?></div>
-                </div>
-	        <?php endforeach; ?>
+        <div class="span8 form-horizontal col-md-8">
+            <fieldset class="options-form form-vertical">
+                <legend><?php echo JText::_( 'COM_MUE_UPLAN_CONTENT' ); ?></legend>
+                <?php foreach($this->form->getFieldset('content') as $field): ?>
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $field->label;?></div>
+                        <div class="controls"><?php echo $field->input;?></div>
+                    </div>
+                <?php endforeach; ?>
+            </fieldset>
         </div>
     </div>
 
 	<?php
-	if ( JVersion::MAJOR_VERSION == 4 ) {
+	if ( JVersion::MAJOR_VERSION >= 4 ) {
 		echo HTMLHelper::_('uitab.endTab');
 		echo HTMLHelper::_( 'uitab.endTabSet' );
 		echo '</div>';
