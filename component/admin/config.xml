@@ -18,11 +18,11 @@
 		</field>
 		<field name="rc_config" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_RC_CONFIG_LABEL" description="COM_MUE_CONFIG_FIELD_RC_CONFIG_DESC" default="disabled">
 			<option value="disabled">Disabled</option>
-			<option value="visible">Visible</option>
-			<option value="invisible">InVisible - Not yet implemented</option>
+			<option value="visible">Enabled</option>
 		</field>
 		<field name="rc_api_key" type="text" label="COM_MUE_CONFIG_FIELD_RC_APIKEY_LABEL" description="COM_MUE_CONFIG_FIELD_RC_APIKEY_DESC" size="70" class="inputbox" required="false" default="" />
 		<field name="rc_api_secret" type="text" label="COM_MUE_CONFIG_FIELD_RC_APISECRET_LABEL" description="COM_MUE_CONFIG_FIELD_RC_APISECRET_DESC" size="70" class="inputbox" required="false" default="" />
+		<field name="rc_threshold" type="text" label="COM_MUE_CONFIG_FIELD_RC_THRESHOLD_LABEL" description="COM_MUE_CONFIG_FIELD_RC_THRESHOLD_DESC" size="40" class="inputbox" required="false" default="0.5" />
 	</fieldset>
 	<fieldset name="subscribing" label="COM_MUE_CONFIG_SUBSCRIBE_LABEL" description="COM_MUE_CONFIG_SUBSCRIBE_DESC">
 		<field name="subscribe" type="radio" class="btn-group" label="COM_MUE_CONFIG_FIELD_SUBSCRIBE_LABEL" description="COM_MUE_CONFIG_FIELD_SUBSCRIBE_DESC" default="0">

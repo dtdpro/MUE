@@ -13,9 +13,9 @@ class MUEViewUserreg extends JViewLegacy
 
 		$config=MUEHelper::getConfig();
 		$this->input = JFactory::getApplication()->input;
-		if ($config->rc_config == "visible" || $config->rc_config == "invisible") {
+		if ($config->rc_config == "visible") {
 			$doc = JFactory::getDocument();
-			$doc->addScript('https://www.google.com/recaptcha/api.js');
+			$doc->addScript( 'https://www.google.com/recaptcha/api.js?render=' . $config->rc_api_key );
 		}
 		$layout = $this->getLayout();
 		$this->return = base64_decode(JFactory::getApplication()->input->get('return', '', 'POST', 'BASE64'));
@@ -113,6 +113,7 @@ class MUEViewUserreg extends JViewLegacy
 					$redir = JRoute::_( 'index.php?option=com_mue&view=subscribe' );
 					$app->setUserState( 'mue.userreg.return', $this->return );
 				}
+				$app->enqueueMessage(JText::_('COM_MUE_REGISTRATION_THANK_YOU'));
 				$app->redirect($redir);
 			}
 		}		

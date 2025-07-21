@@ -32,7 +32,16 @@ JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
                         'event_label': 'Registration Submission'
                     });
                 }
+                <?php if ($cfg->rc_config == "visible" ) { ?>
+                grecaptcha.ready(function() {
+                    grecaptcha.execute('<?php echo $cfg->rc_api_key; ?>', {action: 'submit'}).then(function(token) {
+                        jQuery('#reCapResponse').val(token);
+                        jQuery("#regform")[0].submit();
+                    });
+                });
+                <?php } else { ?>
                 jQuery("#regform")[0].submit();
+                <?php } ?>
             }
         });
 	});
@@ -169,17 +178,6 @@ foreach($this->userfields as $f) {
 	else $ri=1;
 }
 
-// ReCAPTCHA
-if ($cfg->rc_config == "visible" ) {
-	echo '<div class="uk-form-row mue-user-reg-row uk-margin-top">';
-	echo '<div class="uk-form-label mue-user-reg-label">';
-	echo '</div>';
-	echo '<div class="uk-form-controls mue-user-reg-value">';
-	echo '<input type="hidden" id="reCapChecked" name="reCapChecked" value="" data-rule-required="true" data-msg-required="reCaptcha Required">';
-	echo '<div class="g-recaptcha" data-callback="reCapChecked" data-sitekey="'.$cfg->rc_api_key.'"></div>';
-	echo '</div></div>';
-}
-
 // Submit Button
 echo '<div class="uk-form-row mue-user-reg-row uk-margin-top uk-margin-bottom">';
 echo '<div class="uk-form-label mue-user-reg-label">';
@@ -188,6 +186,10 @@ echo '<div class="uk-form-controls mue-user-reg-submit">';
 echo '<input name="saveprofile" id="savereg" value="'.JText::_('COM_MUE_USERREG_BUTTON_SUBMIT').'" type="submit" class="button uk-button uk-button-primary">';
 echo '</div></div>';
 
+// ReCAPTCHA
+if ($cfg->rc_config == "visible" ) {
+    echo '<input type="hidden" id="reCapResponse" name="g-recaptcha-response" value="" class="ignore">';
+}
 
 echo '<input type="hidden" name="option" value="com_mue">';
 echo '<input type="hidden" name="view" value="userreg">';

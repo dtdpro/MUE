@@ -2,6 +2,8 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Component\ComponentHelper;
+
 abstract class JHtmlMUEFields
 {
 	public static function cbox($field,$value=null)
@@ -146,6 +148,14 @@ abstract class JHtmlMUEFields
 	
 	public static function password($field,$require=false)
 	{
+        $params = ComponentHelper::getParams('com_users');
+
+        $minimumLength    = $params->get('minimum_length', 12);
+        $minimumIntegers  = $params->get('minimum_integers', 0);
+        $minimumSymbols   = $params->get('minimum_symbols', 0);
+        $minimumUppercase = $params->get('minimum_uppercase', 0);
+        $minimumLowercase = $params->get('minimum_lowercase', 0);
+
 		$sname = $field->uf_sname;
 		$html = "";
 		
@@ -154,9 +164,10 @@ abstract class JHtmlMUEFields
 			$html .= ' data-rule-required="true"';
 			$html .= ' data-msg-required="This Field is required"';
 		}
-		$html .= 'data-rule-minlength="8"';
+		$html .= 'data-rule-minlength="'.$minimumLength.'"';
+        $html .= ' pattern="(?=.*\d)(?=.*[\W_]).{'.$minimumLength.',255}" title="Password must contain at least: '.$minimumIntegers.' number(s), '.$minimumUppercase.' uppercase letter(s), '.$minimumLowercase.' lowercase letter(s), and '.$minimumSymbols.' special character(s), and have at least '.$minimumLength.' characters"';
 		if ($field->uf_match) $html .= ' data-rule-equalTo="#jform_'.$field->uf_match.'"';
-		$html .= ' data-msg-minlength="Minimum length 8 characters"';
+		$html .= ' data-msg-minlength="Minimum length '.$minimumLength.' characters"';
 		if ($field->uf_match) $html .= ' data-msg-equalTo="Fields must match"';
 		$html .= '>';
 	

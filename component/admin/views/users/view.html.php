@@ -57,7 +57,7 @@ class MUEViewUsers extends JViewLegacy
 		$tbar = JToolBar::getInstance('toolbar');
 		$tbar->appendButton('Link','export','Export CSV','index.php?option=com_mue&view=users&format=csv');
 		if ($cfg->subscribe) JToolBarHelper::custom('users.syncsubs', 'refresh.png', 'refresh_f2.png', 'COM_MUE_TOOLBAR_SYNCSUB', false);
-		if ($cfg->userdir) JToolBarHelper::custom('users.syncmemberdb', 'refresh.png', 'refresh_f2.png', 'COM_MUE_TOOLBAR_SYNCMEMBERDB', false);
+		//if ($cfg->userdir) JToolBarHelper::custom('users.syncmemberdb', 'refresh.png', 'refresh_f2.png', 'COM_MUE_TOOLBAR_SYNCMEMBERDB', false);
 		JToolBarHelper::divider();
 		
 		JHtml::_('bootstrap.modal', 'collapseModal');

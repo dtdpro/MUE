@@ -1,18 +1,22 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
 class MUEHelper {
 
 	public static function getConfig() {
-		$config = JComponentHelper::getParams('com_mue'); 
+		$config = ComponentHelper::getParams('com_mue'); 
 		$cfg = $config->toObject();
 		return $cfg;
 	}
 
 	public static function getDaysSinceLastUpdate() {
-		$user = JFactory::getUser();
+		$user = Factory::getUser();
 		$userid = $user->id;
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$query = 'SELECT DATE(userg_update) FROM #__mue_usergroup ';
 		$query.= 'WHERE userg_user="'.$userid.'"';
 		$db->setQuery($query); 
@@ -29,10 +33,10 @@ class MUEHelper {
 
 	public static function getUserInfo($useids = false, $checkExternal = true) {
 		$cfg = MUEHelper::getConfig();
-		$jconfig = JFactory::getConfig();
-		$user = JFactory::getUser();
+		$jconfig = Factory::getConfig();
+		$user = Factory::getUser();
 		$userid = $user->id;
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$query = 'SELECT ug.userg_group AS userGroupID, ug.userg_update AS lastUpdated, g.ug_name AS userGroupName FROM #__mue_usergroup as ug ';
 		$query.= 'RIGHT JOIN #__mue_ugroups AS g ON ug.userg_group = g.ug_id ';
 		$query.= 'WHERE ug.userg_user="'.$userid.'"';
@@ -114,10 +118,10 @@ class MUEHelper {
 
 	public static function getUserGroup($userid = 0) {
 		if (!$userid) {
-			$user = JFactory::getUser();
+			$user = Factory::getUser();
 			$userid = $user->id;
 		}
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$query = 'SELECT ug.userg_group AS userGroupID, ug.userg_update AS lastUpdated, g.* FROM #__mue_usergroup as ug ';
 		$query.= 'RIGHT JOIN #__mue_ugroups AS g ON ug.userg_group = g.ug_id ';
 		$query.= 'WHERE ug.userg_user="'.$userid.'"';
@@ -130,7 +134,7 @@ class MUEHelper {
 		if (!$groupid) {
 			return false;
 		}
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$query = 'SELECT * FROM #__mue_ugroups ';
 		$query.= 'WHERE ug_id="'.$groupid.'"';
 		$db->setQuery($query);
@@ -139,9 +143,9 @@ class MUEHelper {
 	}
 
 	public static function getUserSubs() {
-		$user = JFactory::getUser();
+		$user = Factory::getUser();
 		$userid = $user->id;
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$query = 'SELECT s.*, p.*, DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft FROM #__mue_usersubs as s ';
 		$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
 		$query.= 'WHERE s.usrsub_status != "notyetstarted" && s.usrsub_user="'.$userid.'" ';
@@ -152,9 +156,9 @@ class MUEHelper {
 	}
 
 	public static function userHadTrial() {
-		$user = JFactory::getUser();
+		$user = Factory::getUser();
 		$userid = $user->id;
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$query = 'SELECT s.*, p.* FROM #__mue_usersubs as s ';
 		$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
 		$query.= 'WHERE s.usrsub_user="'.$userid.'" ';
@@ -169,10 +173,10 @@ class MUEHelper {
 
 	public static function getActiveSub($userid=0) {
 		if (!$userid) {
-			$user = JFactory::getUser();
+			$user = Factory::getUser();
 			$userid = $user->id;
 		}
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$query = 'SELECT s.*,p.*,DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft FROM #__mue_usersubs as s ';
 		$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
 		$query.= 'WHERE s.usrsub_status IN ("completed","accepted") && s.usrsub_end >= DATE(NOW()) && s.usrsub_user="'.$userid.'" ';
@@ -207,11 +211,11 @@ class MUEHelper {
 	}
 
 	public static function updateUserSub($userid) {
-		$user = JFactory::getUser($userid);
+		$user = Factory::getUser($userid);
 		$date = new JDate('now');
 
 		$cfg = MUEHelper::getConfig();
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$query = 'SELECT s.*,p.*,DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft FROM #__mue_usersubs as s ';
 		$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
 		$query.= 'WHERE s.usrsub_status IN ("completed","accepted") && s.usrsub_end >= DATE(NOW()) && s.usrsub_user="'.$userid.'" ';
@@ -248,7 +252,7 @@ class MUEHelper {
 		$usernotes = '';
 
 		/// Active campaign Integration
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$qd = 'SELECT f.* FROM #__mue_ufields as f ';
 		$qd.= ' WHERE f.published = 1 ';
 		$qd .= ' && f.uf_type IN ("aclist")';
@@ -327,7 +331,7 @@ class MUEHelper {
 		}
 
 		/// Campaign Monitor Integration
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$qd = 'SELECT f.* FROM #__mue_ufields as f ';
 		$qd.= ' WHERE f.published = 1 ';
 		$qd .= ' && f.uf_type IN ("cmlist")';
@@ -404,7 +408,7 @@ class MUEHelper {
 		$cfg = MUEHelper::getConfig();
 		if (!$userid) return false;
 
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$query = 'SELECT s.*,p.*,DATEDIFF(DATE(DATE_ADD(usrsub_end, INTERVAL 1 Day)), DATE(NOW())) AS daysLeft FROM #__mue_usersubs as s ';
 		$query.= 'LEFT JOIN #__mue_subs AS p ON s.usrsub_sub = p.sub_id ';
 		$query.= 'WHERE s.usrsub_status IN ("completed","accepted") && s.usrsub_end >= DATE(NOW()) && s.usrsub_user="'.$userid.'" ';
@@ -435,7 +439,7 @@ class MUEHelper {
 			//return $sub;
 		}
 
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		if ($cfg->subgroup <= 2) return;
 		if ($sub) {
 			$query = $db->getQuery(true);
@@ -466,12 +470,12 @@ class MUEHelper {
 	}
 
     public static function updateUserLoginTime($userid) {
-        $user = JFactory::getUser($userid);
+        $user = Factory::getUser($userid);
         $date = new JDate('now');
         $cfg = MUEHelper::getConfig();
 
         /// Active campaign Integration
-        $db = JFactory::getDBO();
+        $db = Factory::getDBO();
         $qd = 'SELECT f.* FROM #__mue_ufields as f ';
         $qd.= ' WHERE f.published = 1 ';
         $qd .= ' && f.uf_type IN ("aclist")';
@@ -514,5 +518,115 @@ class MUEHelper {
                 }
             }
         }
+    }
+
+    public static function verifyPassword($password) {
+        $params = ComponentHelper::getParams('com_users');
+
+
+        $minimumLength    = $params->get('minimum_length', 12);
+        $minimumIntegers  = $params->get('minimum_integers', 0);
+        $minimumSymbols   = $params->get('minimum_symbols', 0);
+        $minimumUppercase = $params->get('minimum_uppercase', 0);
+        $minimumLowercase = $params->get('minimum_lowercase', 0);
+
+        $valueLength = \strlen($password);
+
+        // We set a maximum length to prevent abuse since it is unfiltered.
+        if ($valueLength > 4096) {
+            Factory::getApplication()->enqueueMessage(Text::_('JFIELD_PASSWORD_TOO_LONG'), 'error');
+        }
+
+        // We don't allow white space inside passwords
+        $valueTrim = trim($password);
+
+        // Set a variable to check if any errors are made in password
+        $validPassword = true;
+
+        // Check for spaces
+        if (\strlen($valueTrim) !== $valueLength) {
+            Factory::getApplication()->enqueueMessage(
+                Text::_('JFIELD_PASSWORD_SPACES_IN_PASSWORD'),
+                'error'
+            );
+
+            $validPassword = false;
+        }
+
+        // Minimum number of integers required
+        if (!empty($minimumIntegers)) {
+            $nInts = preg_match_all('/[0-9]/', $password, $imatch);
+
+            if ($nInts < $minimumIntegers) {
+                Factory::getApplication()->enqueueMessage(
+                    Text::plural('JFIELD_PASSWORD_NOT_ENOUGH_INTEGERS_N', $minimumIntegers),
+                    'error'
+                );
+
+                $validPassword = false;
+            }
+        }
+
+        // Minimum number of symbols required
+        if (!empty($minimumSymbols)) {
+            $nsymbols = preg_match_all('[\W]', $password, $smatch);
+
+            if ($nsymbols < $minimumSymbols) {
+                Factory::getApplication()->enqueueMessage(
+                    Text::plural('JFIELD_PASSWORD_NOT_ENOUGH_SYMBOLS_N', $minimumSymbols),
+                    'error'
+                );
+
+                $validPassword = false;
+            }
+        }
+
+        // Minimum number of upper case ASCII characters required
+        if (!empty($minimumUppercase)) {
+            $nUppercase = preg_match_all('/[A-Z]/', $password, $umatch);
+
+            if ($nUppercase < $minimumUppercase) {
+                Factory::getApplication()->enqueueMessage(
+                    Text::plural('JFIELD_PASSWORD_NOT_ENOUGH_UPPERCASE_LETTERS_N', $minimumUppercase),
+                    'error'
+                );
+
+                $validPassword = false;
+            }
+        }
+
+        // Minimum number of lower case ASCII characters required
+        if (!empty($minimumLowercase)) {
+            $nLowercase = preg_match_all('/[a-z]/', $password, $umatch);
+
+            if ($nLowercase < $minimumLowercase) {
+                Factory::getApplication()->enqueueMessage(
+                    Text::plural('JFIELD_PASSWORD_NOT_ENOUGH_LOWERCASE_LETTERS_N', $minimumLowercase),
+                    'error'
+                );
+
+                $validPassword = false;
+            }
+        }
+
+        // Minimum length option
+        if (!empty($minimumLength)) {
+            if (\strlen((string) $password) < $minimumLength) {
+                Factory::getApplication()->enqueueMessage(
+                    Text::plural('JFIELD_PASSWORD_TOO_SHORT_N', $minimumLength),
+                    'error'
+                );
+
+                $validPassword = false;
+            }
+        }
+
+        // If valid has violated any rules above return false.
+        if (!$validPassword) {
+            return false;
+        }
+
+        return true;
+
     }
 }

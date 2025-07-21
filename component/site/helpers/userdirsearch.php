@@ -10,9 +10,7 @@ require_once ( JPATH_BASE .'/includes/defines.php' );
 require_once ( JPATH_BASE .'/includes/framework.php' );
 require_once ('mue.php');
 
-if (JVersion::MAJOR_VERSION == 3) {
-	$app = JFactory::getApplication( 'site' );
-} else {
+
 	if (!file_exists(JPATH_LIBRARIES . '/vendor/autoload.php') || !is_dir(JPATH_ROOT . '/media/vendor'))
 	{
 		echo file_get_contents(JPATH_ROOT . '/templates/system/build_incomplete.html');
@@ -35,13 +33,13 @@ if (JVersion::MAJOR_VERSION == 3) {
 
 	// Set the application as global app
 	\Joomla\CMS\Factory::$application = $app;
-}
 
-$db  = JFactory::getDBO();
-$user = JFactory::getUser();
+
+$db  = \Joomla\CMS\Factory::getDBO();
+$user = \Joomla\CMS\Factory::getUser();
 $config=MUEHelper::getConfig();
 $numsubs=count(MUEHelper::getUserSubs());
-$input = JFactory::getApplication()->input;
+$input = \Joomla\CMS\Factory::getApplication()->input;
 $canview=true;		
 if ($config->subscribe && $config->usrdir_sub) {
 	if ($numsubs) {

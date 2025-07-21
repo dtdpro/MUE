@@ -26,11 +26,12 @@ class plgAuthenticationMUE extends JPlugin
             }
         }
 	}
+
 	function onUserAuthorisation($user, $options)
 	{
 		$app = JFactory::getApplication();
 		if ($app->isClient('administrator')) {
-			return true;
+			return $user;
 		}
         require JPATH_ROOT.'/components/com_mue/vendor/autoload.php';
 		require_once('components/com_mue/helpers/mue.php');
@@ -46,6 +47,6 @@ class plgAuthenticationMUE extends JPlugin
 		if ($config->subscribe) {
 			MUEHelper::updateSubJoomlaGroup($userid);
 		}
-		return true;
+		return $user;
 	}
 }

@@ -80,6 +80,14 @@ class ActiveCampaign {
 			$fieldsByTypeId[$f['type']][$f['id']] = $f['title'];
 		}
 
+        if ($data['meta']['total'] > 100) {
+            $data = $this->getData('/api/3/fields?limit=100&offset=100');
+
+            foreach ($data['fields'] as $f) {
+                $fieldsByTypeId[$f['type']][$f['id']] = $f['title'];
+            }
+        }
+
 		return $fieldsByTypeId;
 	}
 

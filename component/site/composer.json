@@ -1,6 +1,13 @@
 {
     "require": {
         "league/oauth2-client": "^2.6",
+        "dtdpro/mrecaptcha": "dev-master",
         "campaignmonitor/createsend-php": "^7.0"
-    }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../../recaptcha"
+        }
+    ]
 }

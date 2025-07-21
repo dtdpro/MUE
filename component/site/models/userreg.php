@@ -7,6 +7,8 @@ jimport( 'joomla.application.component.model' );
 jimport('joomla.utilities.date');
 
 use Joomla\CMS\Session\Session;
+use MReCaptcha\MReCaptcha;
+
 
 class MUEModelUserreg extends JModelLegacy
 {
@@ -144,32 +146,23 @@ class MUEModelUserreg extends JModelLegacy
 			$item->user_group = $ginfo->ug_name;
 			$item->site_url = JURI::base();
 
-			// reCAPTCHA
-			if ($cfg->rc_config == "visible" || $cfg->rc_config == "invisible") {
-				$rc_url = 'https://www.google.com/recaptcha/api/siteverify';
-				$rc_data = array(
-					'secret' => $cfg->rc_api_secret,
-					'response' => $_POST["g-recaptcha-response"]
-				);
-				$rc_options = array(
-					'http' => array (
-						'method' => 'POST',
-						'content' => http_build_query($rc_data)
-					)
-				);
-				$rc_context  = stream_context_create($rc_options);
-				$rc_verify = file_get_contents($rc_url, false, $rc_context);
-				$rc_captcha_success=json_decode($rc_verify);
-				if ($rc_captcha_success->success==false) {
-					$this->setError('reCAPTCHA Response Required');
-					return false;
-				} else if ($rc_captcha_success->success==true) {
+			// reCAPTCHA check
+			if ($cfg->rc_config == "visible") {
+                $recaptchaCheck = new MReCaptcha($cfg->rc_api_secret);
 
-				} else {
-					$this->setError('reCAPTCHA Error');
-					return false;
-				}
-			}
+                if ($cfg->rc_theme == "v3") {
+                    $resp = $recaptchaCheck->setScoreThreshold($cfg->rc_threshold)
+                        ->setExpectedAction('submit')
+                        ->verify($_POST["g-recaptcha-response"]);
+                } else {
+                    $resp = $recaptchaCheck->verify($_POST["g-recaptcha-response"]);
+                }
+
+                if (!$resp->isSuccess()) {
+                    $this->setError('reCAPTCHA verification unsuccessful.  Please resubmit.');
+                    return false;
+                }
+            }
 				
 			$odsql = "SELECT * FROM #__mue_ufields_opts";
 			$db->setQuery($odsql);
@@ -185,6 +178,11 @@ class MUEModelUserreg extends JModelLegacy
 			//Get Joomla User Config Params
 			$userParams = JComponentHelper::getParams('com_users');
 			$useractivation = $userParams->get('useractivation');
+
+            // Check password requirements
+            if (!MUEHelper::verifyPassword($item->password)) {
+                return false;
+            }
 
 			//Create Joomla User
 			$user= new JUser;

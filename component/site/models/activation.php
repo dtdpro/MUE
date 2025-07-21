@@ -47,7 +47,7 @@ class MUEModelActivation extends JModelLegacy
 			$data['sitename'] = $config->get('sitename');
 			$user->setParam('activate', 1);
 
-			// Svae User
+			// Save User
 			if (!$user->save())
 			{
 				$this->setError($user->getError());

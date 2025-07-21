@@ -309,6 +309,11 @@ class MUEModelUser extends JModelLegacy
 			}
 			$item->site_url = JURI::base();
 			$item->user_group = $ginfo->ug_name;
+
+            // Check password requirements
+            if (!MUEHelper::verifyPassword($item->password)) {
+                return false;
+            }
 			
 			$odsql = "SELECT * FROM #__mue_ufields_opts";
 			$db->setQuery($odsql);
@@ -364,7 +369,7 @@ class MUEModelUser extends JModelLegacy
 				}
 
 				// sync contact
-				$acClient->syncContact($item->email,$item->fname, $item->lname,$fieldData);z
+				$acClient->syncContact($item->email,$item->fname, $item->lname,$fieldData);
 
 				// get contact
 				$contact = $acClient->getContact($item->email);
